@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Maqueta 6 · TV</title>
+  <link rel="icon" href="data:," />
+  <link rel="stylesheet" href="/shared/common.css" />
+  <link rel="stylesheet" href="./display.css" />
+</head>
+<body>
+  <main class="display-shell">
+    <header class="story-header">
+      <div class="story-step">
+        <span id="stepBadge">INICIO</span>
+        <h1 id="stepTitle">Selecciona un segmento en la tablet</h1>
+      </div>
+      <button id="connectionStatus" class="connection-status" type="button" data-debug-toggle>
+        <span aria-hidden="true"></span>
+        Conectando
+      </button>
+    </header>
+
+    <section id="ecosystem" class="ecosystem" aria-live="polite">
+      <article id="annotation" class="annotation" aria-live="polite" hidden></article>
+
+      <aside class="selection-rail" aria-label="Resumen de la selección">
+        <section class="rail-panel">
+          <h2>Segmentos</h2>
+          <div id="segmentRail" class="rail-list"></div>
+        </section>
+        <section class="rail-panel">
+          <h2>Soluciones disponibles</h2>
+          <div id="instrumentRail" class="rail-list"></div>
+        </section>
+        <p id="railHint" class="rail-hint">Selecciona un segmento desde la tablet para comenzar.</p>
+      </aside>
+
+      <svg id="routeLayer" class="route-layer" viewBox="0 0 1920 958" aria-hidden="true">
+        <defs>
+          <filter id="routeGlow" x="-80%" y="-80%" width="260%" height="260%">
+            <feGaussianBlur stdDeviation="5" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+          <marker id="routeArrow" viewBox="0 0 12 10" refX="11" refY="5"
+            markerWidth="18" markerHeight="15" orient="auto" markerUnits="userSpaceOnUse">
+            <path d="M 0 0 L 12 5 L 0 10 Z" fill="context-stroke" />
+          </marker>
+        </defs>
+
+        <path id="segmentRoute-financialInstitutions" class="route route-segment"
+          data-from="financialInstitutions" data-to="bid"
+          d="M 680 244 C 790 305, 862 390, 983 481" />
+        <path id="segmentRoute-privateSector" class="route route-segment"
+          data-from="privateSector" data-to="bid"
+          d="M 687 500 C 808 500, 879 520, 982 531" />
+        <path id="segmentRoute-peopleMsmEs" class="route route-segment"
+          data-from="peopleMsmEs" data-to="bid"
+          d="M 691 784 C 808 731, 884 626, 989 575" />
+
+        <circle class="route-particle" data-particle="0" r="7" cx="-30" cy="-30" />
+        <circle class="route-particle" data-particle="1" r="7" cx="-30" cy="-30" />
+        <circle class="route-particle" data-particle="2" r="7" cx="-30" cy="-30" />
+      </svg>
+
+      <div id="segmentNodes" class="segment-nodes"></div>
+
+      <section class="bid-system" aria-label="BID Banca de Desarrollo e instrumentos">
+        <div id="instrumentRings" class="instrument-rings"></div>
+        <div id="bidPuck" class="bid-puck">
+          <img class="bid-house-art" src="/assets/scenes/scene-development-bank-house.png" alt="" />
+          <strong id="developmentBankTitle" class="bid-house-title">BANCA DE DESARROLLO</strong>
+        </div>
+      </section>
+
+      <div id="actorNodes" class="actor-nodes"></div>
+      <div id="routeMarker" class="route-marker" hidden></div>
+    </section>
+  </main>
+
+  <script type="module" src="./display.js"></script>
+</body>
+</html>

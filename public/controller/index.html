@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Maqueta 6 · Control tablet</title>
+  <link rel="icon" href="data:," />
+  <link rel="stylesheet" href="/shared/common.css" />
+  <link rel="stylesheet" href="./controller.css" />
+</head>
+<body>
+  <main class="tablet-shell">
+    <header class="tablet-header">
+      <div class="intro-copy">
+        <p class="eyebrow">BID · Banca de Desarrollo</p>
+        <h1>Explora una zona y su solución</h1>
+        <p>Primero selecciona una de las 3 zonas. La TV mostrará la barrera principal y esperará hasta que la persona termine de leer.</p>
+      </div>
+      <div class="control-stack">
+        <button id="connection" class="status" type="button" data-debug-toggle>Conectando…</button>
+        <button id="resetGlobal" class="reset-button" type="button">Reset</button>
+      </div>
+    </header>
+
+    <section class="route-status" aria-live="polite">
+      <div>
+        <span id="phaseLabel">Inicio</span>
+        <strong id="routeLabel">Selecciona una zona</strong>
+      </div>
+      <div class="route-meter" aria-hidden="true"><span id="routeMeter"></span></div>
+    </section>
+
+    <section id="segmentStep" class="step active" aria-labelledby="segmentTitle">
+      <div class="step-head">
+        <span>Paso 1</span>
+        <h2 id="segmentTitle">Selecciona una zona</h2>
+      </div>
+      <div id="segments" class="segment-grid"></div>
+    </section>
+
+    <section id="problemStep" class="step" aria-labelledby="problemTitle">
+      <button id="backFromProblem" class="back-button" type="button">Cambiar zona</button>
+      <article class="problem-card">
+        <span>Problema principal</span>
+        <h2 id="problemTitle"></h2>
+        <p id="problemCopy"></p>
+        <button id="readProblem" class="primary-wide" type="button">Ya lo leí · Ver soluciones</button>
+      </article>
+    </section>
+
+    <section id="solutionStep" class="step" aria-labelledby="solutionTitle">
+      <button id="backToProblem" class="back-button" type="button">Volver al problema</button>
+      <article class="selected-summary">
+        <span>Zona seleccionada</span>
+        <strong id="selectedSegment"></strong>
+        <p id="selectedBarrier"></p>
+      </article>
+      <div class="step-head">
+        <span>Paso 2</span>
+        <h2 id="solutionTitle">Elige la solución que responde a la barrera</h2>
+      </div>
+      <div id="instruments" class="instrument-grid"></div>
+    </section>
+
+    <section id="runningStep" class="step" aria-labelledby="runningTitle">
+      <article class="running-card">
+        <span>Participación en TV</span>
+        <h2 id="runningTitle"></h2>
+        <p id="runningCopy">La pantalla está mostrando la solución seleccionada.</p>
+        <div class="actions">
+          <button id="newInstrument" class="secondary" type="button">Comparar otra solución</button>
+          <button id="changeSector" class="secondary" type="button">Cambiar zona</button>
+          <button id="restart" class="primary" type="button">Reiniciar</button>
+        </div>
+      </article>
+    </section>
+  </main>
+  <script type="module" src="./controller.js"></script>
+</body>
+</html>
