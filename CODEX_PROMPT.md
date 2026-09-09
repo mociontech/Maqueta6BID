@@ -1,103 +1,94 @@
 # Prompt recomendado para Codex
 
-> Nota de versión: la dirección vigente usa tres zonas y prioriza la ruta validada Instituciones financieras → Financiamiento → Banco comercial. README.md y data/experience.json son la referencia actual.
+> Nota vigente: el flujo cambio. La maqueta ya no usa seleccion de zona + instrumento en la tablet. Ahora la narrativa es vivienda informal -> Banca de Desarrollo -> sector privado -> vivienda formal. README.md y `data/experience.json` son la referencia actual.
 
-Trabaja sobre este proyecto **Maqueta 6 — Banca de Desarrollo**.
+Trabaja sobre este proyecto **Maqueta 6 - Banca de Desarrollo**.
 
-Primero lee `README.md`, `AGENTS.md`, `data/experience.json` y revisa las imágenes en `public/assets/references/`.
+Primero lee `README.md`, `AGENTS.md`, `data/experience.json` y revisa las imagenes en `public/assets/references/`.
 
 ## Objetivo
 
-Convertir el prototipo funcional actual en la experiencia final para una exhibición del BID, manteniendo dos interfaces sincronizadas:
+Convertir la experiencia en una maqueta digital premium para una exhibicion del BID, manteniendo dos interfaces sincronizadas:
 
-1. `/controller/` — tablet de control.
-2. `/display/` — TV horizontal de 60 pulgadas (1920×1080).
+1. `/controller/` - tablet de control.
+2. `/display/` - TV horizontal de 60 pulgadas (1920x1080).
 
-## Lógica que NO debes cambiar
+## Logica vigente
 
-El usuario selecciona en la tablet:
+La tablet muestra:
 
-1. Un segmento:
-   - Instituciones financieras
-   - Sector privado (Desarrolladores)
-   - Personas & MiPymes
+1. Inicio con boton `COMENZAR`.
+2. Seleccion de uno de tres sectores privados:
+   - Intermediarios.
+   - Inversionistas.
+   - Aseguradoras.
+3. Pantalla de `BANCA DE DESARROLLO activada`.
+4. Pantalla final de agradecimiento.
 
-2. Un instrumento permitido para ese segmento:
-   - Financiamiento
-   - Garantías
-   - Seguros
-   - Capitales
+La TV ejecuta una secuencia automatica:
 
-La TV ejecuta una secuencia visual automática:
+1. Muestra vivienda informal a la izquierda.
+2. Presenta la barrera principal: falta de financiamiento.
+3. Explica que la familia no puede ir directamente al sector privado.
+4. Activa la Banca de Desarrollo como puente.
+5. Enciende el aro/instrumento asociado al sector seleccionado.
+6. Ilumina el sector privado seleccionado.
+7. Muestra la transformacion hacia vivienda formal a la derecha.
 
-1. Enfoca el segmento.
-2. Aparecen popups con barreras.
-3. Se destaca el instrumento elegido alrededor de Banca de Desarrollo.
-4. Se anima un puente desde el segmento hacia Banca de Desarrollo.
-5. Desde Banca de Desarrollo se animan conexiones hacia los actores/proveedores movilizados.
-6. Aparece el resultado y el copy final.
+Internamente se conserva `segmentId + instrumentId` por compatibilidad:
 
-No habilites Seguros para Instituciones financieras salvo que se cambie explícitamente en `data/experience.json`.
+- Intermediarios -> `financing`.
+- Inversionistas -> `capital`.
+- Aseguradoras -> `insurance`.
+
+No reintroduzcas una segunda seleccion manual de instrumentos en la tablet salvo que el cliente lo pida explicitamente.
 
 ## Visual
 
-Usa las referencias de la carpeta `public/assets/references` como dirección artística, no como layout rígido.
+Usa las referencias de `public/assets/references` como direccion artistica, no como layout rigido.
 
-La TV debe parecer una maqueta digital premium, no un dashboard corporativo genérico:
+La TV debe sentirse como maqueta arquitectonica premium:
 
-- Fondo oscuro azul petróleo.
-- Banca de Desarrollo como nodo circular central.
-- Tres zonas a la izquierda y cuatro actores financieros a la derecha:
-  - instituciones financieras: arquitectura institucional latinoamericana;
-  - sector privado: proyecto residencial de escala;
-  - personas & MiPymes: barrio de casas latinoamericanas;
-  - banco comercial, fondos de pensiones, aseguradora y mercado de capitales como actores independientes.
-- Cuatro aros alrededor del centro para Financiamiento, Garantías, Seguros y Capitales.
-- Rutas luminosas con animación de flujo.
-- Popups de barreras cortos, legibles a 2–3 metros.
-- Panel derecho para explicar selección, proveedor y resultado.
-- Evitar estética excesivamente futurista o “IA”; debe sentirse como visualización arquitectónica premium.
+- fondo oscuro azul petroleo;
+- panel izquierdo de vivienda informal/problema;
+- Banca de Desarrollo como edificio/nodo central;
+- cuatro aros alrededor del centro: Financiamiento, Garantias, Seguros y Capitales;
+- sectores privados cerca del centro: Intermediarios, Inversionistas, Aseguradoras;
+- panel derecho de vivienda formal/transformacion;
+- rutas luminosas con flujo, siempre pasando por BD;
+- popups cortos, legibles a 2-3 metros y sin tapar nombres ni rutas importantes.
+
+Evita estetica excesivamente futurista o generica de dashboard.
 
 ## Animaciones
 
-Mejora el prototipo con una librería ligera como GSAP o Motion One si aporta valor.
-
 Secuencia sugerida:
-- Segmento: 0.8–1.2 s.
-- Barreras: entrada secuencial 2.5–3.5 s.
-- Instrumento: aro central 2 s.
-- Puente: trazo luminoso progresivo 2.5–3.5 s.
-- Proveedores: aparición secuencial 3–4 s.
-- Resultado: mantener hasta nueva selección.
 
-Implementa cancelación correcta cuando el usuario cambia de selección durante una animación.
+- Barrera: visible aprox. 5 segundos antes de la ruta.
+- Activacion BD: 0.8-1.2 s.
+- Aro/instrumento: 2 s de lectura.
+- Sector privado: trazo luminoso progresivo 2.5-3.5 s.
+- Transformacion: mantener hasta nueva seleccion.
 
-## Tablet
-
-Hazla más cercana al wireframe del proyecto:
-- mensaje introductorio en la parte superior;
-- tres botones grandes de zonas;
-- al seleccionar segmento, mostrar una síntesis de barreras;
-- después mostrar solo instrumentos válidos;
-- botón para volver/cambiar sector;
-- feedback claro de que la ruta se está ejecutando en la TV.
+Implementa cancelacion correcta cuando el usuario cambia de seleccion durante una animacion.
 
 ## Robustez para evento
 
-- Reconexión WebSocket automática.
-- Mantener último estado válido si la tablet se desconecta.
-- Botón de reset.
+- Reconexion WebSocket automatica.
+- Mantener ultimo estado valido si la tablet se desconecta.
+- Boton de reset.
 - Auto-reset configurable tras 60 s de inactividad.
 - Modo kiosk recomendado en README.
 - No depender de internet.
-- Incluir un panel de diagnóstico oculto con estado de WebSocket y FPS básico.
+- Panel de diagnostico oculto con estado de WebSocket y FPS basico.
 
 ## Entrega
 
 Antes de terminar:
+
 - prueba `/controller/` y `/display/` en paralelo;
-- verifica 1920×1080;
+- verifica 1920x1080;
 - corrige overflow y textos ilegibles;
-- no cambies los contenidos fuente sin documentarlo;
+- no cambies contenidos fuente sin documentarlo;
 - actualiza README con cualquier cambio;
-- resume archivos modificados y pendientes de validación con cliente.
+- resume archivos modificados y pendientes de validacion con cliente.

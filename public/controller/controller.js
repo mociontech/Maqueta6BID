@@ -3,64 +3,58 @@ import { createDiagnosticsPanel } from '/shared/diagnostics.js';
 
 const data = await fetch('/data/experience.json').then(response => response.json());
 
-const routePhases = ['instrument', 'route', 'providers', 'result'];
 const phaseLabels = {
   idle: 'Inicio',
-  problem: 'Leyendo barrera principal',
-  solutions: 'Seleccionando solución',
-  instrument: 'Mostrando solución en TV',
-  route: 'Iluminando participación',
-  providers: 'Entidades participantes',
-  result: 'Resultado en pantalla'
+  problem: 'Mostrando barrera de acceso',
+  solutions: 'Mostrando barrera de acceso',
+  instrument: 'Banca de Desarrollo activada',
+  route: 'Activando sector privado',
+  providers: 'Activando sector privado',
+  result: 'Transformacion en pantalla'
 };
 const phaseProgress = {
   idle: 0,
-  problem: 28,
-  solutions: 46,
-  instrument: 62,
+  problem: 22,
+  solutions: 22,
+  instrument: 52,
   route: 78,
-  providers: 92,
+  providers: 86,
   result: 100
 };
-const segmentMarks = {
-  financialInstitutions: 'landmark',
-  privateSector: 'building-2',
-  peopleMsmEs: 'house'
-};
-const instrumentMarks = {
-  financing: 'banknote',
-  guarantees: 'shield-check',
-  insurance: 'umbrella',
-  capital: 'chart-no-axes-combined'
-};
+const autoRunDelayMs = 5200;
 
 let state = { segmentId: null, instrumentId: null, phase: 'idle', selectionMode: 'initial', runId: 0 };
-let localSegment = null;
+let selectedSectorId = null;
+let autoRunTimer = null;
+let localFinal = false;
 
 const els = {
   shell: document.querySelector('.tablet-shell'),
   connection: document.querySelector('#connection'),
   resetGlobal: document.querySelector('#resetGlobal'),
-  routeLabel: document.querySelector('#routeLabel'),
+  introStep: document.querySelector('#introStep'),
+  sectorStep: document.querySelector('#sectorStep'),
+  activeStep: document.querySelector('#activeStep'),
+  finalStep: document.querySelector('#finalStep'),
+  introTitle: document.querySelector('#introTitle'),
+  introCopy: document.querySelector('#introCopy'),
+  sectorTitle: document.querySelector('#sectorTitle'),
+  sectorCopy: document.querySelector('#sectorCopy'),
+  activeTitle: document.querySelector('#activeTitle'),
+  activeCopy: document.querySelector('#activeCopy'),
+  finalTitle: document.querySelector('#finalTitle'),
+  finalCopy: document.querySelector('#finalCopy'),
+  sectors: document.querySelector('#sectors'),
+  selectedSummary: document.querySelector('#selectedSummary'),
   phaseLabel: document.querySelector('#phaseLabel'),
   routeMeter: document.querySelector('#routeMeter'),
-  segments: document.querySelector('#segments'),
-  instruments: document.querySelector('#instruments'),
-  segmentStep: document.querySelector('#segmentStep'),
-  problemStep: document.querySelector('#problemStep'),
-  solutionStep: document.querySelector('#solutionStep'),
-  runningStep: document.querySelector('#runningStep'),
-  problemTitle: document.querySelector('#problemTitle'),
-  problemCopy: document.querySelector('#problemCopy'),
-  selectedSegment: document.querySelector('#selectedSegment'),
-  selectedBarrier: document.querySelector('#selectedBarrier'),
-  runningTitle: document.querySelector('#runningTitle'),
-  runningCopy: document.querySelector('#runningCopy'),
-  backFromProblem: document.querySelector('#backFromProblem'),
-  backToProblem: document.querySelector('#backToProblem'),
-  readProblem: document.querySelector('#readProblem'),
-  newInstrument: document.querySelector('#newInstrument'),
+  begin: document.querySelector('#begin'),
+  backHome: document.querySelector('#backHome'),
+  goHome: document.querySelector('#goHome'),
+  newSector: document.querySelector('#newSector'),
   changeSector: document.querySelector('#changeSector'),
+  finish: document.querySelector('#finish'),
+  exploreAgain: document.querySelector('#exploreAgain'),
   restart: document.querySelector('#restart')
 };
 
@@ -76,7 +70,7 @@ socket.onConnectionChange((online, wsStatus) => {
 
 function retryLabel(wsStatus) {
   if (wsStatus?.reconnectInMs) return `Reconectando ${Math.round(wsStatus.reconnectInMs / 1000)} s`;
-  return 'Sin conexión';
+  return 'Sin conexion';
 }
 
 function escapeHtml(value = '') {
@@ -89,248 +83,195 @@ function escapeHtml(value = '') {
   })[char]);
 }
 
-function segmentAccent(id) {
+function sectorColor(id) {
   return ({
-    financialInstitutions: '#2e7de9',
-    privateSector: '#32c7c9',
-    peopleMsmEs: '#f08a24'
-  })[id] || '#58ddff';
+    intermediaries: '#4f9dff',
+    investors: '#d3bb62',
+    insurers: '#f28a30'
+  })[id] || '#53e0c7';
 }
 
-function currentSegment() {
-  return data.segments.find(item => item.id === (localSegment || state.segmentId));
+function currentSector(id = selectedSectorId || state.segmentId) {
+  return data.segments.find(item => item.id === id);
 }
 
-function currentInstrument() {
-  return data.instruments.find(item => item.id === state.instrumentId);
+function mappedInstrumentId(sector) {
+  return sector?.mappedInstrumentId || sector?.allowedInstruments?.[0] || null;
 }
 
-function solutionFor(segment, instrumentId) {
-  const configured = segment?.solutions?.[instrumentId];
+function currentInstrument(sector = currentSector()) {
+  const id = state.instrumentId || mappedInstrumentId(sector);
+  return data.instruments.find(item => item.id === id);
+}
+
+function solutionFor(sector, instrumentId = mappedInstrumentId(sector)) {
+  const configured = sector?.solutions?.[instrumentId];
   if (!configured) return null;
   return typeof configured === 'string'
     ? { solution: configured, description: configured, targetActorIds: [] }
     : configured;
 }
 
-function createButton(className, label, iconName) {
-  const button = document.createElement('button');
-  button.className = className;
-  button.type = 'button';
+function iconSpan(iconName, color) {
   const icon = document.createElement('span');
   icon.className = 'pictogram';
   icon.style.setProperty('--icon', `url('/assets/icons/${iconName}.svg')`);
-  const content = document.createElement('span');
-  content.className = 'button-copy';
-  const strong = document.createElement('strong');
-  strong.textContent = label;
-  content.append(strong);
-  button.append(icon, content);
-  return { button, content };
+  icon.style.setProperty('--accent', color);
+  return icon;
 }
 
-function renderSegments() {
-  els.segments.innerHTML = '';
-  for (const segment of data.segments) {
-    const { button, content } = createButton('segment-card', segment.label, segmentMarks[segment.id]);
-    button.dataset.id = segment.id;
-    button.style.setProperty('--accent', segmentAccent(segment.id));
-    const small = document.createElement('small');
-    small.textContent = segment.primaryBarrier;
-    content.append(small);
-    const preview = document.createElement('img');
-    preview.className = 'segment-preview';
-    preview.src = segment.asset;
-    preview.alt = '';
-    button.append(preview);
-    button.addEventListener('click', () => chooseSegment(segment.id));
-    els.segments.append(button);
+function showStep(step, name) {
+  localFinal = step === els.finalStep;
+  els.shell.dataset.step = name;
+  for (const item of [els.introStep, els.sectorStep, els.activeStep, els.finalStep]) {
+    item.classList.toggle('active', item === step);
   }
 }
 
-function providerNames(segment, instrument) {
-  const solution = solutionFor(segment, instrument.id);
-  const names = (solution?.targetActorIds || [])
-    .map(id => data.providers.find(provider => provider.id === id)?.short)
-    .filter(Boolean);
-  return names.length ? names.join(' + ') : 'Participación privada por validar';
+function clearAutoRun() {
+  if (!autoRunTimer) return;
+  clearTimeout(autoRunTimer);
+  autoRunTimer = null;
 }
 
-function renderInstruments(segment) {
-  els.instruments.innerHTML = '';
-  if (!segment) return;
+function setTextFromData() {
+  els.introTitle.textContent = data.meta.introTitle || 'El rol de la banca de desarrollo';
+  els.introCopy.textContent = data.meta.introCopy || '';
+  els.sectorTitle.textContent = data.meta.selectionTitle || 'Explora soluciones';
+  els.sectorCopy.textContent = data.meta.selectionCopy || '';
+  els.activeTitle.textContent = data.meta.activationTitle || 'Banca de Desarrollo activada';
+  els.activeCopy.textContent = data.meta.activationCopy || '';
+  els.finalTitle.textContent = data.meta.finalTitle || 'Gracias por participar';
+  els.finalCopy.textContent = data.meta.finalCopy || '';
+}
 
-  for (const instrument of data.instruments) {
-    const available = segment.allowedInstruments.includes(instrument.id);
-    const solution = solutionFor(segment, instrument.id);
-    const { button, content } = createButton('instrument-card', instrument.label, instrumentMarks[instrument.id]);
-    button.dataset.id = instrument.id;
-    button.style.setProperty('--accent', instrument.color);
-    button.disabled = !available;
-    button.classList.toggle('disabled', !available);
-    const provider = document.createElement('em');
-    provider.textContent = available ? providerNames(segment, instrument) : 'No disponible para este segmento';
-    const small = document.createElement('small');
-    small.textContent = solution?.solution || instrument.short;
-    content.append(provider, small);
-    if (available) button.addEventListener('click', () => chooseInstrument(instrument.id));
-    els.instruments.append(button);
+function renderSectors() {
+  els.sectors.innerHTML = '';
+  for (const sector of data.segments) {
+    const color = sectorColor(sector.id);
+    const instrument = currentInstrument(sector);
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'sector-card';
+    button.dataset.id = sector.id;
+    button.style.setProperty('--accent', color);
+    const copy = document.createElement('span');
+    const title = document.createElement('strong');
+    const detail = document.createElement('small');
+    title.textContent = sector.label;
+    detail.textContent = instrument?.label || 'Solucion BD';
+    copy.append(title, detail);
+    button.append(iconSpan(sector.icon, color), copy);
+    button.addEventListener('click', () => chooseSector(sector.id));
+    els.sectors.append(button);
   }
 }
 
-function showStep(which) {
-  els.shell.dataset.step = which.id;
-  for (const step of [els.segmentStep, els.problemStep, els.solutionStep, els.runningStep]) {
-    step.classList.toggle('active', step === which);
-  }
+function setSelectedSummary(sector) {
+  const instrument = currentInstrument(sector);
+  const solution = solutionFor(sector, instrument?.id);
+  const color = sectorColor(sector?.id);
+  els.selectedSummary.style.setProperty('--accent', color);
+  els.selectedSummary.innerHTML = `
+    <strong>${escapeHtml(sector?.label || '')}</strong>
+    <em>${escapeHtml(instrument?.label || 'Solucion BD')}</em>
+    <span>${escapeHtml(solution?.plainMeaning || solution?.solution || '')}</span>
+  `;
 }
 
 function setRouteStatus() {
-  const segment = data.segments.find(item => item.id === state.segmentId);
-  const instrument = data.instruments.find(item => item.id === state.instrumentId);
   const phase = state.phase || 'idle';
-  els.phaseLabel.textContent = phaseLabels[phase] || 'Experiencia';
+  els.phaseLabel.textContent = phaseLabels[phase] || 'Experiencia en curso';
   els.routeMeter.style.width = `${phaseProgress[phase] ?? 0}%`;
-
-  if (segment && instrument) {
-    els.routeLabel.textContent = `${segment.shortLabel} · ${instrument.label}`;
-  } else if (segment) {
-    els.routeLabel.textContent = segment.shortLabel;
-  } else {
-    els.routeLabel.textContent = 'Selecciona una zona';
-  }
 }
 
-function setProblem(segment) {
-  localSegment = segment?.id || null;
-  els.problemTitle.textContent = segment?.label || '';
-  els.problemCopy.textContent = segment?.primaryBarrier || '';
-  els.selectedSegment.textContent = segment?.label || '';
-  els.selectedBarrier.textContent = segment?.primaryBarrier || '';
-  document.querySelectorAll('.segment-card').forEach(button => {
-    button.classList.toggle('selected', button.dataset.id === segment?.id);
+function goToIntro(reset = true) {
+  clearAutoRun();
+  selectedSectorId = null;
+  showStep(els.introStep, 'intro');
+  if (reset) socket.send({ type: 'reset', source: 'controller' });
+}
+
+function goToSectors(resetDisplay = false) {
+  clearAutoRun();
+  selectedSectorId = null;
+  showStep(els.sectorStep, 'sectors');
+  if (resetDisplay) socket.send({ type: 'reset', source: 'controller' });
+}
+
+function runSelectedSector(sector) {
+  const instrumentId = mappedInstrumentId(sector);
+  if (!sector || !instrumentId) return;
+  socket.send({
+    type: 'runRoute',
+    source: 'controller',
+    segmentId: sector.id,
+    instrumentId
   });
 }
 
-function chooseSegment(id) {
-  const segment = data.segments.find(item => item.id === id);
-  if (!segment) return;
-  state = { ...state, segmentId: id, instrumentId: null, phase: 'problem' };
-  setProblem(segment);
-  setRouteStatus();
-  showStep(els.problemStep);
-  socket.send({ type: 'selectSegment', source: 'controller', segmentId: id });
-}
-
-function showSolutions(comparison = false) {
-  const segment = currentSegment();
-  if (!segment) return;
+function chooseSector(id) {
+  const sector = currentSector(id);
+  if (!sector) return;
+  clearAutoRun();
+  selectedSectorId = sector.id;
   state = {
     ...state,
-    segmentId: segment.id,
+    segmentId: sector.id,
     instrumentId: null,
-    phase: 'solutions',
-    selectionMode: comparison ? 'compare' : 'initial'
+    phase: 'problem'
   };
-  setProblem(segment);
-  renderInstruments(segment);
+  setSelectedSummary(sector);
   setRouteStatus();
-  showStep(els.solutionStep);
-  socket.send({
-    type: 'showSolutions',
-    source: 'controller',
-    segmentId: segment.id,
-    comparison
-  });
+  showStep(els.activeStep, 'active');
+  socket.send({ type: 'selectSegment', source: 'controller', segmentId: sector.id });
+  autoRunTimer = setTimeout(() => runSelectedSector(sector), autoRunDelayMs);
 }
 
-function chooseInstrument(id) {
-  const segment = currentSegment();
-  if (!segment || !segment.allowedInstruments.includes(id)) return;
-  const instrument = data.instruments.find(item => item.id === id);
-  if (!instrument) return;
-
-  state = { ...state, segmentId: segment.id, instrumentId: id, phase: 'instrument' };
-  setRunningCopy(segment, instrument);
-  setRouteStatus();
-  showStep(els.runningStep);
-  socket.send({ type: 'runRoute', source: 'controller', segmentId: segment.id, instrumentId: id });
-}
-
-function setRunningCopy(segment, instrument) {
-  const solution = solutionFor(segment, instrument.id);
-  els.runningTitle.textContent = `${segment.shortLabel} · ${instrument.label}`;
-  els.runningCopy.innerHTML = `
-    <strong>${escapeHtml(solution?.solution || instrument.short)}</strong>
-    ${solution?.plainMeaning ? `<em>${escapeHtml(solution.plainMeaning)}</em>` : ''}
-    <span>${escapeHtml(providerNames(segment, instrument))}</span>
-  `;
+function finishExperience() {
+  clearAutoRun();
+  showStep(els.finalStep, 'final');
 }
 
 function syncFromServer() {
   setRouteStatus();
+  if (localFinal) return;
 
-  if (state.phase === 'idle') {
-    localSegment = null;
-    document.querySelectorAll('.segment-card').forEach(button => button.classList.remove('selected'));
-    showStep(els.segmentStep);
+  if (state.phase === 'idle' && els.shell.dataset.step !== 'sectors') {
+    selectedSectorId = null;
+    showStep(els.introStep, 'intro');
     return;
   }
 
-  const segment = data.segments.find(item => item.id === state.segmentId);
-  const instrument = data.instruments.find(item => item.id === state.instrumentId);
-
-  if (state.phase === 'problem' && segment) {
-    setProblem(segment);
-    showStep(els.problemStep);
-    return;
-  }
-
-  if (state.phase === 'solutions' && segment) {
-    setProblem(segment);
-    renderInstruments(segment);
-    showStep(els.solutionStep);
-    return;
-  }
-
-  if (segment && instrument && routePhases.includes(state.phase)) {
-    localSegment = segment.id;
-    setRunningCopy(segment, instrument);
-    showStep(els.runningStep);
+  const sector = currentSector(state.segmentId);
+  if (sector && state.phase !== 'idle') {
+    selectedSectorId = sector.id;
+    setSelectedSummary(sector);
+    showStep(els.activeStep, 'active');
   }
 }
 
-function resetExperience() {
-  localSegment = null;
-  socket.send({ type: 'reset', source: 'controller' });
-}
-
-els.backFromProblem.addEventListener('click', resetExperience);
-els.backToProblem.addEventListener('click', () => {
-  const segment = currentSegment();
-  if (!segment) return resetExperience();
-  setProblem(segment);
-  state = { ...state, phase: 'problem', instrumentId: null };
-  setRouteStatus();
-  showStep(els.problemStep);
-  socket.send({ type: 'selectSegment', source: 'controller', segmentId: segment.id });
-});
-els.readProblem.addEventListener('click', () => showSolutions(false));
-els.resetGlobal.addEventListener('click', resetExperience);
-els.restart.addEventListener('click', resetExperience);
-els.changeSector.addEventListener('click', resetExperience);
-els.newInstrument.addEventListener('click', () => showSolutions(true));
+els.begin.addEventListener('click', () => goToSectors(true));
+els.backHome.addEventListener('click', () => goToIntro(true));
+els.goHome.addEventListener('click', () => goToIntro(true));
+els.newSector.addEventListener('click', () => goToSectors(false));
+els.changeSector.addEventListener('click', () => goToSectors(true));
+els.finish.addEventListener('click', finishExperience);
+els.exploreAgain.addEventListener('click', () => goToSectors(false));
+els.restart.addEventListener('click', () => goToIntro(true));
+els.resetGlobal.addEventListener('click', () => goToIntro(true));
 
 createDiagnosticsPanel({
-  title: 'Diagnóstico tablet',
+  title: 'Diagnostico tablet',
   socket,
   getRows: () => [
     ['Fase', state.phase || 'idle'],
     ['Run ID', String(state.runId || 0)],
-    ['Zona', state.segmentId || 'ninguna'],
-    ['Instrumento', state.instrumentId || 'ninguno']
+    ['Sector', state.segmentId || selectedSectorId || 'ninguno'],
+    ['Instrumento', state.instrumentId || mappedInstrumentId(currentSector()) || 'ninguno']
   ]
 });
 
-renderSegments();
+setTextFromData();
+renderSectors();
 setRouteStatus();

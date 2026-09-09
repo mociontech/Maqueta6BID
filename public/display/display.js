@@ -8,16 +8,14 @@ const data = await response.json();
 const DESIGN_WIDTH = 1920;
 const DESIGN_HEIGHT = 1080;
 const PHASE_COPY = {
-  idle: ['INICIO', 'Selecciona un segmento en la tablet'],
-  problem: ['PASO 1', 'Selección del segmento'],
-  solutions: ['PASO 2', 'Soluciones propuestas'],
-  instrument: ['PASO 3', 'Solución seleccionada'],
-  route: ['PASO 4', 'Participación activada'],
-  providers: ['PASO 4', 'Entidades iluminadas'],
-  result: ['PASO 4', 'Resultado']
+  idle: ['INICIO', data.meta.title],
+  problem: ['PASO 1', 'Barrera de acceso'],
+  solutions: ['PASO 1', 'Barrera de acceso'],
+  instrument: ['PASO 2', 'Banca de Desarrollo activada'],
+  route: ['PASO 3', 'Sector privado habilitado'],
+  providers: ['PASO 3', 'Sector privado habilitado'],
+  result: ['PASO 4', 'Transformacion de vivienda']
 };
-const routePhases = new Set(['instrument', 'route', 'providers', 'result']);
-const actorVisualStates = new Set(['disabled', 'idle', 'available', 'active']);
 
 let state = {
   phase: 'idle',
@@ -33,19 +31,28 @@ let sequenceAnimations = [];
 
 const els = {
   shell: document.querySelector('.display-shell'),
+  stage: document.querySelector('#stage'),
   stepBadge: document.querySelector('#stepBadge'),
   stepTitle: document.querySelector('#stepTitle'),
+  stepSubtitle: document.querySelector('#stepSubtitle'),
   connection: document.querySelector('#connectionStatus'),
-  segmentRail: document.querySelector('#segmentRail'),
-  instrumentRail: document.querySelector('#instrumentRail'),
-  railHint: document.querySelector('#railHint'),
-  segments: document.querySelector('#segmentNodes'),
-  actors: document.querySelector('#actorNodes'),
+  informalPanel: document.querySelector('#informalPanel'),
+  formalPanel: document.querySelector('#formalPanel'),
+  informalTitle: document.querySelector('#informalTitle'),
+  formalTitle: document.querySelector('#formalTitle'),
+  problemLabel: document.querySelector('#problemLabel'),
+  resultLabel: document.querySelector('#resultLabel'),
+  informalPoster: document.querySelector('#informalPoster'),
+  formalPoster: document.querySelector('#formalPoster'),
+  problemBullets: document.querySelector('#problemBullets'),
+  resultChips: document.querySelector('#resultChips'),
+  sectors: document.querySelector('#sectorNodes'),
   rings: document.querySelector('#instrumentRings'),
   bid: document.querySelector('#bidPuck'),
+  developmentBankImage: document.querySelector('#developmentBankImage'),
   developmentBankTitle: document.querySelector('#developmentBankTitle'),
+  bankExamples: document.querySelector('#bankExamples'),
   annotation: document.querySelector('#annotation'),
-  routeMarker: document.querySelector('#routeMarker'),
   particles: [...document.querySelectorAll('.route-particle')]
 };
 
@@ -63,7 +70,7 @@ function iconMarkup(name, className = 'ui-icon') {
   return `<span class="${className}" style="--icon:url('/assets/icons/${escapeHtml(name)}.svg')" aria-hidden="true"></span>`;
 }
 
-function findSegment(id = state.segmentId) {
+function findSector(id = state.segmentId) {
   return data.segments.find(segment => segment.id === id);
 }
 
@@ -75,113 +82,96 @@ function findProvider(id) {
   return data.providers.find(provider => provider.id === id);
 }
 
-function getSolution(segment, instrument) {
-  if (!segment || !instrument) return null;
-  const configured = segment.solutions?.[instrument.id];
+function mappedInstrumentId(sector) {
+  return sector?.mappedInstrumentId || sector?.allowedInstruments?.[0] || null;
+}
+
+function solutionFor(sector, instrumentId = mappedInstrumentId(sector)) {
+  const configured = sector?.solutions?.[instrumentId];
   if (!configured) return null;
-  if (typeof configured === 'string') {
-    return {
-      enabled: true,
-      solution: configured,
-      description: configured,
-      targetActorIds: [],
-      results: [],
-      mappingStatus: 'pending-client-validation'
-    };
-  }
-  return configured;
+  return typeof configured === 'string'
+    ? {
+        enabled: true,
+        solution: configured,
+        description: configured,
+        targetActorIds: [],
+        results: []
+      }
+    : configured;
+}
+
+function sectorColor(id) {
+  return ({
+    intermediaries: '#4f9dff',
+    investors: '#d3bb62',
+    insurers: '#f28a30'
+  })[id] || '#53e0c7';
 }
 
 function buildScene() {
-  const house = data.meta.developmentBankHouse;
-  els.developmentBankTitle.textContent = house.title;
-  els.segments.innerHTML = data.segments.map(segment => `
-    <article class="segment-node" data-id="${escapeHtml(segment.id)}" data-state="idle" style="--node-color:#4f9dff">
-      <div class="node-label">
-        ${iconMarkup(segment.icon)}
-        <strong>${escapeHtml(segment.shortLabel)}</strong>
-      </div>
-      <img class="node-art" src="${escapeHtml(segment.asset)}" alt="" />
-    </article>
-  `).join('');
+  const media = data.meta.media || {};
+  const problem = data.meta.problem || {};
+  const transformation = data.meta.transformation || {};
+  const house = data.meta.developmentBankHouse || {};
 
-  els.actors.innerHTML = data.providers.map(provider => `
-    <article class="actor-node" data-id="${escapeHtml(provider.id)}" data-state="idle" style="--node-color:#4f9dff">
-      <div class="node-label">
-        ${iconMarkup(provider.icon)}
-        <strong>${escapeHtml(provider.label)}</strong>
-      </div>
-      <p class="actor-role" hidden></p>
-      <img class="node-art" src="${escapeHtml(provider.asset)}" alt="" />
-    </article>
-  `).join('');
+  els.stepSubtitle.textContent = data.meta.subtitle || '';
+  els.informalTitle.textContent = transformation.beforeTitle || 'Vivienda informal';
+  els.formalTitle.textContent = transformation.afterTitle || 'Vivienda formal';
+  els.problemLabel.textContent = problem.label || 'Falta de financiamiento';
+  els.resultLabel.textContent = transformation.resultTitle || 'Transformacion habilitada';
+  els.developmentBankTitle.textContent = house.title || 'BANCA DE DESARROLLO';
+  els.informalPoster.src = media.informalPoster || '/assets/scenes/scene-people-msmes.png';
+  els.formalPoster.src = media.formalPoster || '/assets/scenes/scene-developers.png';
+  els.developmentBankImage.src = media.developmentBank || '/assets/scenes/scene-development-bank-house.png';
+
+  els.problemBullets.innerHTML = (problem.bullets || [])
+    .map(item => `<li>${escapeHtml(item)}</li>`)
+    .join('');
+
+  els.resultChips.innerHTML = ['Credito formal', 'Riesgo compartido', 'Capital movilizado', 'Mejor vivienda']
+    .map(item => `<span>${escapeHtml(item)}</span>`)
+    .join('');
+
+  els.bankExamples.innerHTML = (house.examples || [])
+    .map(example => `<span><strong>${escapeHtml(example.name)}</strong> ${escapeHtml(example.country)}</span>`)
+    .join('');
 
   els.rings.innerHTML = data.instruments.map(instrument => `
     <div class="instrument-ring" data-id="${escapeHtml(instrument.id)}" style="--ring-color:${escapeHtml(instrument.color)}">
       <span class="ring-label">${escapeHtml(instrument.label)}</span>
     </div>
   `).join('');
-}
 
-function renderRail(segment, instrument) {
-  const instrumentPanel = els.instrumentRail.closest('.rail-panel');
-  instrumentPanel.hidden = !segment || state.phase === 'problem';
-  els.segmentRail.innerHTML = data.segments.map(item => {
-    const active = item.id === segment?.id;
+  els.sectors.innerHTML = data.segments.map(sector => {
+    const provider = findProvider(sector.id);
+    const solution = solutionFor(sector);
+    const color = sectorColor(sector.id);
     return `
-      <div class="rail-item available ${active ? 'active' : ''}" style="--item-color:#4f9dff">
-        ${iconMarkup(item.icon)}
-        <strong>${escapeHtml(item.shortLabel)}</strong>
-        <span class="rail-state">${active ? '✓' : ''}</span>
-      </div>
+      <article class="sector-node" data-id="${escapeHtml(sector.id)}" style="--node-color:${escapeHtml(color)}">
+        <img src="${escapeHtml(provider?.asset || sector.asset)}" alt="" />
+        <div class="sector-label">
+          ${iconMarkup(provider?.icon || sector.icon)}
+          <strong>${escapeHtml(sector.shortLabel)}</strong>
+        </div>
+        <p class="sector-products" hidden>${escapeHtml((solution?.products || []).join(' · '))}</p>
+      </article>
     `;
   }).join('');
-
-  els.instrumentRail.innerHTML = data.instruments.map(item => {
-    const available = Boolean(segment?.allowedInstruments.includes(item.id));
-    const active = item.id === instrument?.id;
-    const solution = getSolution(segment, item);
-    return `
-      <div class="rail-item ${available ? 'available' : 'locked'} ${active ? 'active' : ''}"
-        style="--item-color:${escapeHtml(item.color)}">
-        ${iconMarkup(item.icon)}
-        <strong>${escapeHtml(item.label)}</strong>
-        <span class="rail-state">${active ? '✓' : available ? '' : '×'}</span>
-        ${active && solution?.solution ? `<small>${escapeHtml(solution.solution)}</small>` : ''}
-      </div>
-    `;
-  }).join('');
-
-  if (!segment) {
-    els.railHint.textContent = 'Selecciona un segmento desde la tablet para comenzar.';
-  } else if (state.phase === 'problem') {
-    els.railHint.textContent = 'La barrera permanece visible hasta que la persona confirme su lectura.';
-  } else if (state.phase === 'solutions' && state.selectionMode === 'compare') {
-    els.railHint.textContent = 'El segmento y su conexión permanecen activos mientras se compara otra solución.';
-  } else if (state.phase === 'solutions') {
-    els.railHint.textContent = 'Solo se muestran los instrumentos válidos para este segmento.';
-  } else {
-    els.railHint.textContent = instrument
-      ? `Explorando ${instrument.label}. Las entidades participantes se iluminan en la TV.`
-      : 'Selecciona una solución desde la tablet.';
-  }
 }
 
 function cancelSequence() {
   sequenceToken += 1;
   sequenceTimers.forEach(timer => clearTimeout(timer));
-  sequenceTimers = [];
   sequenceFrames.forEach(frame => cancelAnimationFrame(frame));
-  sequenceFrames = [];
   sequenceAnimations.forEach(animation => animation.cancel());
+  sequenceTimers = [];
+  sequenceFrames = [];
   sequenceAnimations = [];
   els.particles.forEach(particle => {
     particle.classList.remove('visible');
-    particle.setAttribute('cx', '-30');
-    particle.setAttribute('cy', '-30');
+    particle.setAttribute('cx', '-40');
+    particle.setAttribute('cy', '-40');
   });
-  els.routeMarker.hidden = true;
-  els.routeMarker.classList.remove('showing');
 }
 
 function later(callback, delay, token) {
@@ -192,17 +182,19 @@ function later(callback, delay, token) {
 }
 
 function resetVisualStates() {
-  document.querySelectorAll('.segment-node, .actor-node').forEach(node => {
-    node.classList.remove('active', 'available', 'disabled', 'dim', 'arrival');
-    node.dataset.state = 'idle';
-    const role = node.querySelector('.actor-role');
-    if (role) {
-      role.hidden = true;
-      role.textContent = '';
-    }
+  els.shell.dataset.phase = state.phase || 'idle';
+  els.shell.dataset.sector = state.segmentId || '';
+  els.shell.dataset.instrument = state.instrumentId || '';
+  els.informalPanel.classList.remove('active', 'dim');
+  els.formalPanel.classList.remove('active', 'dim');
+  els.bid.classList.remove('pulse');
+  document.querySelectorAll('.sector-node').forEach(node => {
+    node.classList.remove('active', 'dim');
+    const products = node.querySelector('.sector-products');
+    if (products) products.hidden = true;
   });
   document.querySelectorAll('.instrument-ring').forEach(ring => {
-    ring.classList.remove('available', 'selected', 'disabled');
+    ring.classList.remove('available', 'selected');
   });
   document.querySelectorAll('.route').forEach(path => {
     path.classList.remove('active', 'complete');
@@ -212,25 +204,23 @@ function resetVisualStates() {
   });
   els.annotation.hidden = true;
   els.annotation.innerHTML = '';
-  els.bid.classList.remove('pulse');
 }
 
-function routeElement(kind, id) {
-  return document.querySelector(`#${kind}Route-${CSS.escape(id)}`);
+function routeById(id) {
+  return document.querySelector(`#${CSS.escape(id)}`);
 }
 
-function completePath(path, color) {
-  if (!path) return;
-  const length = path.getTotalLength();
-  path.style.setProperty('--route-color', color);
-  path.style.strokeDasharray = `${length}`;
-  path.style.strokeDashoffset = '0';
-  path.classList.add('complete');
+function routeForSector(sectorId) {
+  return document.querySelector(`#route-bd-${CSS.escape(sectorId)}`);
+}
+
+function transformRouteForSector(sectorId) {
+  return document.querySelector(`#route-transform-${CSS.escape(sectorId)}`);
 }
 
 function animateParticle(path, duration, color, token, particleIndex = 0) {
   const particle = els.particles[particleIndex];
-  if (!particle) return;
+  if (!particle || !path) return;
   const length = path.getTotalLength();
   const startedAt = performance.now();
   particle.style.setProperty('--route-color', color);
@@ -266,14 +256,19 @@ function animatePath(path, duration, color, token, particleIndex = 0) {
 
   const animation = path.animate(
     [{ strokeDashoffset: length }, { strokeDashoffset: 0 }],
-    {
-      duration,
-      easing: 'cubic-bezier(.2,.72,.2,1)',
-      fill: 'forwards'
-    }
+    { duration, easing: 'cubic-bezier(.2,.72,.2,1)', fill: 'forwards' }
   );
   sequenceAnimations.push(animation);
   animateParticle(path, duration, color, token, particleIndex);
+}
+
+function completePath(path, color) {
+  if (!path) return;
+  const length = path.getTotalLength();
+  path.style.setProperty('--route-color', color);
+  path.style.strokeDasharray = `${length}`;
+  path.style.strokeDashoffset = '0';
+  path.classList.add('complete');
 }
 
 function pulseBid() {
@@ -282,174 +277,96 @@ function pulseBid() {
   els.bid.classList.add('pulse');
 }
 
-function focusSegment(segment) {
-  document.querySelectorAll('.segment-node').forEach(node => {
-    const active = node.dataset.id === segment.id;
-    node.classList.toggle('active', active);
-    node.classList.toggle('dim', !active);
-    node.dataset.state = active ? 'active' : 'idle';
-  });
-  document.querySelectorAll('.actor-node').forEach(node => node.classList.add('dim'));
+function focusProblemSide(active = true) {
+  els.informalPanel.classList.toggle('active', active);
+  els.formalPanel.classList.toggle('dim', active);
+  document.querySelectorAll('.sector-node').forEach(node => node.classList.add('dim'));
 }
 
-function setAvailableRings(segment) {
+function focusSector(sectorId, active = true) {
+  document.querySelectorAll('.sector-node').forEach(node => {
+    const isActive = node.dataset.id === sectorId;
+    node.classList.toggle('active', isActive && active);
+    node.classList.toggle('dim', !isActive || !active);
+    const products = node.querySelector('.sector-products');
+    if (products) products.hidden = true;
+  });
+}
+
+function setRings(sector, selected = false) {
+  const selectedId = mappedInstrumentId(sector);
   document.querySelectorAll('.instrument-ring').forEach(ring => {
-    const available = segment.allowedInstruments.includes(ring.dataset.id);
-    ring.classList.toggle('available', available);
-    ring.classList.toggle('disabled', !available);
+    const isMapped = ring.dataset.id === selectedId;
+    ring.classList.toggle('available', Boolean(sector?.allowedInstruments?.includes(ring.dataset.id)));
+    ring.classList.toggle('selected', selected && isMapped);
   });
 }
 
-function focusRing(instrument) {
-  document.querySelectorAll('.instrument-ring').forEach(ring => {
-    ring.classList.toggle('selected', ring.dataset.id === instrument.id);
-    ring.classList.toggle('disabled', ring.dataset.id !== instrument.id);
-  });
+function updateResults(solution) {
+  const results = Array.isArray(solution?.displayResults) && solution.displayResults.length
+    ? solution.displayResults
+    : ['Credito formal', 'Riesgo compartido', 'Vivienda formal'];
+  els.resultChips.innerHTML = results.map(item => `<span>${escapeHtml(item)}</span>`).join('');
+  els.resultLabel.textContent = solution?.resultTitle || data.meta.transformation?.resultTitle || 'Transformacion habilitada';
 }
 
-function setActorVisualState(node, visualState, arrival = false, solution = null) {
-  const nextState = actorVisualStates.has(visualState) ? visualState : 'idle';
-  node.classList.toggle('active', nextState === 'active');
-  node.classList.toggle('available', nextState === 'available');
-  node.classList.toggle('disabled', nextState === 'disabled');
-  node.classList.toggle('dim', nextState === 'idle' || nextState === 'disabled');
-  node.classList.toggle('arrival', nextState === 'active' && arrival);
-  node.dataset.state = nextState;
-  const role = node.querySelector('.actor-role');
-  if (!role) return;
-  const roleCopy = solution?.actorLabels?.[node.dataset.id];
-  role.textContent = roleCopy || '';
-  role.hidden = nextState !== 'active' || !roleCopy;
-}
-
-function focusActors(actorIds, arrival = false, solution = null) {
-  document.querySelectorAll('.actor-node').forEach(node => {
-    setActorVisualState(node, actorIds.includes(node.dataset.id) ? 'active' : 'idle', arrival, solution);
-  });
-}
-
-function revealActors(actorIds, solution, token) {
-  focusActors([], false, solution);
-  actorIds.forEach((actorId, index) => {
-    later(() => {
-      const node = document.querySelector(`.actor-node[data-id="${CSS.escape(actorId)}"]`);
-      if (node) setActorVisualState(node, 'active', true, solution);
-    }, index * (solution.branchDelayMs || 260), token);
-  });
-}
-
-function illuminateParticipation(actorIds, solution, token, showActorLabels = false) {
-  const roleCopy = showActorLabels ? solution : null;
-  const delay = solution?.branchDelayMs || 260;
-  focusActors([], false, roleCopy);
-  actorIds.forEach((actorId, index) => {
-    later(() => {
-      const node = document.querySelector(`.actor-node[data-id="${CSS.escape(actorId)}"]`);
-      if (node) setActorVisualState(node, 'active', true, roleCopy);
-    }, index * delay, token);
-  });
-  const pulseDelay = Math.max(520, (actorIds.length - 1) * delay + 420);
-  later(pulseBid, pulseDelay, token);
-}
-
-function showBarrier(segment) {
-  const chips = segment.barrier.components || [];
+function showBarrier(sector) {
+  const problem = sector?.barrier || data.meta.problem || {};
+  const chips = problem.components || data.meta.problem?.bullets || [];
   els.annotation.dataset.kind = 'barrier';
-  els.annotation.style.setProperty('--annotation-color', '#4f9dff');
+  els.annotation.style.setProperty('--annotation-color', '#f28a30');
   els.annotation.innerHTML = `
     <div class="annotation-head">
       ${iconMarkup('triangle-alert')}
-      <strong>Barrera principal</strong>
+      <strong>${escapeHtml(problem.title || 'Barrera principal')}</strong>
     </div>
-    <div class="annotation-body">
-      <p>${escapeHtml(segment.barrier.description)}</p>
+    <p><strong>${escapeHtml(problem.short || data.meta.problem?.label || 'Falta de financiamiento')}.</strong> ${escapeHtml(problem.description || data.meta.problem?.description || '')}</p>
+    <div class="product-list">
+      ${chips.slice(0, 4).map(chip => `<span>${escapeHtml(chip)}</span>`).join('')}
     </div>
-    ${chips.length ? `
-      <div class="barrier-chips">
-        ${chips.map(chip => `<span>${escapeHtml(chip)}</span>`).join('')}
+  `;
+  els.annotation.hidden = false;
+}
+
+function showActivation(sector, instrument, solution) {
+  els.annotation.dataset.kind = 'activation';
+  els.annotation.style.setProperty('--annotation-color', instrument?.color || '#4f9dff');
+  els.annotation.innerHTML = `
+    <div class="annotation-head">
+      ${iconMarkup('landmark')}
+      <strong>Banca de Desarrollo activada</strong>
+    </div>
+    <p>${escapeHtml(solution?.routeExplanation || 'La BD reduce el riesgo antes de conectar con el sector privado.')}</p>
+  `;
+  els.annotation.hidden = false;
+}
+
+function showJointAction(sector, instrument, solution, includeResult = false) {
+  const products = solution?.products || [];
+  const results = solution?.displayResults || solution?.results || [];
+  els.annotation.dataset.kind = includeResult ? 'result' : 'route';
+  els.annotation.style.setProperty('--annotation-color', instrument?.color || sectorColor(sector?.id));
+  els.annotation.innerHTML = `
+    <div class="annotation-grid">
+      <section class="annotation-card">
+        <span>Solucion de la BD</span>
+        <strong>${escapeHtml(instrument?.label || 'Instrumento')}</strong>
+        <p>${escapeHtml(solution?.solution || '')}</p>
+      </section>
+      <section class="annotation-card">
+        <span>Sector privado</span>
+        <strong>${escapeHtml(sector?.label || '')}</strong>
+        <p>${escapeHtml(solution?.privateParticipationShort || solution?.privateParticipation || '')}</p>
+      </section>
+    </div>
+    <div class="product-list">
+      ${products.slice(0, 4).map(product => `<span>${escapeHtml(product)}</span>`).join('')}
+    </div>
+    ${includeResult ? `
+      <div class="annotation-results">
+        ${results.slice(0, 3).map(result => `<span>${escapeHtml(result)}</span>`).join('')}
       </div>
     ` : ''}
-  `;
-  els.annotation.hidden = false;
-}
-
-function showSolution(instrument, solution) {
-  els.annotation.dataset.kind = 'solution';
-  els.annotation.style.setProperty('--annotation-color', instrument.color);
-  els.annotation.innerHTML = `
-    <div class="annotation-head">
-      ${iconMarkup(instrument.icon)}
-      <strong>Solución propuesta</strong>
-    </div>
-    <div class="annotation-body">
-      <h2>${escapeHtml(instrument.label)}</h2>
-      <p><strong>${escapeHtml(solution.solution)}</strong></p>
-    </div>
-    ${solution.plainMeaning ? `<div class="plain-meaning">${escapeHtml(solution.plainMeaning)}</div>` : ''}
-  `;
-  els.annotation.hidden = false;
-}
-
-function showRoute(segment, instrument, solution, includeResult) {
-  const results = Array.isArray(solution.displayResults)
-    ? solution.displayResults
-    : Array.isArray(solution.results) ? solution.results : [];
-  const actorNames = solution.targetActorIds
-    .map(id => findProvider(id)?.short)
-    .filter(Boolean);
-  const participation = solution.privateParticipationShort
-    || solution.privateParticipation
-    || actorNames.join(' + ');
-  els.annotation.dataset.kind = 'route';
-  els.annotation.style.setProperty('--annotation-color', instrument.color);
-  els.annotation.innerHTML = `
-    <div class="annotation-head">
-      ${iconMarkup(instrument.icon)}
-      <strong>${includeResult ? 'Resultado' : 'Acción conjunta'}</strong>
-    </div>
-    <div class="annotation-body">
-      <div class="dual-popup">
-        <section class="dual-card dual-card-bd">
-          <span>Solución propuesta de la BD</span>
-          <strong>${escapeHtml(instrument.label)}</strong>
-          <p>${escapeHtml(solution.solution)}</p>
-        </section>
-        <section class="dual-card dual-card-private">
-          <span>Participación del sector privado</span>
-          <strong>${escapeHtml(participation)}</strong>
-        </section>
-      </div>
-      ${includeResult ? `
-        <div class="result-chips">
-          ${results.map(result => `<span>${escapeHtml(result)}</span>`).join('')}
-        </div>
-      ` : ''}
-    </div>
-  `;
-  els.annotation.hidden = false;
-}
-
-function showPending(instrument, solution) {
-  els.annotation.dataset.kind = 'pending';
-  els.annotation.style.setProperty('--annotation-color', instrument.color);
-  els.annotation.innerHTML = `
-    <div class="annotation-head">
-      ${iconMarkup(instrument.icon)}
-      <strong>Por validar</strong>
-    </div>
-    <div class="annotation-body">
-      <div class="dual-popup">
-        <section class="dual-card dual-card-bd">
-          <span>Solución propuesta de la BD</span>
-          <strong>${escapeHtml(instrument.label)}</strong>
-          <p>${escapeHtml(solution.solution)}</p>
-        </section>
-        <section class="dual-card dual-card-private">
-          <span>Participación del sector privado</span>
-          <strong>Por validar con cliente.</strong>
-        </section>
-      </div>
-    </div>
   `;
   els.annotation.hidden = false;
 }
@@ -457,73 +374,80 @@ function showPending(instrument, solution) {
 function renderExperience() {
   cancelSequence();
   resetVisualStates();
+
   const token = sequenceToken;
   const phase = state.phase || 'idle';
-  const [badge, baseTitle] = PHASE_COPY[phase] || PHASE_COPY.idle;
-  const segment = findSegment();
-  const instrument = findInstrument();
-  const solution = getSolution(segment, instrument);
-  const title = phase === 'solutions' && state.selectionMode === 'compare'
-    ? 'Compara otra solución'
-    : baseTitle;
+  const sector = findSector();
+  const instrument = findInstrument(mappedInstrumentId(sector));
+  const solution = solutionFor(sector, instrument?.id);
+  const [badge, title] = PHASE_COPY[phase] || PHASE_COPY.idle;
+  const color = sectorColor(sector?.id);
 
+  els.shell.dataset.phase = phase;
+  els.shell.dataset.sector = sector?.id || '';
   els.shell.dataset.instrument = instrument?.id || '';
   els.stepBadge.textContent = badge;
   els.stepTitle.textContent = title;
-  renderRail(segment, instrument);
+  els.stepSubtitle.textContent = sector
+    ? `${data.meta.subtitle} · ${sector.shortLabel}`
+    : data.meta.subtitle;
 
-  if (!segment || phase === 'idle') return;
-
-  focusSegment(segment);
-  const segmentPath = routeElement('segment', segment.id);
-  const segmentColor = '#4f9dff';
-
-  if (phase === 'problem') {
-    animatePath(segmentPath, data.animationTimings.segmentRouteMs, segmentColor, token);
-    later(pulseBid, data.animationTimings.segmentRouteMs + 180, token);
-    later(() => showBarrier(segment), data.animationTimings.barrierDelayMs, token);
+  if (!sector || phase === 'idle') {
+    els.informalPanel.classList.remove('dim');
+    els.formalPanel.classList.add('dim');
+    document.querySelectorAll('.sector-node').forEach(node => node.classList.remove('active', 'dim'));
     return;
   }
 
-  completePath(segmentPath, segmentColor);
+  updateResults(solution);
+  focusProblemSide(true);
+  setRings(sector, phase !== 'problem' && phase !== 'solutions');
 
-  if (phase === 'solutions') {
-    setAvailableRings(segment);
-    if (state.selectionMode !== 'compare') showBarrier(segment);
+  const barrierRoute = routeById('route-barrier');
+  const sectorRoute = routeForSector(sector.id);
+  const transformationRoute = transformRouteForSector(sector.id);
+
+  if (phase === 'problem' || phase === 'solutions') {
+    animatePath(barrierRoute, data.animationTimings.segmentRouteMs, color, token, 0);
+    later(() => showBarrier(sector), data.animationTimings.barrierDelayMs || 0, token);
     return;
   }
 
-  if (!instrument || !solution || !routePhases.has(phase)) return;
-
-  focusRing(instrument);
+  completePath(barrierRoute, color);
 
   if (phase === 'instrument') {
     pulseBid();
-    later(() => showSolution(instrument, solution), 180, token);
+    setRings(sector, true);
+    later(() => showActivation(sector, instrument, solution), 160, token);
     return;
   }
 
-  const validated = String(solution.mappingStatus || '').startsWith('validated');
-  if (!validated || !solution.targetActorIds?.length) {
-    showPending(instrument, solution);
+  if (phase === 'route' || phase === 'providers') {
+    setRings(sector, true);
+    showJointAction(sector, instrument, solution, false);
+    later(pulseBid, 120, token);
+    later(() => {
+      focusSector(sector.id, true);
+      animatePath(sectorRoute, data.animationTimings.actorRouteMs * .55, color, token, 1);
+    }, 260, token);
+    later(() => {
+      els.formalPanel.classList.add('active');
+      els.formalPanel.classList.remove('dim');
+      animatePath(transformationRoute, data.animationTimings.actorRouteMs * .55, '#5ee6aa', token, 2);
+    }, Math.round(data.animationTimings.actorRouteMs * .48), token);
     return;
   }
 
-  if (phase === 'route') {
-    showRoute(segment, instrument, solution, false);
-    illuminateParticipation(solution.targetActorIds, solution, token, false);
-    return;
+  if (phase === 'result') {
+    setRings(sector, true);
+    completePath(sectorRoute, color);
+    completePath(transformationRoute, '#5ee6aa');
+    focusSector(sector.id, true);
+    els.formalPanel.classList.add('active');
+    els.formalPanel.classList.remove('dim');
+    showJointAction(sector, instrument, solution, true);
+    pulseBid();
   }
-
-  if (phase === 'providers') {
-    showRoute(segment, instrument, solution, false);
-    illuminateParticipation(solution.targetActorIds, solution, token, false);
-    return;
-  }
-
-  focusActors(solution.targetActorIds, false, null);
-  pulseBid();
-  showRoute(segment, instrument, solution, phase === 'result');
 }
 
 function fitDisplay() {
@@ -544,13 +468,13 @@ socket.onConnectionChange(online => {
 });
 
 createDiagnosticsPanel({
-  title: 'Diagnóstico TV',
+  title: 'Diagnostico TV',
   socket,
   getRows: () => [
     ['Fase', state.phase || 'idle'],
     ['Run ID', String(state.runId || 0)],
-    ['Segmento', state.segmentId || 'ninguno'],
-    ['Instrumento', state.instrumentId || 'ninguno']
+    ['Sector', state.segmentId || 'ninguno'],
+    ['Instrumento', state.instrumentId || mappedInstrumentId(findSector()) || 'ninguno']
   ]
 });
 

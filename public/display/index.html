@@ -3,17 +3,20 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Maqueta 6 · TV</title>
+  <title>Maqueta 6 - TV</title>
   <link rel="icon" href="data:," />
   <link rel="stylesheet" href="/shared/common.css" />
   <link rel="stylesheet" href="./display.css" />
 </head>
 <body>
-  <main class="display-shell">
+  <main class="display-shell" data-phase="idle">
     <header class="story-header">
-      <div class="story-step">
+      <div class="story-title">
         <span id="stepBadge">INICIO</span>
-        <h1 id="stepTitle">Selecciona un segmento en la tablet</h1>
+        <div>
+          <h1 id="stepTitle">La Banca de Desarrollo</h1>
+          <p id="stepSubtitle">Puente entre el capital privado y la vivienda</p>
+        </div>
       </div>
       <button id="connectionStatus" class="connection-status" type="button" data-debug-toggle>
         <span aria-hidden="true"></span>
@@ -21,63 +24,93 @@
       </button>
     </header>
 
-    <section id="ecosystem" class="ecosystem" aria-live="polite">
-      <article id="annotation" class="annotation" aria-live="polite" hidden></article>
-
-      <aside class="selection-rail" aria-label="Resumen de la selección">
-        <section class="rail-panel">
-          <h2>Segmentos</h2>
-          <div id="segmentRail" class="rail-list"></div>
-        </section>
-        <section class="rail-panel">
-          <h2>Soluciones disponibles</h2>
-          <div id="instrumentRail" class="rail-list"></div>
-        </section>
-        <p id="railHint" class="rail-hint">Selecciona un segmento desde la tablet para comenzar.</p>
-      </aside>
-
+    <section id="stage" class="stage" aria-live="polite">
       <svg id="routeLayer" class="route-layer" viewBox="0 0 1920 958" aria-hidden="true">
         <defs>
           <filter id="routeGlow" x="-80%" y="-80%" width="260%" height="260%">
-            <feGaussianBlur stdDeviation="5" result="blur" />
+            <feGaussianBlur stdDeviation="7" result="blur" />
             <feMerge>
               <feMergeNode in="blur" />
               <feMergeNode in="SourceGraphic" />
             </feMerge>
           </filter>
-          <marker id="routeArrow" viewBox="0 0 12 10" refX="11" refY="5"
-            markerWidth="18" markerHeight="15" orient="auto" markerUnits="userSpaceOnUse">
-            <path d="M 0 0 L 12 5 L 0 10 Z" fill="context-stroke" />
-          </marker>
         </defs>
 
-        <path id="segmentRoute-financialInstitutions" class="route route-segment"
-          data-from="financialInstitutions" data-to="bid"
-          d="M 680 244 C 790 305, 862 390, 983 481" />
-        <path id="segmentRoute-privateSector" class="route route-segment"
-          data-from="privateSector" data-to="bid"
-          d="M 687 500 C 808 500, 879 520, 982 531" />
-        <path id="segmentRoute-peopleMsmEs" class="route route-segment"
-          data-from="peopleMsmEs" data-to="bid"
-          d="M 691 784 C 808 731, 884 626, 989 575" />
+        <path id="route-barrier" class="route route-barrier"
+          d="M 405 447 C 574 426, 690 428, 854 471" />
+        <path id="route-bd-intermediaries" class="route route-sector route-sector-intermediaries"
+          data-sector="intermediaries" d="M 960 553 C 905 636, 800 742, 712 852" />
+        <path id="route-bd-investors" class="route route-sector route-sector-investors"
+          data-sector="investors" d="M 960 553 C 960 650, 960 752, 960 852" />
+        <path id="route-bd-insurers" class="route route-sector route-sector-insurers"
+          data-sector="insurers" d="M 960 553 C 1022 636, 1116 742, 1208 852" />
+        <path id="route-transform-intermediaries" class="route route-transformation"
+          data-sector="intermediaries" d="M 712 852 C 980 938, 1460 782, 1696 506" />
+        <path id="route-transform-investors" class="route route-transformation"
+          data-sector="investors" d="M 960 852 C 1160 914, 1500 752, 1696 506" />
+        <path id="route-transform-insurers" class="route route-transformation"
+          data-sector="insurers" d="M 1208 852 C 1376 808, 1562 668, 1696 506" />
 
-        <circle class="route-particle" data-particle="0" r="7" cx="-30" cy="-30" />
-        <circle class="route-particle" data-particle="1" r="7" cx="-30" cy="-30" />
-        <circle class="route-particle" data-particle="2" r="7" cx="-30" cy="-30" />
+        <circle class="route-particle" data-particle="0" r="8" cx="-40" cy="-40" />
+        <circle class="route-particle" data-particle="1" r="8" cx="-40" cy="-40" />
+        <circle class="route-particle" data-particle="2" r="8" cx="-40" cy="-40" />
       </svg>
 
-      <div id="segmentNodes" class="segment-nodes"></div>
+      <section class="context-copy" aria-label="Contexto de la experiencia">
+        <h2>LA BANCA DE DESARROLLO</h2>
+        <p>Puente entre el capital privado y la vivienda</p>
+        <small>Financiamiento · Garantias · Seguros · Capitales</small>
+      </section>
 
-      <section class="bid-system" aria-label="BID Banca de Desarrollo e instrumentos">
+      <article id="informalPanel" class="housing-panel informal-panel">
+        <div class="panel-title">
+          <span id="informalTitle">Vivienda informal</span>
+          <strong id="problemLabel">Falta de financiamiento</strong>
+        </div>
+        <div class="visual-card video-card">
+          <img id="informalPoster" src="/assets/scenes/scene-people-msmes.png" alt="" />
+          <div class="video-overlay">
+            <span>Problema</span>
+            <strong>Sin acceso</strong>
+          </div>
+        </div>
+        <ul id="problemBullets" class="problem-bullets"></ul>
+      </article>
+
+      <section class="bank-zone" aria-label="Banca de Desarrollo">
         <div id="instrumentRings" class="instrument-rings"></div>
         <div id="bidPuck" class="bid-puck">
-          <img class="bid-house-art" src="/assets/scenes/scene-development-bank-house.png" alt="" />
+          <img id="developmentBankImage" class="bid-house-art" src="/assets/scenes/scene-development-bank-house.png" alt="" />
           <strong id="developmentBankTitle" class="bid-house-title">BANCA DE DESARROLLO</strong>
+        </div>
+        <div class="bank-caption">
+          <strong>GRUPO BID</strong>
+          <span>Bancas de Desarrollo de la region</span>
+          <div id="bankExamples" class="bank-examples"></div>
         </div>
       </section>
 
-      <div id="actorNodes" class="actor-nodes"></div>
-      <div id="routeMarker" class="route-marker" hidden></div>
+      <section class="private-sector" aria-label="Sectores privados">
+        <h2>SECTORES PRIVADOS</h2>
+        <div id="sectorNodes" class="sector-nodes"></div>
+      </section>
+
+      <article id="formalPanel" class="housing-panel formal-panel">
+        <div class="panel-title">
+          <span id="formalTitle">Vivienda formal</span>
+          <strong id="resultLabel">Transformacion habilitada</strong>
+        </div>
+        <div class="visual-card video-card">
+          <img id="formalPoster" src="/assets/scenes/scene-developers.png" alt="" />
+          <div class="video-overlay success">
+            <span>Despues</span>
+            <strong>Acceso formal</strong>
+          </div>
+        </div>
+        <div id="resultChips" class="result-chips"></div>
+      </article>
+
+      <article id="annotation" class="annotation" aria-live="polite" hidden></article>
     </section>
   </main>
 

@@ -1,377 +1,250 @@
 {
   "meta": {
-    "title": "Banca de Desarrollo",
-    "subtitle": "De la barrera a la solución financiera",
-    "closingCopy": "Reduciendo riesgos, ampliando acceso y movilizando capital privado.",
-    "source": "M6 - Rol de la banca de D en LAC 190826.xlsx + actualización de reunión: participación privada se ilumina sin rutas al centro",
+    "title": "La Banca de Desarrollo",
+    "subtitle": "Puente entre el capital privado y la vivienda",
+    "introTitle": "El rol de la banca de desarrollo",
+    "introCopy": "Descubre como la BD convierte barreras en soluciones y moviliza la participacion del sector privado.",
+    "selectionTitle": "Explora soluciones",
+    "selectionCopy": "Selecciona un sector y observa las animaciones en la maqueta.",
+    "activationTitle": "Banca de Desarrollo activada",
+    "activationCopy": "Observa la maqueta y la pantalla principal.",
+    "finalTitle": "Gracias por participar",
+    "finalCopy": "Has descubierto como la banca de desarrollo comparte riesgos, moviliza inversion y amplia el acceso a vivienda.",
+    "source": "Nuevo guion de reunion: vivienda informal sin acceso directo al sector privado; la Banca de Desarrollo actua como puente hacia soluciones privadas y transforma el acceso a vivienda formal.",
+    "problem": {
+      "title": "Barrera",
+      "label": "Falta de financiamiento",
+      "description": "Las familias no acceden directamente a credito ni a productos privados por riesgo alto, poca liquidez y bajos ingresos.",
+      "bullets": [
+        "Vivienda precaria",
+        "Sin acceso a credito",
+        "Riesgo alto",
+        "Altas tasas"
+      ]
+    },
+    "transformation": {
+      "beforeTitle": "Vivienda informal",
+      "afterTitle": "Vivienda formal",
+      "resultTitle": "Transformacion habilitada",
+      "resultCopy": "La BD comparte riesgo, ordena el financiamiento y habilita la participacion privada."
+    },
     "developmentBankHouse": {
       "title": "BANCA DE DESARROLLO",
       "groupLabel": "GRUPO BID",
-      "networkTitle": "Bancas de Desarrollo de la región",
+      "networkTitle": "Bancas de Desarrollo de la region",
       "examples": [
         { "name": "FINDETER", "country": "Colombia" },
-        { "name": "SHF", "country": "México" }
+        { "name": "SHF", "country": "Mexico" }
       ]
+    },
+    "media": {
+      "informalPoster": "/assets/scenes/scene-people-msmes.png",
+      "formalPoster": "/assets/scenes/scene-developers.png",
+      "developmentBank": "/assets/scenes/scene-development-bank-house.png"
     }
   },
   "animationTimings": {
-    "segmentFocusMs": 800,
-    "segmentRouteMs": 900,
-    "barrierDelayMs": 1400,
-    "instrumentFocusMs": 500,
-    "solutionReadMs": 5500,
-    "actorRouteMs": 2800
+    "segmentFocusMs": 900,
+    "segmentRouteMs": 1200,
+    "barrierDelayMs": 700,
+    "instrumentFocusMs": 700,
+    "solutionReadMs": 5200,
+    "actorRouteMs": 3200
   },
   "instruments": [
     {
       "id": "financing",
       "label": "Financiamiento",
-      "short": "Fondeo y crédito",
+      "short": "Recursos de largo plazo",
       "color": "#4f9dff",
       "icon": "banknote"
     },
     {
       "id": "guarantees",
-      "label": "Garantías",
-      "short": "Mitigación de riesgo",
-      "color": "#4de2e6",
+      "label": "Garantias",
+      "short": "Riesgo compartido",
+      "color": "#53e0c7",
       "icon": "shield-check"
     },
     {
       "id": "insurance",
       "label": "Seguros",
-      "short": "Coberturas y riesgo",
-      "color": "#f39a45",
+      "short": "Cobertura de riesgo",
+      "color": "#f28a30",
       "icon": "umbrella"
     },
     {
       "id": "capital",
       "label": "Capitales",
-      "short": "Inversión institucional",
-      "color": "#c499ff",
+      "short": "Inversion institucional",
+      "color": "#d3bb62",
       "icon": "chart-no-axes-combined"
     }
   ],
   "providers": [
     {
-      "id": "banks",
-      "label": "Banco comercial",
-      "short": "Banco comercial",
+      "id": "intermediaries",
+      "label": "Intermediarios",
+      "short": "Intermediarios",
       "icon": "landmark",
       "asset": "/assets/scenes/actor-commercial-bank.png",
-      "role": "Participa con líneas de primer piso en cofinanciamiento y ayuda a ampliar el alcance del crédito desde el sistema financiero."
+      "role": "Bancos comerciales, microfinancieras y entidades de primer piso llevan el credito al usuario final."
     },
     {
-      "id": "pensionFunds",
-      "label": "Fondos de pensiones",
-      "short": "Fondos de pensiones",
+      "id": "investors",
+      "label": "Inversionistas",
+      "short": "Inversionistas",
       "icon": "chart-column-increasing",
       "asset": "/assets/scenes/actor-pension-funds.png",
-      "role": "Canaliza ahorro institucional de largo plazo hacia operaciones de vivienda, infraestructura y mercado de capitales."
+      "role": "Fondos de pensiones e inversionistas institucionales compran bonos y vehiculos respaldados por cartera."
     },
     {
       "id": "insurers",
-      "label": "Aseguradora",
-      "short": "Aseguradora",
+      "label": "Aseguradoras",
+      "short": "Aseguradoras",
       "icon": "shield-check",
       "asset": "/assets/scenes/actor-insurer.png",
-      "role": "Otorga productos que diversifican el riesgo y permiten cubrir exposiciones asociadas a vivienda, crédito y obras."
-    },
-    {
-      "id": "capitalMarkets",
-      "label": "Inversionistas institucionales y mercado de capitales",
-      "short": "Mercado de capitales",
-      "icon": "chart-no-axes-combined",
-      "asset": "/assets/scenes/actor-capital-markets.png",
-      "role": "Moviliza inversión privada local e internacional mediante instrumentos estructurados, emisiones y vehículos de largo plazo."
+      "role": "Aseguradoras cubren riesgo de credito y hacen mas bancables las operaciones de vivienda."
     }
   ],
   "segments": [
     {
-      "id": "financialInstitutions",
-      "label": "Instituciones financieras",
-      "shortLabel": "Instituciones financieras",
+      "id": "intermediaries",
+      "label": "Intermediarios",
+      "shortLabel": "Intermediarios",
       "icon": "landmark",
-      "asset": "/assets/scenes/scene-financial-institutions.png",
+      "asset": "/assets/scenes/actor-commercial-bank.png",
+      "mappedInstrumentId": "financing",
+      "allowedInstruments": ["financing"],
       "barrier": {
         "title": "Barrera principal",
-        "short": "Alta percepción de riesgo comercial",
-        "description": "Alta percepción de riesgo comercial y limitaciones de liquidez de largo plazo para carteras productivas.",
-        "components": [
-          "Riesgo comercial",
-          "Liquidez de largo plazo"
-        ]
+        "short": "Falta de financiamiento",
+        "description": "Las familias no llegan directamente al banco comercial por falta de historial, ingresos informales y riesgo percibido.",
+        "components": ["Sin historial", "Poca liquidez", "Riesgo alto"]
       },
-      "primaryBarrier": "Alta percepción de riesgo comercial y limitaciones de liquidez de largo plazo para carteras productivas.",
-      "allowedInstruments": ["financing", "guarantees", "capital"],
+      "primaryBarrier": "Falta de financiamiento para pasar de vivienda informal a una solucion formal.",
       "solutions": {
         "financing": {
           "enabled": true,
-          "solution": "Operaciones de 2o. piso a la banca comercial.",
-          "description": "La Banca de Desarrollo usa operaciones de 2o. piso para ampliar liquidez de largo plazo hacia la banca comercial.",
-          "plainMeaning": "Financiar = aportar recursos.",
-          "targetActorIds": ["banks"],
+          "solution": "Fondeo de segundo piso y garantias para que los intermediarios puedan prestar.",
+          "description": "La BD aporta liquidez, comparte riesgo y habilita productos que el usuario no podria recibir de forma directa.",
+          "plainMeaning": "La BD abre el puente hacia hipotecas, microfinanciamiento y credito a la construccion.",
+          "targetActorIds": ["intermediaries"],
           "actorLabels": {
-            "banks": "Líneas de primer piso en cofinanciamiento."
+            "intermediaries": "Hipotecas, microfinanciamiento, credito a la construccion y garantias."
           },
-          "privateParticipation": "Banca Comercial: otorgamiento de líneas de primer piso en cofinanciamiento.",
-          "privateParticipationShort": "Banco comercial: primer piso y cofinanciamiento.",
-          "routeExplanation": "El banco comercial participa con líneas de primer piso en cofinanciamiento.",
-          "resultTitle": "Resultado",
+          "privateParticipation": "Intermediarios: colocan productos financieros al usuario final cuando la BD reduce el riesgo y aporta fondeo.",
+          "privateParticipationShort": "Intermediarios colocan credito con respaldo de la BD.",
+          "routeExplanation": "La familia no va directo al sector privado: primero la BD reduce riesgo y ordena el financiamiento.",
+          "resultTitle": "Vivienda formal",
           "results": [
-            "Mayor liquidez estratégica",
-            "Mayor capacidad de crédito",
-            "Carteras productivas atendidas"
+            "Credito accesible",
+            "Mayor liquidez",
+            "Vivienda formal habilitada"
           ],
-          "displayResults": ["Más liquidez", "Más crédito", "Carteras atendidas"],
-          "mappingStatus": "validated-client-excel-update-2026-09-02"
-        },
-        "guarantees": {
-          "enabled": true,
-          "solution": "Garantías de primera pérdida para mitigar el riesgo de crédito.",
-          "description": "La Banca de Desarrollo ayuda a cubrir la primera pérdida para bajar la percepción de riesgo de crédito.",
-          "plainMeaning": "Garantizar = compartir riesgo.",
-          "targetActorIds": ["insurers"],
-          "actorLabels": {
-            "insurers": "Productos que diversifican el riesgo."
-          },
-          "privateParticipation": "Aseguradoras: otorgan productos que diversifican el riesgo.",
-          "privateParticipationShort": "Aseguradoras: diversifican el riesgo.",
-          "routeExplanation": "Las aseguradoras complementan la garantía con productos que diversifican el riesgo.",
-          "resultTitle": "Resultado",
-          "results": [
-            "Riesgo de crédito mitigado",
-            "Mayor confianza para prestar",
-            "Carteras más viables"
+          "displayResults": ["Credito accesible", "Mas liquidez", "Vivienda formal"],
+          "products": [
+            "Hipotecas",
+            "Microfinanciamientos",
+            "Credito a la construccion",
+            "Garantias"
           ],
-          "displayResults": ["Menor riesgo", "Más confianza", "Carteras viables"],
-          "mappingStatus": "validated-client-excel-update-2026-09-02"
-        },
-        "capital": {
-          "enabled": true,
-          "solution": "Actuar como ancla de confianza aportando liquidez estratégica.",
-          "description": "La Banca de Desarrollo actúa como ancla de confianza para atraer inversión institucional hacia el sector vivienda.",
-          "plainMeaning": "Capitales = movilizar inversión privada de largo plazo.",
-          "targetActorIds": ["pensionFunds", "capitalMarkets"],
-          "branchDelayMs": 250,
-          "actorLabels": {
-            "pensionFunds": "Fondos de pensiones participan en operaciones del sector vivienda.",
-            "capitalMarkets": "Inversionistas del mercado de capitales aportan liquidez."
-          },
-          "privateParticipation": "Inversión por parte de inversionistas del Mercado de Capitales, Inversionistas Institucionales o Fondos de Pensiones en operación de sector vivienda.",
-          "privateParticipationShort": "Inversión institucional y mercado de capitales.",
-          "routeExplanation": "Inversionistas institucionales y fondos de pensiones aportan liquidez estratégica.",
-          "resultTitle": "Resultado",
-          "results": [
-            "Más capital privado movilizado",
-            "Liquidez estratégica",
-            "Más escala para vivienda"
-          ],
-          "displayResults": ["Capital privado", "Liquidez", "Más escala"],
-          "mappingStatus": "validated-client-excel-update-2026-09-02"
+          "mappingStatus": "new-flow-client-meeting"
         }
       }
     },
     {
-      "id": "privateSector",
-      "label": "Desarrolladores de vivienda y proyectos de escala",
-      "shortLabel": "Desarrolladores de vivienda y proyectos de escala",
-      "icon": "building-2",
-      "asset": "/assets/scenes/scene-developers.png",
+      "id": "investors",
+      "label": "Inversionistas",
+      "shortLabel": "Inversionistas",
+      "icon": "chart-column-increasing",
+      "asset": "/assets/scenes/actor-pension-funds.png",
+      "mappedInstrumentId": "capital",
+      "allowedInstruments": ["capital"],
       "barrier": {
         "title": "Barrera principal",
-        "short": "Complejidad de estructuración",
-        "description": "Altos costos y complejidad en la estructuración técnica, legal y financiera de grandes proyectos."
+        "short": "Falta de inversion de largo plazo",
+        "description": "La cartera de vivienda necesita capital paciente y confianza para atraer inversion institucional.",
+        "components": ["Escala limitada", "Riesgo percibido", "Liquidez insuficiente"]
       },
-      "primaryBarrier": "Altos costos y complejidad en la estructuración técnica, legal y financiera de grandes proyectos.",
-      "allowedInstruments": ["financing", "guarantees", "insurance", "capital"],
+      "primaryBarrier": "Falta de inversion de largo plazo para convertir cartera de vivienda en financiamiento sostenible.",
       "solutions": {
-        "financing": {
-          "enabled": true,
-          "solution": "Estructurados o líneas de crédito para infraestructura urbana, construcción directa o grandes proyectos.",
-          "description": "La Banca de Desarrollo estructura líneas de crédito para infraestructura urbana, construcción directa o grandes proyectos.",
-          "plainMeaning": "Financiar = estructurar recursos para grandes proyectos.",
-          "targetActorIds": ["banks"],
-          "actorLabels": {
-            "banks": "Participan en estructurados u operaciones de cofinanciamiento."
-          },
-          "privateParticipation": "Bancos Comerciales: participación en los estructurados o en operaciones de cofinanciamiento.",
-          "privateParticipationShort": "Bancos comerciales: estructurados y cofinanciamiento.",
-          "routeExplanation": "Los bancos comerciales participan en estructurados o cofinanciamientos.",
-          "resultTitle": "Resultado",
-          "results": [
-            "Estructuración financiera más viable",
-            "Cofinanciamiento activo",
-            "Grandes proyectos con mayor escala"
-          ],
-          "displayResults": ["Estructuración viable", "Cofinanciamiento", "Más escala"],
-          "mappingStatus": "validated-client-excel-update-2026-09-02"
-        },
-        "guarantees": {
-          "enabled": true,
-          "solution": "Fungir como socio fiduciario o garante para viabilizar desarrollos y emisiones de deuda.",
-          "description": "Fungir como socio fiduciario para asegurar la viabilidad de los desarrollos o como garante en emisiones de deuda para la construcción.",
-          "plainMeaning": "Garantizar = dar respaldo y confianza.",
-          "targetActorIds": [],
-          "privateParticipation": "",
-          "privateParticipationShort": "Participación privada por validar.",
-          "results": [],
-          "mappingStatus": "pending-client-validation-no-private-participation"
-        },
-        "insurance": {
-          "enabled": true,
-          "solution": "Crear el andamiaje para líneas de seguros que cubran riesgos del desarrollo habitacional.",
-          "description": "Crear el andamiaje para desarrollar líneas de seguros que cubran un riesgo y promuevan el desarrollo habitacional.",
-          "plainMeaning": "Asegurar = cubrir riesgos del proyecto.",
-          "targetActorIds": ["insurers"],
-          "actorLabels": {
-            "insurers": "Productos que diversifican el riesgo."
-          },
-          "privateParticipation": "Aseguradoras: otorgan productos que diversifican el riesgo.",
-          "privateParticipationShort": "Aseguradoras: diversifican el riesgo.",
-          "routeExplanation": "Las aseguradoras participan con productos que diversifican riesgos del desarrollo.",
-          "resultTitle": "Resultado",
-          "results": [
-            "Riesgos del proyecto cubiertos",
-            "Mayor bancabilidad",
-            "Desarrollo habitacional habilitado"
-          ],
-          "displayResults": ["Riesgo cubierto", "Más bancabilidad", "Desarrollo habilitado"],
-          "mappingStatus": "validated-client-excel-update-2026-09-02"
-        },
         "capital": {
           "enabled": true,
-          "solution": "Apoyar la estructuración de emisiones temáticas para captar inversión.",
-          "description": "La Banca de Desarrollo apoya emisiones temáticas para captar inversión institucional y de mercado.",
-          "plainMeaning": "Capitales = atraer inversión privada.",
-          "targetActorIds": ["pensionFunds", "capitalMarkets"],
-          "branchDelayMs": 250,
+          "solution": "Bonos y vehiculos respaldados por cartera de credito de vivienda.",
+          "description": "La BD estructura y da confianza para que el capital institucional financie vivienda con horizonte de largo plazo.",
+          "plainMeaning": "La BD transforma cartera en instrumentos invertibles.",
+          "targetActorIds": ["investors"],
           "actorLabels": {
-            "pensionFunds": "Fondos de pensiones participan como inversionistas institucionales.",
-            "capitalMarkets": "Mercado de capitales canaliza inversión hacia emisiones temáticas."
+            "investors": "Compra de bonos respaldados por cartera de credito."
           },
-          "privateParticipation": "Inversión por parte de inversionistas del Mercado de Capitales, Inversionistas Institucionales o Fondos de Pensiones.",
-          "privateParticipationShort": "Inversión institucional y mercado de capitales.",
-          "routeExplanation": "Los inversionistas institucionales y el mercado de capitales aportan inversión para emisiones temáticas.",
-          "resultTitle": "Resultado",
+          "privateParticipation": "Inversionistas institucionales compran instrumentos respaldados por cartera de credito, incluyendo credito individual y microfinanciamiento.",
+          "privateParticipationShort": "Inversionistas compran bonos de cartera de vivienda.",
+          "routeExplanation": "La BD crea confianza para que la inversion llegue a la vivienda sin trasladar todo el riesgo a las familias.",
+          "resultTitle": "Vivienda formal",
           "results": [
-            "Inversión privada captada",
-            "Emisiones temáticas estructuradas",
-            "Grandes proyectos financiables"
-          ],
-          "displayResults": ["Inversión captada", "Emisiones temáticas", "Proyectos financiables"],
-          "mappingStatus": "validated-client-excel-update-2026-09-02"
-        }
-      }
-    },
-    {
-      "id": "peopleMsmEs",
-      "label": "Personas & MiPymes",
-      "shortLabel": "Personas & MiPymes",
-      "icon": "house",
-      "asset": "/assets/scenes/scene-people-msmes.png",
-      "barrier": {
-        "title": "Barrera principal",
-        "short": "Barreras históricas de acceso al crédito",
-        "description": "Históricas barreras de acceso al crédito tradicional y bajo nivel de modernización operativa."
-      },
-      "primaryBarrier": "Históricas barreras de acceso al crédito tradicional y bajo nivel de modernización operativa.",
-      "allowedInstruments": ["financing", "guarantees", "insurance", "capital"],
-      "solutions": {
-        "financing": {
-          "enabled": true,
-          "solution": "Fondos estratégicos para poblaciones no atendidas.",
-          "description": "La Banca de Desarrollo impulsa fondos estratégicos para llegar a poblaciones no atendidas por el crédito tradicional.",
-          "plainMeaning": "Financiar = llevar recursos a población no atendida.",
-          "targetActorIds": ["banks"],
-          "actorLabels": {
-            "banks": "Participan en operaciones de cofinanciamiento."
-          },
-          "privateParticipation": "Bancos Comerciales: participación en operaciones de cofinanciamiento.",
-          "privateParticipationShort": "Bancos comerciales: cofinanciamiento.",
-          "routeExplanation": "Los bancos comerciales participan en operaciones de cofinanciamiento.",
-          "resultTitle": "Resultado",
-          "results": [
-            "Más acceso a crédito formal",
-            "Poblaciones no atendidas incluidas",
-            "Mayor alcance operativo"
-          ],
-          "displayResults": ["Más acceso", "Población incluida", "Mayor alcance"],
-          "mappingStatus": "validated-client-excel-update-2026-09-02"
-        },
-        "guarantees": {
-          "enabled": true,
-          "solution": "Instrumentos de mitigación de riesgo para operar junto a la banca comercial.",
-          "description": "Facilitar el acceso mediante instrumentos de mitigación de riesgo operados junto a la banca comercial.",
-          "plainMeaning": "Garantizar = reducir riesgo para abrir crédito.",
-          "targetActorIds": ["banks"],
-          "actorLabels": {
-            "banks": "Opera junto a la Banca de Desarrollo."
-          },
-          "privateParticipation": "Operación junto a la banca comercial.",
-          "privateParticipationShort": "Banca comercial: operación conjunta.",
-          "routeExplanation": "La banca comercial opera junto a la Banca de Desarrollo mediante instrumentos de mitigación de riesgo.",
-          "resultTitle": "Resultado",
-          "results": [
-            "Riesgo mitigado",
-            "Mayor acceso al crédito",
-            "Operación bancaria habilitada"
-          ],
-          "displayResults": ["Riesgo mitigado", "Más acceso", "Operación habilitada"],
-          "mappingStatus": "validated-client-excel-update-2026-09-02"
-        },
-        "insurance": {
-          "enabled": true,
-          "solution": "Crear el andamiaje para el seguro de crédito a la vivienda o de crédito.",
-          "description": "Crear el andamiaje para desarrollar seguros de crédito a la vivienda o de crédito individual.",
-          "plainMeaning": "Asegurar = diversificar riesgo del crédito.",
-          "targetActorIds": ["insurers"],
-          "actorLabels": {
-            "insurers": "Productos que diversifican el riesgo."
-          },
-          "privateParticipation": "Aseguradoras: otorgan productos que diversifican el riesgo.",
-          "privateParticipationShort": "Aseguradoras: diversifican el riesgo.",
-          "routeExplanation": "Las aseguradoras aportan productos que diversifican el riesgo del crédito.",
-          "resultTitle": "Resultado",
-          "results": [
-            "Riesgo diversificado",
-            "Seguro de crédito habilitado",
-            "Mayor protección financiera"
-          ],
-          "displayResults": ["Riesgo diversificado", "Seguro habilitado", "Más protección"],
-          "mappingStatus": "validated-client-excel-update-2026-09-02"
-        },
-        "capital": {
-          "enabled": true,
-          "solution": "Emisión de bonos de crédito individual para liberación de cartera.",
-          "description": "La Banca de Desarrollo apoya emisiones de bonos de crédito individual para liberar cartera y movilizar inversión.",
-          "plainMeaning": "Capitales = liberar cartera y atraer inversión.",
-          "targetActorIds": ["pensionFunds", "capitalMarkets"],
-          "branchDelayMs": 250,
-          "actorLabels": {
-            "pensionFunds": "Fondos de pensiones participan como inversionistas institucionales.",
-            "capitalMarkets": "Mercado de capitales invierte en bonos de crédito individual."
-          },
-          "privateParticipation": "Inversión por parte de inversionistas del Mercado de Capitales, Inversionistas Institucionales o Fondos de Pensiones.",
-          "privateParticipationShort": "Inversión institucional y mercado de capitales.",
-          "routeExplanation": "Inversionistas institucionales y mercado de capitales participan en bonos de crédito individual.",
-          "resultTitle": "Resultado",
-          "results": [
+            "Capital privado movilizado",
             "Cartera liberada",
-            "Bonos de crédito individual",
-            "Inversión institucional movilizada"
+            "Mas viviendas financiables"
           ],
-          "displayResults": ["Cartera liberada", "Bonos individuales", "Inversión movilizada"],
-          "mappingStatus": "validated-client-excel-update-2026-09-02"
+          "displayResults": ["Capital movilizado", "Cartera liberada", "Mas viviendas"],
+          "products": [
+            "Bonos respaldados por cartera",
+            "Credito individual",
+            "Microfinanciamiento"
+          ],
+          "mappingStatus": "new-flow-client-meeting"
+        }
+      }
+    },
+    {
+      "id": "insurers",
+      "label": "Aseguradoras",
+      "shortLabel": "Aseguradoras",
+      "icon": "shield-check",
+      "asset": "/assets/scenes/actor-insurer.png",
+      "mappedInstrumentId": "insurance",
+      "allowedInstruments": ["insurance"],
+      "barrier": {
+        "title": "Barrera principal",
+        "short": "Riesgo de credito alto",
+        "description": "El riesgo de incumplimiento impide que familias vulnerables sean elegibles para productos de vivienda.",
+        "components": ["Incumplimiento", "Exposicion alta", "Poca cobertura"]
+      },
+      "primaryBarrier": "Riesgo de credito alto que bloquea el acceso a productos de vivienda.",
+      "solutions": {
+        "insurance": {
+          "enabled": true,
+          "solution": "Seguro de credito a la vivienda para cubrir riesgo y ampliar elegibilidad.",
+          "description": "La BD impulsa el andamiaje para que las aseguradoras cubran parte del riesgo del credito de vivienda.",
+          "plainMeaning": "El seguro protege la operacion y permite prestar a mas familias.",
+          "targetActorIds": ["insurers"],
+          "actorLabels": {
+            "insurers": "Seguro de credito a la vivienda."
+          },
+          "privateParticipation": "Aseguradoras otorgan seguros de credito a la vivienda que diversifican el riesgo.",
+          "privateParticipationShort": "Aseguradoras cubren riesgo de credito.",
+          "routeExplanation": "La BD no reemplaza a la aseguradora: crea condiciones para que la cobertura llegue a vivienda.",
+          "resultTitle": "Vivienda formal",
+          "results": [
+            "Riesgo cubierto",
+            "Credito mas bancable",
+            "Familias elegibles"
+          ],
+          "displayResults": ["Riesgo cubierto", "Credito bancable", "Familias elegibles"],
+          "products": [
+            "Seguro de credito a la vivienda",
+            "Cobertura de incumplimiento"
+          ],
+          "mappingStatus": "new-flow-client-meeting"
         }
       }
     }
   ],
   "notes": [
-    "La interfaz actual usa tres zonas según la indicación más reciente del cliente; proyectos de escala se presenta junto con desarrolladores de vivienda.",
-    "Seguros permanece deshabilitado para Instituciones financieras porque no aparece como solución en la fuente.",
-    "Actualización de reunión 2026-09-02: las entidades del lado derecho ya no dibujan rutas hacia Banca de Desarrollo; solo se iluminan según la columna Participación del Sector privado en conjunto con la BD.",
-    "Las participaciones de banco comercial, aseguradoras, fondos de pensiones y mercado de capitales se transcribieron desde la captura de Excel compartida por el cliente.",
-    "Garantías para Desarrolladores queda sin entidad derecha porque la captura no muestra una participación privada explícita para esa solución."
+    "Cambio de flujo: la tablet ya no presenta zonas de demanda ni una segunda seleccion de instrumento; ahora muestra tres sectores privados: intermediarios, inversionistas y aseguradoras.",
+    "El problema narrativo comun es la falta de financiamiento de familias en vivienda informal. La Banca de Desarrollo aparece como puente obligatorio antes de llegar a productos privados.",
+    "Los assets actuales se usan como placeholders visuales de video. Cuando el cliente entregue clips, deben conectarse en meta.media sin cambiar la logica.",
+    "Se conserva el protocolo segmentId + instrumentId para mantener compatibilidad con WebSocket, reset, auto-reset y Netlify preview."
   ]
 }

@@ -1,52 +1,73 @@
 # Maqueta 6 - Banca de Desarrollo
 
-Experiencia local para una exhibición del BID con dos interfaces sincronizadas:
+Experiencia local para una exhibicion del BID con dos interfaces sincronizadas:
 
 - `/controller/`: tablet de control.
-- `/display/`: TV horizontal de 60 pulgadas, diseñada en 1920 × 1080.
+- `/display/`: TV horizontal de 60 pulgadas, disenada en 1920 x 1080.
 
 La experiencia funciona sin internet. Los renders 3D, iconos, datos y scripts se sirven desde el mismo computador o NUC.
 
-## Flujo implementado
+## Flujo vigente
 
-1. La tablet presenta tres zonas:
-   - Instituciones financieras.
-   - Desarrolladores de vivienda y proyectos de escala.
-   - Personas & MiPymes.
-2. Al seleccionar una zona, la TV la ilumina y dibuja la ruta hacia BID.
-3. La barrera principal aparece como anotación y permanece visible.
-4. La tablet avanza cuando la persona pulsa `Ya lo leí · Ver soluciones`.
-5. La TV y la tablet muestran únicamente los instrumentos válidos.
-6. Al seleccionar un instrumento, la TV destaca su aro y presenta la solución.
-7. La solución permanece 5,5 segundos para permitir su lectura.
-8. Después se limpia el popup y las entidades del lado derecho se iluminan según la participación privada definida en el Excel actualizado.
-9. El resultado aparece en la franja superior, fuera del mapa y sin cubrir nombres ni conexiones.
-10. `Comparar otra solución` conserva la zona y la ruta hacia BID; solo limpia y reemplaza el instrumento, los actores y el resultado.
+La narrativa cambio en la ultima reunion:
 
-Seguros permanece deshabilitado para Instituciones financieras.
+1. La TV parte desde una situacion de vivienda informal a la izquierda.
+2. La barrera comun es la falta de financiamiento: la familia no puede ir directamente al sector privado.
+3. La tablet muestra tres sectores privados:
+   - Intermediarios.
+   - Inversionistas.
+   - Aseguradoras.
+4. Al seleccionar un sector, la TV muestra la barrera durante unos segundos para lectura.
+5. Luego se activa la Banca de Desarrollo como puente obligatorio.
+6. La BD enciende el instrumento asociado al sector:
+   - Intermediarios: Financiamiento.
+   - Inversionistas: Capitales.
+   - Aseguradoras: Seguros.
+7. El sector privado seleccionado se ilumina.
+8. La ruta termina mostrando la transformacion hacia vivienda formal a la derecha.
 
-## Participaciones configuradas
+No hay seleccion manual de instrumentos en la tablet en esta version. Internamente se conserva `segmentId + instrumentId` para mantener compatibilidad con WebSocket, reset, auto-reset y Netlify preview.
 
-Esta iteración elimina las flechas desde las entidades del lado derecho hacia Banca de Desarrollo. Esas entidades ya no trazan rutas; solamente se iluminan cuando corresponden a la columna `Participación del Sector privado en conjunto con la BD`.
+## Tablet
 
-Relaciones activas en el Excel actualizado:
+La tablet sigue el wireframe nuevo:
 
-- Instituciones financieras + Financiamiento: Banco comercial.
-- Instituciones financieras + Garantías: Aseguradora.
-- Instituciones financieras + Capitales: Fondos de pensiones + Mercado de capitales.
-- Desarrolladores + Financiamiento: Banco comercial.
-- Desarrolladores + Seguros: Aseguradora.
-- Desarrolladores + Capitales: Fondos de pensiones + Mercado de capitales.
-- Personas & MiPymes + Financiamiento: Banco comercial.
-- Personas & MiPymes + Garantías: Banco comercial, tomado del texto "operar junto a la banca comercial".
-- Personas & MiPymes + Seguros: Aseguradora.
-- Personas & MiPymes + Capitales: Fondos de pensiones + Mercado de capitales.
+- Inicio: mensaje introductorio y boton `COMENZAR`.
+- Seleccion: tres botones grandes, uno por sector privado.
+- Activada: confirma que la Banca de Desarrollo esta actuando y muestra progreso de la TV.
+- Final: cierre de participacion con opciones para explorar otro sector o volver al inicio.
 
-Desarrolladores + Garantías queda como `pending-client-validation-no-private-participation`, porque la captura no muestra una entidad privada explícita para esa solución.
+Al tocar un sector, la tablet envia primero `selectSegment` para mostrar la barrera y, despues de `5200` ms, envia `runRoute` con el instrumento mapeado en `data/experience.json`.
 
-Seguros no pertenece a `allowedInstruments` para Instituciones financieras y el servidor rechaza cualquier intento de activarlo.
+## TV
 
-## Instalación
+La composicion nueva usa:
+
+- izquierda: panel de vivienda informal y problema;
+- centro: Banca de Desarrollo como edificio/nodo central;
+- aros: Financiamiento, Garantias, Seguros y Capitales;
+- parte inferior central: sectores privados;
+- derecha: vivienda formal como resultado;
+- rutas luminosas: vivienda informal -> BD -> sector privado -> vivienda formal.
+
+Los popups se mantienen sobre la zona central de lectura, sin ocupar la cabecera ni tapar los nombres principales. El popup final muestra al mismo tiempo:
+
+- `Solucion de la BD`;
+- `Sector privado`;
+- productos o instrumentos activados;
+- resultados cortos.
+
+## Assets y videos
+
+Los assets actuales de `public/assets/scenes/` se usan como placeholders visuales de video:
+
+- `scene-people-msmes.png`: poster de vivienda informal.
+- `scene-developers.png`: poster de vivienda formal.
+- `scene-development-bank-house.png`: sede de Banca de Desarrollo.
+
+Cuando el cliente entregue clips reales, se recomienda agregarlos a `public/assets/video/` y conectar las rutas en `data/experience.json > meta.media` sin cambiar la logica.
+
+## Instalacion
 
 Requiere Node.js 20 o posterior.
 
@@ -65,11 +86,11 @@ En dos dispositivos de la misma red local, usa la IP del NUC:
 - `http://192.168.1.20:3000/controller/`
 - `http://192.168.1.20:3000/display/`
 
-## Configuración
+## Configuracion
 
 - `PORT`: puerto HTTP/WebSocket. Valor por defecto: `3000`.
-- `AUTO_RESET_MS`: inactividad antes del reinicio automático. Valor por defecto: `60000`.
-- `AUTO_RESET_MS=0`: desactiva el reinicio automático.
+- `AUTO_RESET_MS`: inactividad antes del reinicio automatico. Valor por defecto: `60000`.
+- `AUTO_RESET_MS=0`: desactiva el reinicio automatico.
 
 ## Publicar en Netlify
 
@@ -79,9 +100,9 @@ El proyecto incluye `netlify.toml`. En Netlify usa:
 - Publish directory: `public`
 - Node: `20`
 
-El build copia `data/experience.json` a `public/data/experience.json` para que la maqueta cargue como sitio estático.
+El build copia `data/experience.json` a `public/data/experience.json` para que la maqueta cargue como sitio estatico.
 
-Nota importante: Netlify sirve bien el preview visual, pero no reemplaza el servidor local `Express + WebSocket` para operación real con tablet y TV en dispositivos separados. En Netlify se activa un modo preview con `BroadcastChannel/localStorage`, útil para probar controller/display en pestañas del mismo navegador. Para exhibición en sala, usa `npm start` en el NUC o una plataforma Node persistente.
+Nota importante: Netlify sirve el preview visual, pero no reemplaza el servidor local `Express + WebSocket` para operacion real con tablet y TV en dispositivos separados. En Netlify se activa un modo preview con `BroadcastChannel/localStorage`, util para probar controller/display en pestanas del mismo navegador. Para exhibicion en sala, usa `npm start` en el NUC o una plataforma Node persistente.
 
 PowerShell:
 
@@ -90,14 +111,14 @@ $env:AUTO_RESET_MS = "90000"
 npm start
 ```
 
-## Operación en evento
+## Operacion en evento
 
 - Inicia el servidor con `npm start` o `start.bat`.
 - Abre la TV antes que la tablet.
-- La TV conserva el último estado válido si la tablet se desconecta.
-- El WebSocket reconecta automáticamente con espera incremental.
-- El servidor cancela la secuencia anterior cuando llega una nueva selección.
-- El botón Reset funciona sin recargar el navegador.
+- La TV conserva el ultimo estado valido si la tablet se desconecta.
+- El WebSocket reconecta automaticamente con espera incremental.
+- El servidor cancela la secuencia anterior cuando llega una nueva seleccion.
+- El boton Reset funciona sin recargar el navegador.
 
 ### Modo kiosk recomendado
 
@@ -105,81 +126,45 @@ npm start
 & "C:\Program Files\Google\Chrome\Application\chrome.exe" --kiosk --app=http://localhost:3000/display/
 ```
 
-Para la tablet, usa pantalla completa en `/controller/`. En producción conviene fijar la IP del NUC y desactivar suspensión, ahorro de energía y actualizaciones automáticas durante la exhibición.
+Para la tablet, usa pantalla completa en `/controller/`. En produccion conviene fijar la IP del NUC y desactivar suspension, ahorro de energia y actualizaciones automaticas durante la exhibicion.
 
-## Diagnóstico oculto
+## Diagnostico oculto
 
 Disponible en tablet y TV:
 
 - `Ctrl + Alt + D` o `Shift + D`.
-- En tablet, toca el estado de conexión.
-- En TV, toca el estado de conexión.
+- En tablet, toca el estado de conexion.
+- En TV, toca el estado de conexion.
 
-El panel muestra WebSocket, FPS básico, fase, `runId`, segmento e instrumento.
+El panel muestra WebSocket, FPS basico, fase, `runId`, sector e instrumento.
 
-## Arquitectura visual
-
-- Los renders 3D independientes están en `public/assets/scenes/`.
-- `scene-development-bank-house.png` representa la sede central de Banca de Desarrollo y se sirve localmente con transparencia real.
-- La sede central se presenta sin tarjeta inferior: solo se muestra la imagen arquitectónica de Banca de Desarrollo y su rótulo. Los ejemplos regionales permanecen documentados en `data/experience.json > meta.developmentBankHouse` para una posible etapa posterior.
-- Los iconos Lucide usados por la interfaz están incluidos en `public/assets/icons/`.
-- Aros, etiquetas y popups son HTML/CSS.
-- Barrera, solución y resultado se muestran centrados sobre la sede y antes del aro exterior, sin ocupar la cabecera.
-- En el paso final, el popup combina dos bloques: `Solución propuesta de la BD` y `Participación del sector privado`, para que ambas lecturas se vean al mismo tiempo.
-- La conexión de cada zona hacia Banca de Desarrollo es un `path` SVG independiente con estados apagado, activo y completado.
-- Las entidades del lado derecho no dibujan rutas ni flechas hacia el centro; se iluminan según `targetActorIds`.
-- Las partículas recorren únicamente la conexión de la zona seleccionada hacia Banca de Desarrollo.
-- Los actores usan los estados reutilizables `disabled`, `idle`, `available` y `active`.
-- La composición se escala proporcionalmente, pero su lienzo de diseño es 1920 × 1080.
-
-La utilidad `scripts/remove-checkerboard.js` convierte los renders fuente en PNG con alfa real. Usa `sharp` como dependencia de desarrollo; no se ejecuta durante la exhibición.
-
-## Máquina de estados
+## Maquina de estados
 
 ```text
 idle
-  ↓
-problem
-  ↓ confirmación de lectura
-solutions
-  ↓ selección en tablet
-instrument
-  ↓
-route
-  ↓
-result
+  -> problem
+  -> instrument
+  -> route
+  -> result
 ```
 
-Los tiempos están centralizados en `data/experience.json > animationTimings` y en la secuencia del servidor. `solutionReadMs` controla la pausa de lectura de la solución; actualmente está configurado en `5500` ms. `actorRouteMs` se conserva como nombre interno, pero ahora controla el tiempo del paso de iluminación de entidades, no una ruta del lado derecho.
-
-## Agregar los otros segmentos
-
-Las relaciones se agregan en `data/experience.json`, dentro de `segments[].solutions[instrumentId]`. Cada solución debe definir al menos:
-
-- `solution` y `description`;
-- `targetActorIds` con IDs existentes en `providers`;
-- `privateParticipation` o `privateParticipationShort` para el popup de TV;
-- `results` y `resultTitle`;
-- `mappingStatus` con prefijo `validated` únicamente después de aprobación del cliente.
-
-La tablet lee automáticamente `allowedInstruments` y `targetActorIds`, por lo que no debe enviar actores manualmente.
+`problem` se activa al tocar un sector. La tablet lanza `runRoute` automaticamente despues de la pausa de lectura. `solutionReadMs` controla cuanto tiempo permanece la explicacion de la BD antes de activar la ruta al sector privado; actualmente esta en `5200` ms.
 
 ## Fuente y decisiones de contenido
 
-Fuente principal: `source/M6 - Rol de la banca de D en LAC 190826.xlsx`.
+Fuente base: `source/M6 - Rol de la banca de D en LAC 190826.xlsx`.
 
 Cambios documentados:
 
-- El Excel contiene cuatro segmentos; la interfaz actual usa tres por la indicación más reciente del cliente.
-- `Empresas (Proyectos de escala)` se presenta junto con Desarrolladores de vivienda.
-- No se habilitó Seguros para Instituciones financieras.
-- La actualización de reunión del 2026-09-02 cambió el comportamiento del lado derecho: las entidades se iluminan, pero no trazan flechas ni rutas hacia Banca de Desarrollo.
-- El copy de participación privada se transcribió desde la captura del Excel actualizado.
-- La visualización corta el copy de TV mediante `privateParticipationShort` y `displayResults`; el contenido fuente completo permanece en `privateParticipation`, `results` y `routeExplanation`.
-- Se incorporaron FINDETER (Colombia) y SHF (México) como ejemplos visibles de bancas de desarrollo de la región, según la referencia entregada por el cliente.
+- El flujo anterior de tres zonas + seleccion manual de instrumentos fue reemplazado por una narrativa de acceso a vivienda.
+- La tablet ahora selecciona sectores privados: Intermediarios, Inversionistas y Aseguradoras.
+- La barrera comun es falta de financiamiento para familias en vivienda informal.
+- Cada sector tiene un instrumento BD mapeado internamente en `mappedInstrumentId`.
+- Se mantienen FINDETER (Colombia) y SHF (Mexico) como ejemplos de Bancas de Desarrollo de la region dentro de `data/experience.json`.
 
-Pendiente de validación con cliente:
+Pendiente de validacion con cliente:
 
-- participación privada para `Desarrolladores + Garantías`;
-- consolidación definitiva de Proyectos de escala dentro de Desarrolladores;
-- copy final de sala y tiempos definitivos de lectura.
+- videos reales de vivienda informal y vivienda formal;
+- copy final de productos por sector;
+- si Intermediarios debe incluir tambien Garantias como aro activo secundario;
+- duraciones definitivas de lectura en sala.
