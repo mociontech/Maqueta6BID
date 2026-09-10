@@ -30,6 +30,10 @@ let sequenceToken = 0;
 let sequenceTimers = [];
 let sequenceFrames = [];
 let sequenceAnimations = [];
+let playedVideoRun = {
+  informal: null,
+  formal: null
+};
 
 const els = {
   shell: document.querySelector('.display-shell'),
@@ -121,18 +125,37 @@ function setVideoSource(video, poster, src) {
     video.closest('.video-card')?.classList.add('has-video');
   }
   video.muted = true;
-  video.loop = true;
+  video.loop = false;
   video.playsInline = true;
+  video.addEventListener('ended', () => {
+    video.closest('.video-card')?.classList.add('video-ended');
+  });
 }
 
-function playVideo(video) {
+function playVideo(video, options = {}) {
   if (!video || !video.src) return;
+  const card = video.closest('.video-card');
+  card?.classList.remove('video-off', 'video-ended');
+  if (options.restart) {
+    try { video.currentTime = 0; } catch {}
+  }
   video.play().catch(() => {});
 }
 
-function pauseVideo(video) {
-  if (!video || video.paused) return;
+function playVideoOnce(video, key) {
+  const runId = state.runId || 0;
+  if (playedVideoRun[key] === runId) return;
+  playedVideoRun[key] = runId;
+  playVideo(video, { restart: true });
+}
+
+function stopVideo(video, reset = true) {
+  if (!video) return;
   video.pause();
+  if (reset) {
+    try { video.currentTime = 0; } catch {}
+  }
+  video.closest('.video-card')?.classList.add('video-off');
 }
 
 function buildScene() {
@@ -500,8 +523,9 @@ function renderExperience() {
     els.informalPanel.classList.remove('dim');
     els.formalPanel.classList.add('dim');
     document.querySelectorAll('.sector-node').forEach(node => node.classList.remove('active', 'dim'));
-    playVideo(els.informalVideo);
-    pauseVideo(els.formalVideo);
+    playedVideoRun = { informal: null, formal: null };
+    stopVideo(els.informalVideo);
+    stopVideo(els.formalVideo);
     showInitialMessage();
     return;
   }
@@ -511,8 +535,8 @@ function renderExperience() {
     els.formalPanel.classList.add('dim');
     document.querySelectorAll('.sector-node').forEach(node => node.classList.remove('active', 'dim'));
     showAllRingsAvailable();
-    playVideo(els.informalVideo);
-    pauseVideo(els.formalVideo);
+    playVideoOnce(els.informalVideo, 'informal');
+    stopVideo(els.formalVideo);
     completePath(routeById('route-barrier'), '#4f9dff');
     pulseBid();
     showBankIntro();
@@ -530,8 +554,8 @@ function renderExperience() {
       completePath(routeForSector(item.id), sectorColor(item.id));
       completePath(transformRouteForSector(item.id), '#5ee6aa');
     }
-    playVideo(els.informalVideo);
-    playVideo(els.formalVideo);
+    stopVideo(els.informalVideo, false);
+    playVideoOnce(els.formalVideo, 'formal');
     showClosing();
     pulseBid();
     return;
@@ -544,9 +568,13 @@ function renderExperience() {
   updateResults(solution);
   focusProblemSide(true);
   setRings(sector, phase !== 'problem' && phase !== 'solutions');
-  playVideo(els.informalVideo);
-  if (phase === 'route' || phase === 'providers' || phase === 'result') playVideo(els.formalVideo);
-  else pauseVideo(els.formalVideo);
+  if (phase === 'problem' || phase === 'solutions' || phase === 'instrument' || phase === 'route' || phase === 'providers') {
+    playVideoOnce(els.informalVideo, 'informal');
+  } else {
+    stopVideo(els.informalVideo, false);
+  }
+  if (phase === 'result') playVideoOnce(els.formalVideo, 'formal');
+  else stopVideo(els.formalVideo);
 
   const barrierRoute = routeById('route-barrier');
   const sectorRoute = routeForSector(sector.id);

@@ -64,6 +64,13 @@ La TV usa videos locales dentro de `public/assets/video/`:
 - `viviendasInformales.mp4`: video de vivienda informal.
 - `videoFormal.mp4`: video de vivienda formal / transformacion.
 
+Los videos se comportan como clips de la narracion, no como loops permanentes:
+
+- en `idle` quedan quietos como imagen/poster;
+- al activar la Banca de Desarrollo o seleccionar un actor, se reproduce el video informal una vez;
+- en `result` y `closing` se reproduce el video formal una vez;
+- cuando un clip termina, queda atenuado para comunicar que la etapa ya se completo.
+
 Los PNG de `public/assets/scenes/` quedan como posters y respaldo visual si el navegador tarda en decodificar video:
 
 - `scene-people-msmes.png`: poster de vivienda informal.

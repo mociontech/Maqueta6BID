@@ -282,7 +282,7 @@ function syncFromServer() {
 els.begin.addEventListener('click', () => goToSectors(true));
 els.backHome.addEventListener('click', () => goToIntro(true));
 els.goHome.addEventListener('click', () => goToIntro(true));
-els.newSector.addEventListener('click', () => goToSectors(false));
+els.newSector?.addEventListener('click', () => goToSectors(false));
 els.changeSector.addEventListener('click', () => goToSectors(true));
 els.finish.addEventListener('click', finishExperience);
 els.exploreAgain.addEventListener('click', () => goToSectors(false));
