@@ -1,6 +1,6 @@
 # Prompt recomendado para Codex
 
-> Nota vigente: el flujo cambio. La maqueta ya no usa seleccion de zona + instrumento en la tablet. Ahora la narrativa es vivienda informal -> Banca de Desarrollo -> sector privado -> vivienda formal. README.md y `data/experience.json` son la referencia actual.
+> Nota vigente: el flujo cambio. La maqueta ya no usa seleccion de zona + instrumento en la tablet. Ahora la narrativa es vivienda informal -> Banca de Desarrollo -> sector privado -> vivienda formal, alineada con `Maqueta_6_Storytelling_e_Interaccion.docx.pdf`. README.md y `data/experience.json` son la referencia actual.
 
 Trabaja sobre este proyecto **Maqueta 6 - Banca de Desarrollo**.
 
@@ -18,12 +18,13 @@ Convertir la experiencia en una maqueta digital premium para una exhibicion del 
 La tablet muestra:
 
 1. Inicio con boton `COMENZAR`.
-2. Seleccion de uno de tres sectores privados:
+2. Activacion de la Banca de Desarrollo en la TV.
+3. Seleccion de uno de tres sectores privados:
    - Intermediarios.
    - Inversionistas.
    - Aseguradoras.
-3. Pantalla de `BANCA DE DESARROLLO activada`.
-4. Pantalla final de agradecimiento.
+4. Pantalla de `Conexion activada`.
+5. Pantalla final.
 
 La TV ejecuta una secuencia automatica:
 
@@ -32,8 +33,9 @@ La TV ejecuta una secuencia automatica:
 3. Explica que la familia no puede ir directamente al sector privado.
 4. Activa la Banca de Desarrollo como puente.
 5. Enciende el aro/instrumento asociado al sector seleccionado.
-6. Ilumina el sector privado seleccionado.
-7. Muestra la transformacion hacia vivienda formal a la derecha.
+6. Muestra al mismo tiempo la solucion BD y la participacion del sector privado.
+7. Ilumina el sector privado seleccionado.
+8. Muestra la transformacion hacia vivienda formal a la derecha.
 
 Internamente se conserva `segmentId + instrumentId` por compatibilidad:
 

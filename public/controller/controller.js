@@ -5,23 +5,27 @@ const data = await fetch('/data/experience.json').then(response => response.json
 
 const phaseLabels = {
   idle: 'Inicio',
+  bankIntro: 'Elige un actor',
   problem: 'Mostrando barrera de acceso',
   solutions: 'Mostrando barrera de acceso',
   instrument: 'Banca de Desarrollo activada',
   route: 'Activando sector privado',
   providers: 'Activando sector privado',
-  result: 'Transformacion en pantalla'
+  result: 'Transformacion en pantalla',
+  closing: 'Experiencia finalizada'
 };
 const phaseProgress = {
   idle: 0,
+  bankIntro: 16,
   problem: 22,
   solutions: 22,
   instrument: 52,
   route: 78,
   providers: 86,
-  result: 100
+  result: 100,
+  closing: 100
 };
-const autoRunDelayMs = 5200;
+const autoRunDelayMs = 1200;
 
 let state = { segmentId: null, instrumentId: null, phase: 'idle', selectionMode: 'initial', runId: 0 };
 let selectedSectorId = null;
@@ -196,7 +200,16 @@ function goToSectors(resetDisplay = false) {
   clearAutoRun();
   selectedSectorId = null;
   showStep(els.sectorStep, 'sectors');
-  if (resetDisplay) socket.send({ type: 'reset', source: 'controller' });
+  if (resetDisplay) {
+    socket.send({ type: 'reset', source: 'controller' });
+    setTimeout(() => {
+      socket.send({
+        type: 'setState',
+        source: 'controller',
+        patch: { phase: 'bankIntro', segmentId: null, instrumentId: null, selectionMode: 'initial' }
+      });
+    }, 120);
+  }
 }
 
 function runSelectedSector(sector) {
@@ -230,6 +243,11 @@ function chooseSector(id) {
 
 function finishExperience() {
   clearAutoRun();
+  socket.send({
+    type: 'setState',
+    source: 'controller',
+    patch: { phase: 'closing' }
+  });
   showStep(els.finalStep, 'final');
 }
 
@@ -240,6 +258,16 @@ function syncFromServer() {
   if (state.phase === 'idle' && els.shell.dataset.step !== 'sectors') {
     selectedSectorId = null;
     showStep(els.introStep, 'intro');
+    return;
+  }
+
+  if (state.phase === 'bankIntro') {
+    showStep(els.sectorStep, 'sectors');
+    return;
+  }
+
+  if (state.phase === 'closing') {
+    showStep(els.finalStep, 'final');
     return;
   }
 

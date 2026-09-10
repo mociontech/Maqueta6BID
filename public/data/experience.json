@@ -2,19 +2,20 @@
   "meta": {
     "title": "La Banca de Desarrollo",
     "subtitle": "Puente entre el capital privado y la vivienda",
-    "introTitle": "El rol de la banca de desarrollo",
-    "introCopy": "Descubre como la BD convierte barreras en soluciones y moviliza la participacion del sector privado.",
-    "selectionTitle": "Explora soluciones",
-    "selectionCopy": "Selecciona un sector y observa las animaciones en la maqueta.",
-    "activationTitle": "Banca de Desarrollo activada",
+    "introTitle": "Conecta soluciones de vivienda",
+    "introCopy": "Descubre como actua la banca de desarrollo.",
+    "selectionTitle": "Elige un actor",
+    "selectionCopy": "Toca una opcion para activar la conexion.",
+    "activationTitle": "Conexion activada",
     "activationCopy": "Observa la maqueta y la pantalla principal.",
-    "finalTitle": "Gracias por participar",
-    "finalCopy": "Has descubierto como la banca de desarrollo comparte riesgos, moviliza inversion y amplia el acceso a vivienda.",
+    "finalTitle": "Experiencia finalizada",
+    "finalCopy": "La banca de desarrollo convierte barreras en oportunidades al compartir riesgos y movilizar inversion privada.",
     "source": "Nuevo guion de reunion: vivienda informal sin acceso directo al sector privado; la Banca de Desarrollo actua como puente hacia soluciones privadas y transforma el acceso a vivienda formal.",
     "problem": {
       "title": "Barrera",
       "label": "Falta de financiamiento",
-      "description": "Las familias no acceden directamente a credito ni a productos privados por riesgo alto, poca liquidez y bajos ingresos.",
+      "headline": "Cuando falta financiamiento, la vivienda informal crece.",
+      "description": "El alto riesgo y las condiciones de credito dejan fuera a familias y proyectos de vivienda.",
       "bullets": [
         "Vivienda precaria",
         "Sin acceso a credito",
@@ -23,10 +24,12 @@
       ]
     },
     "transformation": {
-      "beforeTitle": "Vivienda informal",
-      "afterTitle": "Vivienda formal",
-      "resultTitle": "Transformacion habilitada",
-      "resultCopy": "La BD comparte riesgo, ordena el financiamiento y habilita la participacion privada."
+      "beforeTitle": "EL RETO / DEFICIT HABITACIONAL",
+      "afterTitle": "IMPACTO / VIVIENDA FORMAL",
+      "resultTitle": "Soluciones financiables y escalables",
+      "resultCopy": "Cuando la banca de desarrollo conecta actores, instrumentos y capital, mas personas pueden acceder a soluciones de vivienda formal y digna.",
+      "closingTitle": "Conectar para transformar",
+      "closingCopy": "Su valor no esta solo en financiar, sino en llevar las soluciones de vivienda a mayor escala."
     },
     "developmentBankHouse": {
       "title": "BANCA DE DESARROLLO",
@@ -112,7 +115,7 @@
   "segments": [
     {
       "id": "intermediaries",
-      "label": "Intermediarios",
+      "label": "Intermediarios financieros",
       "shortLabel": "Intermediarios",
       "icon": "landmark",
       "asset": "/assets/scenes/actor-commercial-bank.png",
@@ -128,26 +131,27 @@
       "solutions": {
         "financing": {
           "enabled": true,
-          "solution": "Fondeo de segundo piso y garantias para que los intermediarios puedan prestar.",
-          "description": "La BD aporta liquidez, comparte riesgo y habilita productos que el usuario no podria recibir de forma directa.",
-          "plainMeaning": "La BD abre el puente hacia hipotecas, microfinanciamiento y credito a la construccion.",
+          "title": "Mas credito, mejores condiciones.",
+          "solution": "La banca de desarrollo aporta fondeo y garantias.",
+          "description": "Los intermediarios convierten estos recursos en soluciones de credito.",
+          "plainMeaning": "Mas acceso al credito para personas y proyectos de vivienda.",
           "targetActorIds": ["intermediaries"],
           "actorLabels": {
             "intermediaries": "Hipotecas, microfinanciamiento, credito a la construccion y garantias."
           },
-          "privateParticipation": "Intermediarios: colocan productos financieros al usuario final cuando la BD reduce el riesgo y aporta fondeo.",
-          "privateParticipationShort": "Intermediarios colocan credito con respaldo de la BD.",
-          "routeExplanation": "La familia no va directo al sector privado: primero la BD reduce riesgo y ordena el financiamiento.",
+          "privateParticipation": "Los intermediarios convierten el fondeo y las garantias en hipotecas, microfinanciamiento y credito a la construccion.",
+          "privateParticipationShort": "Convierten recursos en soluciones de credito.",
+          "routeExplanation": "La banca de desarrollo cambia la ecuacion: aporta recursos, comparte riesgos y genera confianza.",
           "resultTitle": "Vivienda formal",
           "results": [
-            "Credito accesible",
-            "Mayor liquidez",
-            "Vivienda formal habilitada"
+            "Mas personas y proyectos acceden a financiamiento",
+            "Mejores condiciones de credito",
+            "Vivienda formal y digna"
           ],
-          "displayResults": ["Credito accesible", "Mas liquidez", "Vivienda formal"],
+          "displayResults": ["Mas financiamiento", "Mejores condiciones", "Vivienda formal"],
           "products": [
             "Hipotecas",
-            "Microfinanciamientos",
+            "Microfinanciamiento",
             "Credito a la construccion",
             "Garantias"
           ],
@@ -173,23 +177,24 @@
       "solutions": {
         "capital": {
           "enabled": true,
-          "solution": "Bonos y vehiculos respaldados por cartera de credito de vivienda.",
-          "description": "La BD estructura y da confianza para que el capital institucional financie vivienda con horizonte de largo plazo.",
-          "plainMeaning": "La BD transforma cartera en instrumentos invertibles.",
+          "title": "Capital para ampliar la escala.",
+          "solution": "La banca de desarrollo respalda instrumentos que atraen inversion privada.",
+          "description": "El respaldo libera recursos para nuevos creditos y amplifica la escala de la vivienda.",
+          "plainMeaning": "Mas inversion permite generar nuevos financiamientos.",
           "targetActorIds": ["investors"],
           "actorLabels": {
             "investors": "Compra de bonos respaldados por cartera de credito."
           },
-          "privateParticipation": "Inversionistas institucionales compran instrumentos respaldados por cartera de credito, incluyendo credito individual y microfinanciamiento.",
-          "privateParticipationShort": "Inversionistas compran bonos de cartera de vivienda.",
-          "routeExplanation": "La BD crea confianza para que la inversion llegue a la vivienda sin trasladar todo el riesgo a las familias.",
+          "privateParticipation": "Inversionistas compran bonos respaldados por cartera de credito, incluyendo cartera individual y de microfinanciamiento.",
+          "privateParticipationShort": "Compran bonos respaldados por cartera.",
+          "routeExplanation": "La BD respalda instrumentos que atraen inversion privada y liberan recursos para nuevos creditos.",
           "resultTitle": "Vivienda formal",
           "results": [
             "Capital privado movilizado",
             "Cartera liberada",
             "Mas viviendas financiables"
           ],
-          "displayResults": ["Capital movilizado", "Cartera liberada", "Mas viviendas"],
+          "displayResults": ["Capital a escala", "Cartera liberada", "Nuevos creditos"],
           "products": [
             "Bonos respaldados por cartera",
             "Credito individual",
@@ -217,23 +222,24 @@
       "solutions": {
         "insurance": {
           "enabled": true,
-          "solution": "Seguro de credito a la vivienda para cubrir riesgo y ampliar elegibilidad.",
-          "description": "La BD impulsa el andamiaje para que las aseguradoras cubran parte del riesgo del credito de vivienda.",
-          "plainMeaning": "El seguro protege la operacion y permite prestar a mas familias.",
+          "title": "Menos riesgo, mas acceso.",
+          "solution": "El seguro protege la cartera y facilita nuevas operaciones de vivienda.",
+          "description": "La BD crea condiciones para que el riesgo pueda cubrirse y el credito llegue a mas familias.",
+          "plainMeaning": "Mayor proteccion para ampliar el financiamiento.",
           "targetActorIds": ["insurers"],
           "actorLabels": {
             "insurers": "Seguro de credito a la vivienda."
           },
-          "privateParticipation": "Aseguradoras otorgan seguros de credito a la vivienda que diversifican el riesgo.",
-          "privateParticipationShort": "Aseguradoras cubren riesgo de credito.",
-          "routeExplanation": "La BD no reemplaza a la aseguradora: crea condiciones para que la cobertura llegue a vivienda.",
+          "privateParticipation": "Aseguradoras protegen la cartera con seguro de credito a la vivienda.",
+          "privateParticipationShort": "Protegen la cartera y facilitan el credito.",
+          "routeExplanation": "La BD conecta con aseguradoras para proteger la cartera y facilitar el acceso al credito.",
           "resultTitle": "Vivienda formal",
           "results": [
             "Riesgo cubierto",
             "Credito mas bancable",
             "Familias elegibles"
           ],
-          "displayResults": ["Riesgo cubierto", "Credito bancable", "Familias elegibles"],
+          "displayResults": ["Menos riesgo", "Mas acceso", "Credito protegido"],
           "products": [
             "Seguro de credito a la vivienda",
             "Cobertura de incumplimiento"

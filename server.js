@@ -153,6 +153,18 @@ function applyClientPatch(patch, source = 'client') {
     return;
   }
 
+  if (patch.phase === 'bankIntro' || patch.phase === 'closing') {
+    clearRouteTimer();
+    setState({
+      segmentId: patch.segmentId === undefined ? state.segmentId : patch.segmentId,
+      instrumentId: patch.instrumentId === undefined ? state.instrumentId : patch.instrumentId,
+      phase: patch.phase,
+      selectionMode: patch.selectionMode || state.selectionMode,
+      runId: state.runId + 1
+    }, source);
+    return;
+  }
+
   if (patch.segmentId && !patch.instrumentId) {
     if (patch.phase === 'solutions') showSolutions(patch.segmentId, source, patch.selectionMode === 'compare');
     else selectSegment(patch.segmentId, source);

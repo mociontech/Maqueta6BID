@@ -8,13 +8,15 @@ const data = await response.json();
 const DESIGN_WIDTH = 1920;
 const DESIGN_HEIGHT = 1080;
 const PHASE_COPY = {
-  idle: ['INICIO', data.meta.title],
+  idle: ['INICIO', 'Cuando falta financiamiento, la vivienda informal crece'],
+  bankIntro: ['INICIO', 'La banca de desarrollo cambia la ecuacion'],
   problem: ['PASO 1', 'Barrera de acceso'],
   solutions: ['PASO 1', 'Barrera de acceso'],
   instrument: ['PASO 2', 'Banca de Desarrollo activada'],
   route: ['PASO 3', 'Sector privado habilitado'],
   providers: ['PASO 3', 'Sector privado habilitado'],
-  result: ['PASO 4', 'Transformacion de vivienda']
+  result: ['PASO 4', 'Transformacion de vivienda'],
+  closing: ['CIERRE', 'Conectar para transformar']
 };
 
 let state = {
@@ -346,6 +348,13 @@ function setRings(sector, selected = false) {
   });
 }
 
+function showAllRingsAvailable() {
+  document.querySelectorAll('.instrument-ring, .instrument-plaza').forEach(item => {
+    item.classList.add('available');
+    item.classList.remove('selected');
+  });
+}
+
 function updateResults(solution) {
   const results = Array.isArray(solution?.displayResults) && solution.displayResults.length
     ? solution.displayResults
@@ -367,6 +376,38 @@ function showBarrier(sector) {
     <p><strong>${escapeHtml(problem.short || data.meta.problem?.label || 'Falta de financiamiento')}.</strong> ${escapeHtml(problem.description || data.meta.problem?.description || '')}</p>
     <div class="product-list">
       ${chips.slice(0, 4).map(chip => `<span>${escapeHtml(chip)}</span>`).join('')}
+    </div>
+  `;
+  els.annotation.hidden = false;
+}
+
+function showInitialMessage() {
+  const problem = data.meta.problem || {};
+  els.annotation.dataset.kind = 'initial';
+  els.annotation.style.setProperty('--annotation-color', '#f28a30');
+  els.annotation.innerHTML = `
+    <div class="annotation-head">
+      ${iconMarkup('triangle-alert')}
+      <strong>${escapeHtml(problem.headline || 'Cuando falta financiamiento, la vivienda informal crece.')}</strong>
+    </div>
+    <p>${escapeHtml(problem.description || 'El alto riesgo deja fuera a familias y proyectos de vivienda.')}</p>
+  `;
+  els.annotation.hidden = false;
+}
+
+function showBankIntro() {
+  els.annotation.dataset.kind = 'bankIntro';
+  els.annotation.style.setProperty('--annotation-color', '#4f9dff');
+  els.annotation.innerHTML = `
+    <div class="annotation-head">
+      ${iconMarkup('landmark')}
+      <strong>La banca de desarrollo cambia la ecuacion</strong>
+    </div>
+    <p>Aporta recursos, comparte riesgos y genera confianza para movilizar al sector privado.</p>
+    <div class="annotation-results">
+      <span>No actua sola</span>
+      <span>Reduce riesgos</span>
+      <span>Moviliza recursos</span>
     </div>
   `;
   els.annotation.hidden = false;
@@ -394,7 +435,7 @@ function showJointAction(sector, instrument, solution, includeResult = false) {
     <div class="annotation-grid">
       <section class="annotation-card">
         <span>Solucion de la BD</span>
-        <strong>${escapeHtml(instrument?.label || 'Instrumento')}</strong>
+        <strong>${escapeHtml(solution?.title || instrument?.label || 'Instrumento')}</strong>
         <p>${escapeHtml(solution?.solution || '')}</p>
       </section>
       <section class="annotation-card">
@@ -411,6 +452,25 @@ function showJointAction(sector, instrument, solution, includeResult = false) {
         ${results.slice(0, 3).map(result => `<span>${escapeHtml(result)}</span>`).join('')}
       </div>
     ` : ''}
+  `;
+  els.annotation.hidden = false;
+}
+
+function showClosing() {
+  const transformation = data.meta.transformation || {};
+  els.annotation.dataset.kind = 'closing';
+  els.annotation.style.setProperty('--annotation-color', '#5ee6aa');
+  els.annotation.innerHTML = `
+    <div class="annotation-head">
+      ${iconMarkup('circle-check')}
+      <strong>${escapeHtml(transformation.closingTitle || 'Conectar para transformar')}</strong>
+    </div>
+    <p>${escapeHtml(transformation.closingCopy || 'La banca de desarrollo convierte barreras en oportunidades al compartir riesgos y movilizar inversion privada.')}</p>
+    <div class="annotation-results">
+      <span>Riesgo compartido</span>
+      <span>Inversion movilizada</span>
+      <span>Vivienda formal y digna</span>
+    </div>
   `;
   els.annotation.hidden = false;
 }
@@ -436,12 +496,48 @@ function renderExperience() {
     ? `${data.meta.subtitle} · ${sector.shortLabel}`
     : data.meta.subtitle;
 
-  if (!sector || phase === 'idle') {
+  if (phase === 'idle') {
     els.informalPanel.classList.remove('dim');
     els.formalPanel.classList.add('dim');
     document.querySelectorAll('.sector-node').forEach(node => node.classList.remove('active', 'dim'));
     playVideo(els.informalVideo);
     pauseVideo(els.formalVideo);
+    showInitialMessage();
+    return;
+  }
+
+  if (phase === 'bankIntro') {
+    els.informalPanel.classList.add('active');
+    els.formalPanel.classList.add('dim');
+    document.querySelectorAll('.sector-node').forEach(node => node.classList.remove('active', 'dim'));
+    showAllRingsAvailable();
+    playVideo(els.informalVideo);
+    pauseVideo(els.formalVideo);
+    completePath(routeById('route-barrier'), '#4f9dff');
+    pulseBid();
+    showBankIntro();
+    return;
+  }
+
+  if (phase === 'closing') {
+    els.informalPanel.classList.remove('dim');
+    els.formalPanel.classList.add('active');
+    els.formalPanel.classList.remove('dim');
+    showAllRingsAvailable();
+    document.querySelectorAll('.sector-node').forEach(node => node.classList.add('active'));
+    completePath(routeById('route-barrier'), '#4f9dff');
+    for (const item of data.segments) {
+      completePath(routeForSector(item.id), sectorColor(item.id));
+      completePath(transformRouteForSector(item.id), '#5ee6aa');
+    }
+    playVideo(els.informalVideo);
+    playVideo(els.formalVideo);
+    showClosing();
+    pulseBid();
+    return;
+  }
+
+  if (!sector) {
     return;
   }
 

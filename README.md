@@ -17,8 +17,8 @@ La narrativa cambio en la ultima reunion:
    - Intermediarios.
    - Inversionistas.
    - Aseguradoras.
-4. Al seleccionar un sector, la TV muestra la barrera durante unos segundos para lectura.
-5. Luego se activa la Banca de Desarrollo como puente obligatorio.
+4. Al seleccionar un sector, la TV responde de inmediato y conserva el contexto de barrera.
+5. Luego la Banca de Desarrollo muestra la solucion propuesta durante una pausa de lectura.
 6. La BD enciende el instrumento asociado al sector:
    - Intermediarios: Financiamiento.
    - Inversionistas: Capitales.
@@ -37,7 +37,7 @@ La tablet sigue el wireframe nuevo:
 - Activada: confirma que la Banca de Desarrollo esta actuando y muestra progreso de la TV.
 - Final: cierre de participacion con opciones para explorar otro sector o volver al inicio.
 
-Al tocar un sector, la tablet envia primero `selectSegment` para mostrar la barrera y, despues de `5200` ms, envia `runRoute` con el instrumento mapeado en `data/experience.json`.
+Al tocar un sector, la tablet envia primero `selectSegment` para dar feedback inmediato y, despues de una pausa breve, envia `runRoute` con el instrumento mapeado en `data/experience.json`. La pausa larga de lectura ocurre en la TV durante `solutionReadMs`.
 
 ## TV
 
@@ -147,17 +147,19 @@ El panel muestra WebSocket, FPS basico, fase, `runId`, sector e instrumento.
 
 ```text
 idle
+  -> bankIntro
   -> problem
   -> instrument
   -> route
   -> result
+  -> closing
 ```
 
-`problem` se activa al tocar un sector. La tablet lanza `runRoute` automaticamente despues de la pausa de lectura. `solutionReadMs` controla cuanto tiempo permanece la explicacion de la BD antes de activar la ruta al sector privado; actualmente esta en `5200` ms.
+`bankIntro` se activa al tocar `COMENZAR`. `problem` da feedback inmediato al elegir actor. La tablet lanza `runRoute` automaticamente tras una pausa breve. `solutionReadMs` controla cuanto tiempo permanece visible la explicacion de la BD antes de activar la ruta al sector privado; actualmente esta en `5200` ms.
 
 ## Fuente y decisiones de contenido
 
-Fuente base: `source/M6 - Rol de la banca de D en LAC 190826.xlsx`.
+Fuente base: `source/M6 - Rol de la banca de D en LAC 190826.xlsx` y ajuste narrativo de `Maqueta_6_Storytelling_e_Interaccion.docx.pdf`.
 
 Cambios documentados:
 
