@@ -1246,3 +1246,465 @@ button {
 .storyboard-mode .video-card.video-ended img {
   opacity: 0;
 }
+
+.physical-mode {
+  background: #030507;
+}
+
+.physical-mode::before,
+.physical-mode::after {
+  display: none;
+}
+
+.physical-mode .story-header {
+  position: absolute;
+  inset: 0;
+  z-index: 70;
+  height: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.physical-mode .story-title {
+  display: none;
+}
+
+.physical-mode .connection-status {
+  position: absolute;
+  top: 30px;
+  right: 42px;
+  min-width: 122px;
+  min-height: 28px;
+  padding: 0 12px;
+  border-color: rgba(190, 213, 228, .72);
+  border-radius: 5px;
+  background: rgba(5, 15, 22, .94);
+  color: #dce8f0;
+  font-size: 11px;
+}
+
+.physical-mode .connection-status span {
+  width: 5px;
+  height: 5px;
+}
+
+.physical-mode .stage {
+  top: 0;
+  height: 1080px;
+  background:
+    linear-gradient(rgba(255, 255, 255, .026) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, .026) 1px, transparent 1px),
+    radial-gradient(ellipse at 50% 52%, rgba(11, 37, 54, .48), rgba(4, 7, 10, .96) 60%, #020304 100%);
+  background-size: 86px 86px, 86px 86px, auto;
+}
+
+.physical-layout {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  color: #f6f7f8;
+  pointer-events: none;
+}
+
+.frame-outline {
+  position: absolute;
+  border: 1px solid rgba(255, 255, 255, .24);
+}
+
+.outer-frame {
+  left: 50px;
+  top: 40px;
+  width: 1820px;
+  height: 1000px;
+}
+
+.physical-mode .main-title,
+.physical-mode .main-subtitle,
+.physical-mode .main-copy,
+.physical-mode .zone-title,
+.physical-mode .slot-caption,
+.physical-mode .private-title-physical,
+.physical-mode .formal-title-physical,
+.physical-mode .bridge-copy,
+.physical-mode .private-copy,
+.physical-mode .result-bubble,
+.physical-mode .barrier-bubble {
+  position: absolute;
+  margin: 0;
+  text-align: center;
+  letter-spacing: 0;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, .72);
+}
+
+.physical-mode .main-title {
+  top: 65px;
+  left: 620px;
+  width: 680px;
+  font-size: 31px;
+  font-weight: 900;
+  line-height: 1.08;
+}
+
+.physical-mode .main-subtitle {
+  top: 104px;
+  left: 620px;
+  width: 680px;
+  font-size: 31px;
+  font-weight: 800;
+  line-height: 1.08;
+}
+
+.physical-mode .main-copy {
+  top: 170px;
+  left: 690px;
+  width: 560px;
+  color: #e6e9ee;
+  font-size: 21px;
+  line-height: 1.25;
+}
+
+.physical-mode .zone-title {
+  top: 142px;
+  font-size: 24px;
+  font-weight: 900;
+  line-height: 1.08;
+}
+
+.physical-mode .left-title {
+  left: 86px;
+  width: 420px;
+}
+
+.physical-mode .right-title {
+  right: 90px;
+  width: 430px;
+}
+
+.slot {
+  position: absolute;
+  border: 1px solid rgba(235, 244, 251, .38);
+  background: rgba(0, 0, 0, .18);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .05);
+}
+
+.slot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(0, 255, 52, .82);
+  opacity: .82;
+}
+
+.slot-bank::after,
+.slot-private::after,
+.slot-formal::after {
+  border-color: rgba(255, 32, 32, .86);
+}
+
+.slot-informal {
+  left: 50px;
+  top: 165px;
+  width: 468px;
+  height: 620px;
+}
+
+.slot-bank {
+  left: 866px;
+  top: 388px;
+  width: 206px;
+  height: 206px;
+  border-color: transparent;
+  border-radius: 50%;
+  background: transparent;
+}
+
+.slot-bank::after {
+  border-width: 4px;
+  border-color: #d8ff29;
+  border-radius: 50%;
+  box-shadow: 0 0 22px rgba(216, 255, 41, .35), inset 0 0 20px rgba(216, 255, 41, .16);
+}
+
+.slot-private {
+  left: 655px;
+  top: 734px;
+  width: 636px;
+  height: 310px;
+  border-color: transparent;
+  border-radius: 58px;
+}
+
+.slot-private::after {
+  border-width: 3px;
+  border-radius: 58px;
+}
+
+.slot-formal {
+  left: 1414px;
+  top: 428px;
+  width: 468px;
+  height: 612px;
+}
+
+.slot-caption {
+  color: #fff;
+  font-size: 28px;
+  line-height: 1.1;
+}
+
+.informal-caption {
+  left: 82px;
+  top: 598px;
+}
+
+.bank-caption-physical {
+  left: 838px;
+  top: 356px;
+  width: 260px;
+}
+
+.private-caption-physical {
+  left: 964px;
+  top: 704px;
+  width: 230px;
+}
+
+.formal-caption {
+  right: 68px;
+  top: 600px;
+  width: 300px;
+}
+
+.private-title-physical {
+  left: 800px;
+  top: 986px;
+  width: 360px;
+  font-size: 24px;
+  font-weight: 900;
+}
+
+.formal-title-physical {
+  left: 1504px;
+  top: 982px;
+  width: 300px;
+  font-size: 23px;
+  font-weight: 900;
+  line-height: 1.08;
+}
+
+.barrier-bubble {
+  left: 360px;
+  top: 604px;
+  width: 308px;
+  min-height: 124px;
+  display: grid;
+  align-content: center;
+  gap: 3px;
+  padding: 18px 20px;
+  border: 3px solid #ff1f2d;
+  border-radius: 58px;
+  color: #fff;
+  font-size: 22px;
+  line-height: 1.1;
+}
+
+.barrier-bubble strong {
+  display: block;
+  font-size: 21px;
+  line-height: 1.05;
+}
+
+.barrier-bubble span {
+  display: block;
+}
+
+.result-bubble {
+  left: 1304px;
+  top: 196px;
+  width: 202px;
+  min-height: 164px;
+  display: grid;
+  place-items: center;
+  padding: 22px;
+  border: 3px solid #ff1f2d;
+  border-radius: 56px;
+  color: #f5f5f5;
+  font-size: 20px;
+  line-height: 1.14;
+}
+
+.bridge-copy {
+  color: #efefef;
+  font-size: 20px;
+  line-height: 1.08;
+}
+
+.bridge-copy-left {
+  left: 584px;
+  top: 418px;
+  width: 190px;
+}
+
+.bridge-copy-right {
+  left: 1146px;
+  top: 508px;
+  width: 260px;
+}
+
+.private-copy {
+  left: 1136px;
+  top: 594px;
+  width: 280px;
+  color: #f1f1f1;
+  font-size: 21px;
+  line-height: 1.2;
+}
+
+.video-copy {
+  position: absolute;
+  display: grid;
+  gap: 5px;
+  color: #f8f8f8;
+  text-align: left;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, .72);
+}
+
+.video-copy strong,
+.video-copy span {
+  display: block;
+  font-size: 28px;
+  font-weight: 500;
+  line-height: 1.05;
+}
+
+.video-copy small {
+  display: block;
+  color: #f3f3f3;
+  font-size: 20px;
+  line-height: 1.16;
+}
+
+.before-copy {
+  left: 66px;
+  top: 802px;
+  width: 390px;
+}
+
+.after-copy {
+  right: 56px;
+  top: 182px;
+  width: 322px;
+  text-align: right;
+}
+
+.physical-mode .maquette-bed,
+.physical-mode .bridge,
+.physical-mode .context-copy,
+.physical-mode .reference-board,
+.physical-mode .bank-zone,
+.physical-mode .instrument-plazas,
+.physical-mode .private-sector,
+.physical-mode .panel-title,
+.physical-mode .problem-bullets,
+.physical-mode .result-chips,
+.physical-mode .video-overlay,
+.physical-mode .annotation {
+  display: none !important;
+}
+
+.physical-mode .route-layer {
+  z-index: 10;
+  inset: 0;
+  width: 1920px;
+  height: 1080px;
+  opacity: 1;
+  mix-blend-mode: screen;
+}
+
+.physical-mode .route {
+  stroke-width: 4;
+  opacity: .2;
+}
+
+.physical-mode .route.active,
+.physical-mode .route.complete {
+  stroke-width: 7;
+  opacity: 1;
+}
+
+.physical-mode .route-barrier.active,
+.physical-mode .route-barrier.complete {
+  stroke: #d8ff29;
+}
+
+.physical-mode .route-transformation.active,
+.physical-mode .route-transformation.complete {
+  stroke: #5ee6aa;
+}
+
+.physical-mode .housing-panel {
+  z-index: 24;
+  width: auto;
+  display: block;
+  opacity: 0;
+  filter: none;
+}
+
+.physical-mode .housing-panel.active,
+.physical-mode[data-phase="result"] .formal-panel,
+.physical-mode[data-phase="closing"] .formal-panel {
+  opacity: 1;
+}
+
+.physical-mode .informal-panel {
+  left: 66px;
+  top: 790px;
+}
+
+.physical-mode .formal-panel {
+  left: 1596px;
+  top: 250px;
+}
+
+.physical-mode .visual-card {
+  width: 406px;
+  height: 208px;
+  border: 1px solid rgba(255, 255, 255, .24);
+  border-radius: 0;
+  background: rgba(0, 0, 0, .72);
+  box-shadow: none;
+}
+
+.physical-mode .formal-panel .visual-card {
+  width: 402px;
+  height: 214px;
+}
+
+.physical-mode .visual-card::after {
+  display: none;
+}
+
+.physical-mode .visual-card video,
+.physical-mode .visual-card img {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 0;
+  filter: grayscale(1) brightness(.62) contrast(1.08);
+}
+
+.physical-mode .housing-panel.active .visual-card video,
+.physical-mode[data-phase="result"] .formal-panel .visual-card video,
+.physical-mode[data-phase="closing"] .formal-panel .visual-card video {
+  filter: none;
+  opacity: 1;
+}
+
+.physical-mode .video-card.video-off video,
+.physical-mode .video-card.video-ended video,
+.physical-mode .video-card.video-off img,
+.physical-mode .video-card.video-ended img {
+  opacity: 0;
+}

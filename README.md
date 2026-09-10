@@ -43,14 +43,15 @@ Al tocar un sector, la tablet envia primero `selectSegment` para dar feedback in
 
 La composicion nueva usa:
 
-- una imagen base de maquetado en `public/assets/scenes/image (2).png`, usada como referencia visual directa en pantalla completa;
+- `public/assets/scenes/image (2).png` solo como referencia de proporcion y ubicacion;
+- recuadros vacios para las maquetas fisicas que iran sobre la pantalla;
 - izquierda: panel de vivienda informal y problema;
 - centro: Banca de Desarrollo como edificio/nodo central;
-- aros/lineas ya integrados en la imagen base;
+- puentes y lineas luminosas animables;
 - parte inferior central: sectores privados;
 - derecha: vivienda formal como resultado.
 
-En el modo actual de referencia fiel, los textos principales quedan integrados en la imagen base. La logica de popups permanece en el codigo para iteraciones posteriores, pero esta oculta visualmente para no romper el maquetado aprobado. El contenido de ruta sigue organizado como:
+El modo actual reserva espacios exactos para piezas fisicas y mantiene los copies sobre pantalla. La logica de popups permanece en el codigo para iteraciones posteriores, pero esta oculta visualmente para no competir con las maquetas. El contenido de ruta sigue organizado como:
 
 - `Solucion de la BD`;
 - `Sector privado`;
