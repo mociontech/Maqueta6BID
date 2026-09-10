@@ -1087,3 +1087,162 @@ button {
     transition-duration: .001ms !important;
   }
 }
+
+.storyboard-mode {
+  background: #050505;
+}
+
+.storyboard-mode::before,
+.storyboard-mode::after {
+  display: none;
+}
+
+.storyboard-mode .story-header {
+  position: absolute;
+  inset: 0;
+  z-index: 60;
+  height: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.storyboard-mode .story-title {
+  display: none;
+}
+
+.storyboard-mode .connection-status {
+  display: none;
+}
+
+.storyboard-mode .connection-status span {
+  width: 5px;
+  height: 5px;
+}
+
+.storyboard-mode .stage {
+  top: 0;
+  height: 1080px;
+  background: #050505;
+}
+
+.storyboard-base {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+.storyboard-mode .maquette-bed,
+.storyboard-mode .bridge,
+.storyboard-mode .context-copy,
+.storyboard-mode .reference-board,
+.storyboard-mode .bank-zone,
+.storyboard-mode .instrument-plazas,
+.storyboard-mode .private-sector,
+.storyboard-mode .panel-title,
+.storyboard-mode .problem-bullets,
+.storyboard-mode .result-chips,
+.storyboard-mode .video-overlay,
+.storyboard-mode .annotation {
+  display: none !important;
+}
+
+.storyboard-mode .route-layer {
+  z-index: 8;
+  inset: 0;
+  width: 1920px;
+  height: 1080px;
+  opacity: 0;
+  mix-blend-mode: screen;
+}
+
+.storyboard-mode .route {
+  stroke-width: 5;
+  opacity: 0;
+}
+
+.storyboard-mode .route.active,
+.storyboard-mode .route.complete {
+  stroke-width: 7;
+  opacity: 1;
+}
+
+.storyboard-mode .route-barrier.active,
+.storyboard-mode .route-barrier.complete {
+  stroke: #d8ff29;
+}
+
+.storyboard-mode .route-transformation.active,
+.storyboard-mode .route-transformation.complete {
+  stroke: #5ee6aa;
+}
+
+.storyboard-mode .housing-panel {
+  z-index: 18;
+  width: auto;
+  display: block;
+  opacity: 0;
+  filter: none;
+}
+
+.storyboard-mode .housing-panel.active,
+.storyboard-mode[data-phase="result"] .formal-panel,
+.storyboard-mode[data-phase="closing"] .formal-panel {
+  opacity: 1;
+}
+
+.storyboard-mode .informal-panel {
+  left: 66px;
+  top: 790px;
+}
+
+.storyboard-mode .formal-panel {
+  left: 1598px;
+  top: 250px;
+}
+
+.storyboard-mode .visual-card {
+  width: 406px;
+  height: 208px;
+  border: 1px solid rgba(255, 255, 255, .24);
+  border-radius: 0;
+  background: rgba(0, 0, 0, .72);
+  box-shadow: none;
+}
+
+.storyboard-mode .formal-panel .visual-card {
+  width: 402px;
+  height: 214px;
+}
+
+.storyboard-mode .visual-card::after {
+  display: none;
+}
+
+.storyboard-mode .visual-card video,
+.storyboard-mode .visual-card img {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 0;
+  filter: grayscale(1) brightness(.62) contrast(1.08);
+}
+
+.storyboard-mode .housing-panel.active .visual-card video,
+.storyboard-mode[data-phase="result"] .formal-panel .visual-card video,
+.storyboard-mode[data-phase="closing"] .formal-panel .visual-card video {
+  filter: none;
+  opacity: 1;
+}
+
+.storyboard-mode .video-card.video-off video,
+.storyboard-mode .video-card.video-ended video,
+.storyboard-mode .video-card.video-off img,
+.storyboard-mode .video-card.video-ended img {
+  opacity: 0;
+}

@@ -43,14 +43,14 @@ Al tocar un sector, la tablet envia primero `selectSegment` para dar feedback in
 
 La composicion nueva usa:
 
+- una imagen base de maquetado en `public/assets/scenes/image (2).png`, usada como referencia visual directa en pantalla completa;
 - izquierda: panel de vivienda informal y problema;
 - centro: Banca de Desarrollo como edificio/nodo central;
-- aros: Financiamiento, Garantias, Seguros y Capitales;
+- aros/lineas ya integrados en la imagen base;
 - parte inferior central: sectores privados;
-- derecha: vivienda formal como resultado;
-- rutas luminosas: vivienda informal -> BD -> sector privado -> vivienda formal.
+- derecha: vivienda formal como resultado.
 
-Los popups se mantienen sobre la zona central de lectura, sin ocupar la cabecera ni tapar los nombres principales. El popup final muestra al mismo tiempo:
+En el modo actual de referencia fiel, los textos principales quedan integrados en la imagen base. La logica de popups permanece en el codigo para iteraciones posteriores, pero esta oculta visualmente para no romper el maquetado aprobado. El contenido de ruta sigue organizado como:
 
 - `Solucion de la BD`;
 - `Sector privado`;

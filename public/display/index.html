@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="./display.css" />
 </head>
 <body>
-  <main class="display-shell" data-phase="idle">
+  <main class="display-shell storyboard-mode" data-phase="idle">
     <header class="story-header">
       <div class="story-title">
         <span id="stepBadge">INICIO</span>
@@ -25,12 +25,13 @@
     </header>
 
     <section id="stage" class="stage" aria-live="polite">
+      <img class="storyboard-base" src="/assets/scenes/image%20(2).png" alt="" aria-hidden="true" />
       <div class="maquette-bed" aria-hidden="true"></div>
       <div class="bridge bridge-left" aria-hidden="true"></div>
       <div class="bridge bridge-right bridge-right-top" aria-hidden="true"></div>
       <div class="bridge bridge-right bridge-right-bottom" aria-hidden="true"></div>
 
-      <svg id="routeLayer" class="route-layer" viewBox="0 0 1920 958" aria-hidden="true">
+      <svg id="routeLayer" class="route-layer" viewBox="0 0 1920 1080" aria-hidden="true">
         <defs>
           <filter id="routeGlow" x="-80%" y="-80%" width="260%" height="260%">
             <feGaussianBlur stdDeviation="7" result="blur" />
