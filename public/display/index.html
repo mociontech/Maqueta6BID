@@ -41,8 +41,30 @@
           </filter>
         </defs>
 
+        <path class="holo-bridge holo-bridge-shadow"
+          d="M 510 438 C 650 438, 760 438, 835 474" />
+        <path class="holo-bridge holo-bridge-deck"
+          d="M 510 438 C 650 438, 760 438, 835 474" />
+        <path class="holo-bridge holo-bridge-rail holo-bridge-rail-top"
+          d="M 512 424 C 650 424, 758 424, 838 460" />
+        <path class="holo-bridge holo-bridge-rail holo-bridge-rail-bottom"
+          d="M 510 452 C 648 452, 754 452, 828 488" />
+        <path class="holo-bridge holo-bridge-scan"
+          d="M 510 438 C 650 438, 760 438, 835 474" />
         <path id="route-barrier" class="route route-barrier"
           d="M 510 438 C 650 438, 760 438, 835 474" />
+        <path class="formal-holo-bridge formal-holo-bridge-shadow"
+          d="M 1068 486 C 1200 454, 1322 362, 1450 324" />
+        <path id="route-formal-bridge" class="route route-formal-bridge"
+          d="M 1068 486 C 1200 454, 1322 362, 1450 324" />
+        <path class="formal-holo-bridge formal-holo-bridge-deck"
+          d="M 1068 486 C 1200 454, 1322 362, 1450 324" />
+        <path class="formal-holo-bridge formal-holo-bridge-rail formal-holo-bridge-rail-top"
+          d="M 1066 472 C 1196 440, 1320 348, 1450 310" />
+        <path class="formal-holo-bridge formal-holo-bridge-rail formal-holo-bridge-rail-bottom"
+          d="M 1072 500 C 1204 470, 1328 376, 1452 338" />
+        <path class="formal-holo-bridge formal-holo-bridge-scan"
+          d="M 1068 486 C 1200 454, 1322 362, 1450 324" />
         <path id="route-bd-intermediaries" class="route route-sector route-sector-intermediaries"
           data-sector="intermediaries" d="M 960 568 C 914 660, 836 724, 780 802" />
         <path id="route-bd-investors" class="route route-sector route-sector-investors"
@@ -71,6 +93,7 @@
         <h3 class="zone-title right-title">IMPACTO / VIVIENDA FORMAL</h3>
 
         <div class="slot slot-informal"></div>
+        <div class="maquette-pad informal-maquette-pad"></div>
         <div class="slot-caption informal-caption">Modelo 3D - 1</div>
 
         <div class="barrier-bubble">
@@ -89,6 +112,21 @@
         <div class="result-bubble">Del deficit habitacional a soluciones de vivienda financiables y escalables.</div>
 
         <div class="slot slot-private"></div>
+        <div class="private-pad private-pad-intermediaries" data-sector="intermediaries"></div>
+        <div class="private-pad private-pad-investors" data-sector="investors"></div>
+        <div class="private-pad private-pad-insurers" data-sector="insurers"></div>
+        <div class="private-label private-label-intermediaries">Intermediarios</div>
+        <div class="private-label private-label-investors">Inversionistas</div>
+        <div class="private-label private-label-insurers">Aseguradoras</div>
+        <div class="private-popup private-popup-intermediaries" data-sector="intermediaries">
+          <span>Hipotecas, microfinanciamientos, credito a la construccion y garantias.</span>
+        </div>
+        <div class="private-popup private-popup-investors" data-sector="investors">
+          <span>Compra de bonos respaldados por cartera de credito individual y microfinanciamiento.</span>
+        </div>
+        <div class="private-popup private-popup-insurers" data-sector="insurers">
+          <span>Seguro de credito a la vivienda.</span>
+        </div>
         <div class="slot-caption private-caption-physical">Modelo 3D - 4</div>
         <div class="private-title-physical">SECTOR PRIVADO</div>
 
@@ -140,7 +178,7 @@
           <strong id="problemLabel">Falta de financiamiento</strong>
         </div>
         <div class="visual-card video-card">
-          <video id="informalVideo" muted loop autoplay playsinline preload="auto" poster="/assets/scenes/scene-people-msmes.png"></video>
+          <video id="informalVideo" muted playsinline preload="auto" poster="/assets/scenes/scene-people-msmes.png"></video>
           <img id="informalPoster" src="/assets/scenes/scene-people-msmes.png" alt="" />
           <div class="video-overlay">
             <span>Problema</span>

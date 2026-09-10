@@ -26,11 +26,17 @@ const phaseProgress = {
   closing: 100
 };
 const autoRunDelayMs = 1200;
+const mandatoryIntroLockMs = data.animationTimings?.mandatoryIntroLockMs || 24000;
+const transformationLockMs = data.animationTimings?.transformationLockMs || 12000;
+const sectorOrder = data.segments.map(segment => segment.id);
 
-let state = { segmentId: null, instrumentId: null, phase: 'idle', selectionMode: 'initial', runId: 0 };
+let state = { segmentId: null, instrumentId: null, phase: 'idle', selectionMode: 'initial', runId: 0, lockedUntil: 0 };
 let selectedSectorId = null;
 let autoRunTimer = null;
+let sectorReadTimer = null;
+const completedSectors = new Set();
 let localFinal = false;
+let lockTimer = null;
 
 const els = {
   shell: document.querySelector('.tablet-shell'),
@@ -58,9 +64,11 @@ const els = {
   newSector: document.querySelector('#newSector'),
   changeSector: document.querySelector('#changeSector'),
   finish: document.querySelector('#finish'),
+  viewTransformation: document.querySelector('#viewTransformation'),
   exploreAgain: document.querySelector('#exploreAgain'),
   restart: document.querySelector('#restart')
 };
+els.activeActions = els.activeStep.querySelector('.action-stack');
 
 const socket = createExperienceSocket(next => {
   state = next;
@@ -130,12 +138,19 @@ function showStep(step, name) {
   for (const item of [els.introStep, els.sectorStep, els.activeStep, els.finalStep]) {
     item.classList.toggle('active', item === step);
   }
+  updateInteractionLock();
 }
 
 function clearAutoRun() {
   if (!autoRunTimer) return;
   clearTimeout(autoRunTimer);
   autoRunTimer = null;
+}
+
+function clearSectorReadTimer() {
+  if (!sectorReadTimer) return;
+  clearTimeout(sectorReadTimer);
+  sectorReadTimer = null;
 }
 
 function setTextFromData() {
@@ -169,6 +184,25 @@ function renderSectors() {
     button.addEventListener('click', () => chooseSector(sector.id));
     els.sectors.append(button);
   }
+  updateSectorGuidance();
+}
+
+function nextPendingSectorId() {
+  return sectorOrder.find(id => !completedSectors.has(id)) || sectorOrder[0] || null;
+}
+
+function updateSectorGuidance(activeId = selectedSectorId, waiting = false) {
+  const allCompleted = sectorOrder.length > 0 && sectorOrder.every(id => completedSectors.has(id));
+  const nextId = waiting || allCompleted ? null : nextPendingSectorId();
+  els.sectors.querySelectorAll('.sector-card').forEach(button => {
+    const id = button.dataset.id;
+    button.classList.toggle('selected', id === activeId);
+    button.classList.toggle('completed', completedSectors.has(id));
+    button.classList.toggle('recommended', Boolean(nextId) && id === nextId && id !== activeId);
+  });
+  if (els.viewTransformation) {
+    els.viewTransformation.hidden = !allCompleted;
+  }
 }
 
 function setSelectedSummary(sector) {
@@ -185,31 +219,113 @@ function setSelectedSummary(sector) {
 
 function setRouteStatus() {
   const phase = state.phase || 'idle';
-  els.phaseLabel.textContent = phaseLabels[phase] || 'Experiencia en curso';
+  els.shell.dataset.phase = phase;
+  const remainingSeconds = Math.ceil(lockRemainingMs() / 1000);
+  els.phaseLabel.textContent = remainingSeconds > 0
+    ? `Observa la maqueta (${remainingSeconds} s)`
+    : phaseLabels[phase] || 'Experiencia en curso';
   els.routeMeter.style.width = `${phaseProgress[phase] ?? 0}%`;
 }
 
+function lockRemainingMs() {
+  return Math.max(0, Number(state.lockedUntil || 0) - Date.now());
+}
+
+function isInteractionLocked() {
+  return lockRemainingMs() > 0;
+}
+
+function updateInteractionLock() {
+  if (lockTimer) {
+    clearTimeout(lockTimer);
+    lockTimer = null;
+  }
+
+  const locked = isInteractionLocked();
+  const waitingIntro = state.phase === 'bankIntro' && els.shell.dataset.step === 'active';
+  els.shell.dataset.locked = locked ? 'true' : 'false';
+  els.shell.dataset.waitingIntro = waitingIntro ? 'true' : 'false';
+  if (els.activeActions) els.activeActions.hidden = waitingIntro;
+  const controls = [
+    els.resetGlobal,
+    els.begin,
+    els.backHome,
+    els.goHome,
+    els.changeSector,
+    els.finish,
+    els.viewTransformation,
+    els.exploreAgain,
+    els.restart,
+    ...els.sectors.querySelectorAll('button')
+  ].filter(Boolean);
+
+  for (const control of controls) {
+    control.disabled = locked;
+    control.setAttribute('aria-disabled', locked ? 'true' : 'false');
+  }
+
+  if (locked) {
+    lockTimer = setTimeout(() => {
+      setRouteStatus();
+      updateInteractionLock();
+      if (!isInteractionLocked() && state.phase === 'bankIntro' && els.shell.dataset.step === 'active' && !localFinal) {
+        showStep(els.sectorStep, 'sectors');
+      }
+      if (!isInteractionLocked() && state.phase === 'closing' && els.shell.dataset.step === 'active' && !localFinal) {
+        showStep(els.finalStep, 'final');
+      }
+    }, Math.min(lockRemainingMs(), 1000));
+  } else if (waitingIntro && !localFinal) {
+    showStep(els.sectorStep, 'sectors');
+  } else if (state.phase === 'closing' && els.shell.dataset.step === 'active' && !localFinal) {
+    showStep(els.finalStep, 'final');
+  }
+}
+
+function shouldIgnoreInteraction() {
+  if (!isInteractionLocked()) return false;
+  setRouteStatus();
+  updateInteractionLock();
+  return true;
+}
+
 function goToIntro(reset = true) {
+  if (shouldIgnoreInteraction()) return;
   clearAutoRun();
+  clearSectorReadTimer();
+  completedSectors.clear();
   selectedSectorId = null;
   showStep(els.introStep, 'intro');
   if (reset) socket.send({ type: 'reset', source: 'controller' });
 }
 
 function goToSectors(resetDisplay = false) {
+  if (shouldIgnoreInteraction()) return;
   clearAutoRun();
+  clearSectorReadTimer();
   selectedSectorId = null;
-  showStep(els.sectorStep, 'sectors');
   if (resetDisplay) {
-    socket.send({ type: 'reset', source: 'controller' });
-    setTimeout(() => {
-      socket.send({
-        type: 'setState',
-        source: 'controller',
-        patch: { phase: 'bankIntro', segmentId: null, instrumentId: null, selectionMode: 'initial' }
-      });
-    }, 120);
+    state = {
+      ...state,
+      phase: 'bankIntro',
+      segmentId: null,
+      instrumentId: null,
+      selectionMode: 'initial',
+      lockedUntil: Date.now() + mandatoryIntroLockMs
+    };
+    setRouteStatus();
+    showStep(els.activeStep, 'active');
+    updateInteractionLock();
+    socket.send({
+      type: 'setState',
+      source: 'controller',
+      patch: { phase: 'bankIntro', segmentId: null, instrumentId: null, selectionMode: 'initial' }
+    });
+    return;
   }
+
+  showStep(els.sectorStep, 'sectors');
+  updateSectorGuidance(null);
 }
 
 function runSelectedSector(sector) {
@@ -224,25 +340,29 @@ function runSelectedSector(sector) {
 }
 
 function chooseSector(id) {
+  if (shouldIgnoreInteraction()) return;
   const sector = currentSector(id);
   if (!sector) return;
   clearAutoRun();
+  clearSectorReadTimer();
   selectedSectorId = sector.id;
+  completedSectors.add(sector.id);
   state = {
     ...state,
     segmentId: sector.id,
     instrumentId: null,
     phase: 'problem'
   };
-  setSelectedSummary(sector);
   setRouteStatus();
-  showStep(els.activeStep, 'active');
+  showStep(els.sectorStep, 'sectors');
+  updateSectorGuidance(sector.id);
   socket.send({ type: 'selectSegment', source: 'controller', segmentId: sector.id });
-  autoRunTimer = setTimeout(() => runSelectedSector(sector), autoRunDelayMs);
 }
 
 function finishExperience() {
+  if (shouldIgnoreInteraction()) return;
   clearAutoRun();
+  clearSectorReadTimer();
   socket.send({
     type: 'setState',
     source: 'controller',
@@ -251,8 +371,28 @@ function finishExperience() {
   showStep(els.finalStep, 'final');
 }
 
+function viewTransformation() {
+  if (shouldIgnoreInteraction()) return;
+  clearAutoRun();
+  clearSectorReadTimer();
+  state = {
+    ...state,
+    phase: 'closing',
+    lockedUntil: Date.now() + transformationLockMs
+  };
+  setRouteStatus();
+  showStep(els.activeStep, 'active');
+  updateInteractionLock();
+  socket.send({
+    type: 'setState',
+    source: 'controller',
+    patch: { phase: 'closing', selectionMode: 'transformation', lockedMs: transformationLockMs }
+  });
+}
+
 function syncFromServer() {
   setRouteStatus();
+  updateInteractionLock();
   if (localFinal) return;
 
   if (state.phase === 'idle' && els.shell.dataset.step !== 'sectors') {
@@ -262,16 +402,24 @@ function syncFromServer() {
   }
 
   if (state.phase === 'bankIntro') {
-    showStep(els.sectorStep, 'sectors');
+    showStep(isInteractionLocked() ? els.activeStep : els.sectorStep, isInteractionLocked() ? 'active' : 'sectors');
+    if (!isInteractionLocked()) updateSectorGuidance(null);
     return;
   }
 
   if (state.phase === 'closing') {
-    showStep(els.finalStep, 'final');
+    showStep(isInteractionLocked() ? els.activeStep : els.finalStep, isInteractionLocked() ? 'active' : 'final');
     return;
   }
 
   const sector = currentSector(state.segmentId);
+  if (sector && (state.phase === 'problem' || state.phase === 'solutions')) {
+    selectedSectorId = sector.id;
+    showStep(els.sectorStep, 'sectors');
+    updateSectorGuidance(sector.id, true);
+    return;
+  }
+
   if (sector && state.phase !== 'idle') {
     selectedSectorId = sector.id;
     setSelectedSummary(sector);
@@ -285,6 +433,7 @@ els.goHome.addEventListener('click', () => goToIntro(true));
 els.newSector?.addEventListener('click', () => goToSectors(false));
 els.changeSector.addEventListener('click', () => goToSectors(true));
 els.finish.addEventListener('click', finishExperience);
+els.viewTransformation?.addEventListener('click', viewTransformation);
 els.exploreAgain.addEventListener('click', () => goToSectors(false));
 els.restart.addEventListener('click', () => goToIntro(true));
 els.resetGlobal.addEventListener('click', () => goToIntro(true));
@@ -303,3 +452,4 @@ createDiagnosticsPanel({
 setTextFromData();
 renderSectors();
 setRouteStatus();
+updateInteractionLock();

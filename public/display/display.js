@@ -34,6 +34,7 @@ let playedVideoRun = {
   informal: null,
   formal: null
 };
+const revealedPrivateSectors = new Set();
 
 const els = {
   shell: document.querySelector('.display-shell'),
@@ -128,34 +129,128 @@ function setVideoSource(video, poster, src) {
   video.loop = false;
   video.playsInline = true;
   video.addEventListener('ended', () => {
-    video.closest('.video-card')?.classList.add('video-ended');
+    const card = video.closest('.video-card');
+    if (video.dataset.keepVisibleOnEnd === 'true') {
+      card?.classList.add('video-paused-visible');
+    } else {
+      card?.classList.add('video-ended');
+    }
   });
 }
 
 function playVideo(video, options = {}) {
   if (!video || !video.src) return;
   const card = video.closest('.video-card');
-  card?.classList.remove('video-off', 'video-ended');
+  card?.classList.remove('video-off', 'video-ended', 'video-paused-visible');
+  video.loop = Boolean(options.loop);
+  video.dataset.keepVisibleOnEnd = options.keepVisibleOnEnd ? 'true' : 'false';
   if (options.restart) {
     try { video.currentTime = 0; } catch {}
   }
   video.play().catch(() => {});
 }
 
-function playVideoOnce(video, key) {
+function playVideoOnce(video, key, options = {}) {
   const runId = state.runId || 0;
   if (playedVideoRun[key] === runId) return;
   playedVideoRun[key] = runId;
-  playVideo(video, { restart: true });
+  playVideo(video, { restart: true, ...options });
 }
 
-function stopVideo(video, reset = true) {
+function stopVideo(video, reset = true, keepVisible = false) {
   if (!video) return;
   video.pause();
+  video.loop = false;
+  video.dataset.keepVisibleOnEnd = keepVisible ? 'true' : 'false';
   if (reset) {
     try { video.currentTime = 0; } catch {}
   }
-  video.closest('.video-card')?.classList.add('video-off');
+  const card = video.closest('.video-card');
+  card?.classList.toggle('video-off', !keepVisible);
+  card?.classList.toggle('video-paused-visible', keepVisible);
+}
+
+function setSequenceSteps(...steps) {
+  els.shell.dataset.sequence = steps.filter(Boolean).join(' ');
+}
+
+function estimateVideoDurationMs(video, fallbackMs = 10000) {
+  if (video && Number.isFinite(video.duration) && video.duration > 0) {
+    return Math.round(video.duration * 1000);
+  }
+  return fallbackMs;
+}
+
+function revealBankIntroSequence(token) {
+  const barrierRoute = routeById('route-barrier');
+  setSequenceSteps('maquette');
+  stopVideo(els.informalVideo, true, true);
+  stopVideo(els.formalVideo);
+
+  later(() => setSequenceSteps('maquette', 'problem'), 3000, token);
+
+  later(() => {
+    setSequenceSteps('maquette', 'problem', 'video');
+    playVideo(els.informalVideo, { restart: true, keepVisibleOnEnd: true });
+    const videoMs = estimateVideoDurationMs(els.informalVideo, 10000);
+
+    later(() => {
+      setSequenceSteps('maquette', 'problem', 'video', 'bridge');
+      animatePath(barrierRoute, 2300, '#d8ff29', token, 0);
+    }, videoMs, token);
+
+    later(() => {
+      setSequenceSteps('maquette', 'problem', 'video', 'bridge', 'bridge-text');
+    }, videoMs + 2300, token);
+
+    later(() => {
+      setSequenceSteps('maquette', 'problem', 'video', 'bridge', 'bridge-text', 'bank-ring', 'main-copy');
+      pulseBid();
+    }, videoMs + 4300, token);
+
+    later(() => {
+      setSequenceSteps('maquette', 'problem', 'video', 'bridge', 'bridge-text', 'bank-ring', 'main-copy', 'center-copy');
+    }, videoMs + 9300, token);
+  }, 6500, token);
+}
+
+function privateStepForSector(sectorId) {
+  const index = data.segments.findIndex(item => item.id === sectorId);
+  return index >= 0 ? `private-${index + 1}` : null;
+}
+
+function currentPrivateSteps() {
+  return data.segments
+    .map(item => revealedPrivateSectors.has(item.id) ? privateStepForSector(item.id) : null)
+    .filter(Boolean);
+}
+
+function revealPrivateSectorRead(sector) {
+  if (sector?.id) revealedPrivateSectors.add(sector.id);
+  setSequenceSteps(...currentPrivateSteps());
+}
+
+function setFormalSequenceSteps(...steps) {
+  setSequenceSteps(...currentPrivateSteps(), ...steps);
+}
+
+function revealFormalTransformationSequence(token) {
+  setFormalSequenceSteps('formal-bridge');
+  stopVideo(els.formalVideo);
+  animatePath(routeById('route-formal-bridge'), 4000, '#5ee6aa', token, 0);
+
+  later(() => {
+    setFormalSequenceSteps('formal-bridge', 'formal-copy');
+  }, 4000, token);
+
+  later(() => {
+    setFormalSequenceSteps('formal-bridge', 'formal-copy', 'formal-slot');
+  }, 8000, token);
+
+  later(() => {
+    setFormalSequenceSteps('formal-bridge', 'formal-copy', 'formal-slot', 'formal-video');
+    playVideo(els.formalVideo, { restart: true, keepVisibleOnEnd: true });
+  }, 11000, token);
 }
 
 function buildScene() {
@@ -246,6 +341,7 @@ function resetVisualStates() {
   els.shell.dataset.phase = state.phase || 'idle';
   els.shell.dataset.sector = state.segmentId || '';
   els.shell.dataset.instrument = state.instrumentId || '';
+  els.shell.dataset.sequence = '';
   els.informalPanel.classList.remove('active', 'dim');
   els.formalPanel.classList.remove('active', 'dim');
   els.bid.classList.remove('pulse');
@@ -520,43 +616,41 @@ function renderExperience() {
     : data.meta.subtitle;
 
   if (phase === 'idle') {
+    revealedPrivateSectors.clear();
     els.informalPanel.classList.remove('dim');
     els.formalPanel.classList.add('dim');
     document.querySelectorAll('.sector-node').forEach(node => node.classList.remove('active', 'dim'));
     playedVideoRun = { informal: null, formal: null };
-    stopVideo(els.informalVideo);
+    stopVideo(els.informalVideo, true, true);
     stopVideo(els.formalVideo);
     showInitialMessage();
     return;
   }
 
   if (phase === 'bankIntro') {
+    revealedPrivateSectors.clear();
     els.informalPanel.classList.add('active');
     els.formalPanel.classList.add('dim');
     document.querySelectorAll('.sector-node').forEach(node => node.classList.remove('active', 'dim'));
     showAllRingsAvailable();
-    playVideoOnce(els.informalVideo, 'informal');
-    stopVideo(els.formalVideo);
-    completePath(routeById('route-barrier'), '#4f9dff');
-    pulseBid();
-    showBankIntro();
+    els.annotation.hidden = true;
+    revealBankIntroSequence(token);
     return;
   }
 
   if (phase === 'closing') {
     els.informalPanel.classList.remove('dim');
-    els.formalPanel.classList.add('active');
-    els.formalPanel.classList.remove('dim');
+    els.formalPanel.classList.remove('active', 'dim');
     showAllRingsAvailable();
     document.querySelectorAll('.sector-node').forEach(node => node.classList.add('active'));
     completePath(routeById('route-barrier'), '#4f9dff');
     for (const item of data.segments) {
-      completePath(routeForSector(item.id), sectorColor(item.id));
-      completePath(transformRouteForSector(item.id), '#5ee6aa');
+      revealedPrivateSectors.add(item.id);
     }
-    stopVideo(els.informalVideo, false);
-    playVideoOnce(els.formalVideo, 'formal');
-    showClosing();
+    stopVideo(els.informalVideo, false, true);
+    els.annotation.hidden = true;
+    revealPrivateSectorRead(null);
+    revealFormalTransformationSequence(token);
     pulseBid();
     return;
   }
@@ -569,20 +663,17 @@ function renderExperience() {
   focusProblemSide(true);
   setRings(sector, phase !== 'problem' && phase !== 'solutions');
   if (phase === 'problem' || phase === 'solutions' || phase === 'instrument' || phase === 'route' || phase === 'providers') {
-    playVideoOnce(els.informalVideo, 'informal');
+    playVideoOnce(els.informalVideo, 'informal', { loop: true });
   } else {
-    stopVideo(els.informalVideo, false);
+    stopVideo(els.informalVideo, false, true);
   }
-  if (phase === 'result') playVideoOnce(els.formalVideo, 'formal');
+  if (phase === 'closing') playVideoOnce(els.formalVideo, 'formal');
   else stopVideo(els.formalVideo);
 
   const barrierRoute = routeById('route-barrier');
-  const sectorRoute = routeForSector(sector.id);
-  const transformationRoute = transformRouteForSector(sector.id);
 
   if (phase === 'problem' || phase === 'solutions') {
-    animatePath(barrierRoute, data.animationTimings.segmentRouteMs, color, token, 0);
-    later(() => showBarrier(sector), data.animationTimings.barrierDelayMs || 0, token);
+    revealPrivateSectorRead(sector);
     return;
   }
 
@@ -601,23 +692,13 @@ function renderExperience() {
     later(pulseBid, 120, token);
     later(() => {
       focusSector(sector.id, true);
-      animatePath(sectorRoute, data.animationTimings.actorRouteMs * .55, color, token, 1);
     }, 260, token);
-    later(() => {
-      els.formalPanel.classList.add('active');
-      els.formalPanel.classList.remove('dim');
-      animatePath(transformationRoute, data.animationTimings.actorRouteMs * .55, '#5ee6aa', token, 2);
-    }, Math.round(data.animationTimings.actorRouteMs * .48), token);
     return;
   }
 
   if (phase === 'result') {
     setRings(sector, true);
-    completePath(sectorRoute, color);
-    completePath(transformationRoute, '#5ee6aa');
     focusSector(sector.id, true);
-    els.formalPanel.classList.add('active');
-    els.formalPanel.classList.remove('dim');
     showJointAction(sector, instrument, solution, true);
     pulseBid();
   }

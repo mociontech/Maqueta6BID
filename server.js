@@ -6,6 +6,8 @@ const experience = require('./data/experience.json');
 
 const PORT = Number(process.env.PORT || 3000);
 const AUTO_RESET_MS = Number(process.env.AUTO_RESET_MS || 60000);
+const INTRO_LOCK_MS = Number(process.env.INTRO_LOCK_MS || experience.animationTimings?.mandatoryIntroLockMs || 24000);
+const TRANSFORMATION_LOCK_MS = Number(process.env.TRANSFORMATION_LOCK_MS || experience.animationTimings?.transformationLockMs || 12000);
 
 const app = express();
 const server = http.createServer(app);
@@ -23,6 +25,7 @@ const initialState = {
   phase: 'idle',
   selectionMode: 'initial',
   runId: 0,
+  lockedUntil: 0,
   updatedAt: Date.now()
 };
 
@@ -70,6 +73,10 @@ function clearAutoResetTimer() {
   autoResetTimer = null;
 }
 
+function isInteractionLocked() {
+  return Number(state.lockedUntil || 0) > Date.now();
+}
+
 function scheduleAutoReset() {
   clearAutoResetTimer();
   if (!AUTO_RESET_MS || AUTO_RESET_MS < 0 || state.phase === 'idle') return;
@@ -97,7 +104,8 @@ function selectSegment(segmentId, source = 'controller') {
     instrumentId: null,
     phase: 'problem',
     selectionMode: 'initial',
-    runId: state.runId + 1
+    runId: state.runId + 1,
+    lockedUntil: 0
   }, source);
 }
 
@@ -110,7 +118,8 @@ function showSolutions(segmentId, source = 'controller', comparison = false) {
     instrumentId: null,
     phase: 'solutions',
     selectionMode: comparison ? 'compare' : 'initial',
-    runId: state.runId + 1
+    runId: state.runId + 1,
+    lockedUntil: 0
   }, source);
 }
 
@@ -142,7 +151,8 @@ function runRoute(segmentId, instrumentId, source = 'controller') {
     instrumentId: nextInstrumentId,
     phase: routePhases[0].phase,
     selectionMode: 'route',
-    runId
+    runId,
+    lockedUntil: 0
   }, source);
   scheduleNextPhase(runId, 0);
 }
@@ -155,12 +165,16 @@ function applyClientPatch(patch, source = 'client') {
 
   if (patch.phase === 'bankIntro' || patch.phase === 'closing') {
     clearRouteTimer();
+    const lockedUntil = patch.phase === 'bankIntro'
+      ? Date.now() + INTRO_LOCK_MS
+      : Date.now() + Number(patch.lockedMs || TRANSFORMATION_LOCK_MS);
     setState({
       segmentId: patch.segmentId === undefined ? state.segmentId : patch.segmentId,
       instrumentId: patch.instrumentId === undefined ? state.instrumentId : patch.instrumentId,
       phase: patch.phase,
       selectionMode: patch.selectionMode || state.selectionMode,
-      runId: state.runId + 1
+      runId: state.runId + 1,
+      lockedUntil
     }, source);
     return;
   }
@@ -177,7 +191,8 @@ function applyClientPatch(patch, source = 'client') {
       segmentId: patch.segmentId,
       instrumentId: patch.instrumentId,
       phase: patch.phase || state.phase,
-      runId: state.runId + 1
+      runId: state.runId + 1,
+      lockedUntil: 0
     }, source);
   }
 }
@@ -190,6 +205,8 @@ wss.on('connection', (socket) => {
   socket.on('message', (raw) => {
     let msg;
     try { msg = JSON.parse(String(raw)); } catch { return; }
+
+    if (isInteractionLocked()) return;
 
     if (msg.type === 'setState' && msg.patch && typeof msg.patch === 'object') {
       applyClientPatch(msg.patch, msg.source || 'client');

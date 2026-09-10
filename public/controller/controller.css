@@ -15,6 +15,11 @@ button {
   font: inherit;
 }
 
+button:disabled {
+  cursor: not-allowed;
+  opacity: .42;
+}
+
 .tablet-shell {
   width: min(100%, 760px);
   min-height: 100vh;
@@ -67,6 +72,7 @@ button {
 }
 
 .wire-card {
+  position: relative;
   width: 100%;
   min-height: 560px;
   display: grid;
@@ -79,6 +85,29 @@ button {
   background: rgba(7, 9, 12, .82);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, .04), 0 24px 60px rgba(0, 0, 0, .28);
   text-align: center;
+}
+
+.tablet-shell[data-locked="true"] .wire-card::after {
+  content: "Observa la maqueta";
+  position: absolute;
+  left: 50%;
+  bottom: 26px;
+  transform: translateX(-50%);
+  padding: 8px 14px;
+  border: 1px solid rgba(216, 255, 41, .45);
+  border-radius: 999px;
+  background: rgba(14, 20, 16, .88);
+  color: #eaff75;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0;
+  box-shadow: 0 0 18px rgba(216, 255, 41, .16);
+}
+
+.tablet-shell[data-locked="true"] .action-stack,
+.tablet-shell[data-phase="bankIntro"][data-step="active"] .action-stack,
+.tablet-shell[data-waiting-intro="true"] .action-stack {
+  display: none;
 }
 
 h1,
@@ -162,6 +191,37 @@ h1 {
   color: #d9dde2;
   text-align: center;
   box-shadow: 0 0 16px rgba(216, 255, 41, .1);
+  transition: border-color .25s ease, box-shadow .25s ease, opacity .25s ease, transform .25s ease;
+}
+
+.sector-card.selected {
+  border-color: #58b8ff;
+  box-shadow:
+    0 0 0 2px rgba(88, 184, 255, .22),
+    0 0 26px rgba(88, 184, 255, .36);
+  transform: translateY(-2px);
+}
+
+.sector-card.completed {
+  border-color: rgba(124, 240, 179, .44);
+  opacity: .56;
+}
+
+.sector-card.recommended {
+  border-color: #d8ff29;
+  box-shadow:
+    0 0 0 2px rgba(216, 255, 41, .24),
+    0 0 28px rgba(216, 255, 41, .38);
+  animation: nextSectorPulse 1.3s ease-in-out infinite;
+}
+
+@keyframes nextSectorPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.025);
+  }
 }
 
 .sector-card strong {
@@ -176,6 +236,20 @@ h1 {
 }
 
 .sector-card .pictogram {
+  display: none;
+}
+
+.transformation-button {
+  min-width: min(100%, 390px);
+  min-height: 64px;
+  margin-top: 8px;
+  border-radius: 20px;
+  font-size: 20px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.transformation-button[hidden] {
   display: none;
 }
 
