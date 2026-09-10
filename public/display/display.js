@@ -42,12 +42,15 @@ const els = {
   formalTitle: document.querySelector('#formalTitle'),
   problemLabel: document.querySelector('#problemLabel'),
   resultLabel: document.querySelector('#resultLabel'),
+  informalVideo: document.querySelector('#informalVideo'),
+  formalVideo: document.querySelector('#formalVideo'),
   informalPoster: document.querySelector('#informalPoster'),
   formalPoster: document.querySelector('#formalPoster'),
   problemBullets: document.querySelector('#problemBullets'),
   resultChips: document.querySelector('#resultChips'),
   sectors: document.querySelector('#sectorNodes'),
   rings: document.querySelector('#instrumentRings'),
+  instrumentPlazas: document.querySelector('#instrumentPlazas'),
   bid: document.querySelector('#bidPuck'),
   developmentBankImage: document.querySelector('#developmentBankImage'),
   developmentBankTitle: document.querySelector('#developmentBankTitle'),
@@ -108,6 +111,28 @@ function sectorColor(id) {
   })[id] || '#53e0c7';
 }
 
+function setVideoSource(video, poster, src) {
+  if (!video) return;
+  if (poster) video.poster = poster;
+  if (src) {
+    video.src = src;
+    video.closest('.video-card')?.classList.add('has-video');
+  }
+  video.muted = true;
+  video.loop = true;
+  video.playsInline = true;
+}
+
+function playVideo(video) {
+  if (!video || !video.src) return;
+  video.play().catch(() => {});
+}
+
+function pauseVideo(video) {
+  if (!video || video.paused) return;
+  video.pause();
+}
+
 function buildScene() {
   const media = data.meta.media || {};
   const problem = data.meta.problem || {};
@@ -120,8 +145,12 @@ function buildScene() {
   els.problemLabel.textContent = problem.label || 'Falta de financiamiento';
   els.resultLabel.textContent = transformation.resultTitle || 'Transformacion habilitada';
   els.developmentBankTitle.textContent = house.title || 'BANCA DE DESARROLLO';
-  els.informalPoster.src = media.informalPoster || '/assets/scenes/scene-people-msmes.png';
-  els.formalPoster.src = media.formalPoster || '/assets/scenes/scene-developers.png';
+  const informalPoster = media.informalPoster || '/assets/scenes/scene-people-msmes.png';
+  const formalPoster = media.formalPoster || '/assets/scenes/scene-developers.png';
+  els.informalPoster.src = informalPoster;
+  els.formalPoster.src = formalPoster;
+  setVideoSource(els.informalVideo, informalPoster, media.informalVideo);
+  setVideoSource(els.formalVideo, formalPoster, media.formalVideo);
   els.developmentBankImage.src = media.developmentBank || '/assets/scenes/scene-development-bank-house.png';
 
   els.problemBullets.innerHTML = (problem.bullets || [])
@@ -140,6 +169,13 @@ function buildScene() {
     <div class="instrument-ring" data-id="${escapeHtml(instrument.id)}" style="--ring-color:${escapeHtml(instrument.color)}">
       <span class="ring-label">${escapeHtml(instrument.label)}</span>
     </div>
+  `).join('');
+
+  els.instrumentPlazas.innerHTML = data.instruments.map((instrument, index) => `
+    <article class="instrument-plaza" data-id="${escapeHtml(instrument.id)}" style="--plaza-color:${escapeHtml(instrument.color)}">
+      <span>${String.fromCharCode(65 + index)}. ${escapeHtml(instrument.label)}</span>
+      <strong>${escapeHtml(instrument.short)}</strong>
+    </article>
   `).join('');
 
   els.sectors.innerHTML = data.segments.map(sector => {
@@ -195,6 +231,9 @@ function resetVisualStates() {
   });
   document.querySelectorAll('.instrument-ring').forEach(ring => {
     ring.classList.remove('available', 'selected');
+  });
+  document.querySelectorAll('.instrument-plaza').forEach(plaza => {
+    plaza.classList.remove('available', 'selected');
   });
   document.querySelectorAll('.route').forEach(path => {
     path.classList.remove('active', 'complete');
@@ -300,6 +339,11 @@ function setRings(sector, selected = false) {
     ring.classList.toggle('available', Boolean(sector?.allowedInstruments?.includes(ring.dataset.id)));
     ring.classList.toggle('selected', selected && isMapped);
   });
+  document.querySelectorAll('.instrument-plaza').forEach(plaza => {
+    const isMapped = plaza.dataset.id === selectedId;
+    plaza.classList.toggle('available', Boolean(sector?.allowedInstruments?.includes(plaza.dataset.id)));
+    plaza.classList.toggle('selected', selected && isMapped);
+  });
 }
 
 function updateResults(solution) {
@@ -396,12 +440,17 @@ function renderExperience() {
     els.informalPanel.classList.remove('dim');
     els.formalPanel.classList.add('dim');
     document.querySelectorAll('.sector-node').forEach(node => node.classList.remove('active', 'dim'));
+    playVideo(els.informalVideo);
+    pauseVideo(els.formalVideo);
     return;
   }
 
   updateResults(solution);
   focusProblemSide(true);
   setRings(sector, phase !== 'problem' && phase !== 'solutions');
+  playVideo(els.informalVideo);
+  if (phase === 'route' || phase === 'providers' || phase === 'result') playVideo(els.formalVideo);
+  else pauseVideo(els.formalVideo);
 
   const barrierRoute = routeById('route-barrier');
   const sectorRoute = routeForSector(sector.id);

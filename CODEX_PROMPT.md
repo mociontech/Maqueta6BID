@@ -51,10 +51,12 @@ La TV debe sentirse como maqueta arquitectonica premium:
 
 - fondo oscuro azul petroleo;
 - panel izquierdo de vivienda informal/problema;
+- video local de vivienda informal (`public/assets/video/viviendasInformales.mp4`);
 - Banca de Desarrollo como edificio/nodo central;
 - cuatro aros alrededor del centro: Financiamiento, Garantias, Seguros y Capitales;
 - sectores privados cerca del centro: Intermediarios, Inversionistas, Aseguradoras;
 - panel derecho de vivienda formal/transformacion;
+- video local de vivienda formal (`public/assets/video/videoFormal.mp4`);
 - rutas luminosas con flujo, siempre pasando por BD;
 - popups cortos, legibles a 2-3 metros y sin tapar nombres ni rutas importantes.
 

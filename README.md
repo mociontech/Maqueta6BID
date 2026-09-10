@@ -59,13 +59,18 @@ Los popups se mantienen sobre la zona central de lectura, sin ocupar la cabecera
 
 ## Assets y videos
 
-Los assets actuales de `public/assets/scenes/` se usan como placeholders visuales de video:
+La TV usa videos locales dentro de `public/assets/video/`:
+
+- `viviendasInformales.mp4`: video de vivienda informal.
+- `videoFormal.mp4`: video de vivienda formal / transformacion.
+
+Los PNG de `public/assets/scenes/` quedan como posters y respaldo visual si el navegador tarda en decodificar video:
 
 - `scene-people-msmes.png`: poster de vivienda informal.
 - `scene-developers.png`: poster de vivienda formal.
 - `scene-development-bank-house.png`: sede de Banca de Desarrollo.
 
-Cuando el cliente entregue clips reales, se recomienda agregarlos a `public/assets/video/` y conectar las rutas en `data/experience.json > meta.media` sin cambiar la logica.
+Las rutas estan configuradas en `data/experience.json > meta.media`.
 
 ## Instalacion
 
@@ -164,7 +169,7 @@ Cambios documentados:
 
 Pendiente de validacion con cliente:
 
-- videos reales de vivienda informal y vivienda formal;
+- confirmar encuadre y duracion de los videos reales de vivienda informal y vivienda formal;
 - copy final de productos por sector;
 - si Intermediarios debe incluir tambien Garantias como aro activo secundario;
 - duraciones definitivas de lectura en sala.

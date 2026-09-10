@@ -25,6 +25,11 @@
     </header>
 
     <section id="stage" class="stage" aria-live="polite">
+      <div class="maquette-bed" aria-hidden="true"></div>
+      <div class="bridge bridge-left" aria-hidden="true"></div>
+      <div class="bridge bridge-right bridge-right-top" aria-hidden="true"></div>
+      <div class="bridge bridge-right bridge-right-bottom" aria-hidden="true"></div>
+
       <svg id="routeLayer" class="route-layer" viewBox="0 0 1920 958" aria-hidden="true">
         <defs>
           <filter id="routeGlow" x="-80%" y="-80%" width="260%" height="260%">
@@ -62,12 +67,33 @@
         <small>Financiamiento · Garantias · Seguros · Capitales</small>
       </section>
 
+      <aside class="reference-board problem-board" aria-label="Problema">
+        <strong>1. PROBLEMA</strong>
+        <span>Deficit habitacional</span>
+        <ul>
+          <li>Vivienda precaria</li>
+          <li>Falta de acceso a credito</li>
+          <li>Riesgo alto</li>
+        </ul>
+      </aside>
+
+      <aside class="reference-board participation-board" aria-label="Participacion del sector privado">
+        <strong>4. PARTICIPACION DEL SECTOR PRIVADO</strong>
+        <span>Capital con menor riesgo</span>
+        <ul>
+          <li>Bancos comerciales</li>
+          <li>Fondos de pensiones</li>
+          <li>Aseguradoras</li>
+        </ul>
+      </aside>
+
       <article id="informalPanel" class="housing-panel informal-panel">
         <div class="panel-title">
           <span id="informalTitle">Vivienda informal</span>
           <strong id="problemLabel">Falta de financiamiento</strong>
         </div>
         <div class="visual-card video-card">
+          <video id="informalVideo" muted loop autoplay playsinline preload="auto" poster="/assets/scenes/scene-people-msmes.png"></video>
           <img id="informalPoster" src="/assets/scenes/scene-people-msmes.png" alt="" />
           <div class="video-overlay">
             <span>Problema</span>
@@ -90,6 +116,8 @@
         </div>
       </section>
 
+      <section id="instrumentPlazas" class="instrument-plazas" aria-label="Instrumentos que generan impacto"></section>
+
       <section class="private-sector" aria-label="Sectores privados">
         <h2>SECTORES PRIVADOS</h2>
         <div id="sectorNodes" class="sector-nodes"></div>
@@ -101,6 +129,7 @@
           <strong id="resultLabel">Transformacion habilitada</strong>
         </div>
         <div class="visual-card video-card">
+          <video id="formalVideo" muted loop autoplay playsinline preload="auto" poster="/assets/scenes/scene-developers.png"></video>
           <img id="formalPoster" src="/assets/scenes/scene-developers.png" alt="" />
           <div class="video-overlay success">
             <span>Despues</span>
