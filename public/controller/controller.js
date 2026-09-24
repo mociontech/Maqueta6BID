@@ -305,13 +305,14 @@ function goToSectors(resetDisplay = false) {
   clearSectorReadTimer();
   selectedSectorId = null;
   if (resetDisplay) {
+    const lockedUntil = Date.now() + mandatoryIntroLockMs;
     state = {
       ...state,
       phase: 'bankIntro',
       segmentId: null,
       instrumentId: null,
       selectionMode: 'initial',
-      lockedUntil: Date.now() + mandatoryIntroLockMs
+      lockedUntil
     };
     setRouteStatus();
     showStep(els.activeStep, 'active');
@@ -319,7 +320,7 @@ function goToSectors(resetDisplay = false) {
     socket.send({
       type: 'setState',
       source: 'controller',
-      patch: { phase: 'bankIntro', segmentId: null, instrumentId: null, selectionMode: 'initial' }
+      patch: { phase: 'bankIntro', segmentId: null, instrumentId: null, selectionMode: 'initial', lockedUntil }
     });
     return;
   }
