@@ -16,11 +16,15 @@
     </header>
 
     <section id="introStep" class="step active intro-step" aria-labelledby="introTitle">
-      <article class="wire-card">
+      <article class="wire-card brand-screen">
+        <div class="bid-brand" aria-label="Grupo BID">
+          <span class="bid-mark" aria-hidden="true"></span>
+          <span>Grupo BID</span>
+        </div>
         <h1 id="introTitle">El rol de la banca de desarrollo</h1>
         <p id="introCopy">Descubre como la BD convierte barreras en soluciones y moviliza la participacion del SECTOR PRIVADO para ampliar el acceso al financiamiento.</p>
-        <span>Toca y conoce</span>
-        <button id="begin" class="primary-button activate-bank-button" type="button">ACTIVAR<br>BANCA DE DESARROLLO</button>
+        <span class="start-hint">Toca para comenzar</span>
+        <button id="begin" class="primary-button activate-bank-button" type="button">Activar banca de desarrollo</button>
       </article>
     </section>
 
@@ -38,12 +42,21 @@
     </section>
 
     <section id="activeStep" class="step active-route-step" aria-labelledby="activeTitle">
-      <article class="wire-card">
+      <article class="wire-card brand-screen wait-screen">
+        <div class="bid-brand" aria-label="Grupo BID">
+          <span class="bid-mark" aria-hidden="true"></span>
+          <span>Grupo BID</span>
+        </div>
         <h1 id="activeTitle">BANCA DE DESARROLLO activada</h1>
         <p id="activeCopy">Observa la maqueta y la pantalla principal.</p>
         <div id="selectedSummary" class="selected-summary" hidden></div>
         <div class="route-meter" aria-hidden="true"><span id="routeMeter"></span></div>
         <p id="phaseLabel" class="phase-label">Mostrando barrera</p>
+        <div class="wait-progress" aria-hidden="true">
+          <span class="active"></span>
+          <span></span>
+        </div>
+        <p class="animation-status">La animacion esta comenzando</p>
         <div class="action-stack">
           <button id="changeSector" class="secondary-button" type="button">Cambiar de sector</button>
           <button id="finish" class="primary-button" type="button">Finalizar</button>
