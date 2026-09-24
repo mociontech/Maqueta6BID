@@ -373,16 +373,9 @@ h1 {
   left: 22.3958%;
   top: 58.9815%;
   width: 55.1563%;
-  z-index: 2;
   display: grid;
   gap: .1852svh;
   margin: 0;
-  transition: left .45s ease, width .45s ease;
-}
-
-.tablet-shell[data-step="sectors"][data-impact-ready="true"] .sector-buttons {
-  left: 7.4479%;
-  width: 37.5521%;
 }
 
 .sector-card {
@@ -522,7 +515,7 @@ h1 {
 }
 
 .tablet-shell[data-step="sectors"][data-impact-ready="true"] .sector-card {
-  pointer-events: auto;
+  pointer-events: none;
 }
 
 .sector-card small {

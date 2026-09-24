@@ -349,22 +349,6 @@ function chooseSector(id) {
   if (!sector) return;
   clearAutoRun();
   clearSectorReadTimer();
-
-  if (completedSectors.has(sector.id)) {
-    completedSectors.delete(sector.id);
-    selectedSectorId = null;
-    state = {
-      ...state,
-      segmentId: null,
-      instrumentId: null,
-      phase: 'bankIntro'
-    };
-    setRouteStatus();
-    showStep(els.sectorStep, 'sectors');
-    updateSectorGuidance(null);
-    return;
-  }
-
   selectedSectorId = sector.id;
   completedSectors.add(sector.id);
   state = {
