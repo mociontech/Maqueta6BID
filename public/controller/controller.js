@@ -438,7 +438,7 @@ els.newSector?.addEventListener('click', () => goToSectors(false));
 els.changeSector.addEventListener('click', () => goToSectors(true));
 els.finish.addEventListener('click', finishExperience);
 els.viewTransformation?.addEventListener('click', viewTransformation);
-els.exploreAgain.addEventListener('click', () => goToSectors(false));
+els.exploreAgain.addEventListener('click', viewTransformation);
 els.restart.addEventListener('click', () => goToIntro(true));
 els.resetGlobal.addEventListener('click', () => goToIntro(true));
 
