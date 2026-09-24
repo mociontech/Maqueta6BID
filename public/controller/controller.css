@@ -55,7 +55,7 @@ button:disabled {
   height: 100svh;
   padding: 0;
   overflow: hidden;
-  background: url("/pantallas/soluciones.png") center / 100% 100% no-repeat #0965ff;
+  background: url("/pantallas/soluciones.png") center / cover no-repeat #0965ff;
 }
 
 .tablet-topbar {
@@ -334,9 +334,10 @@ h1 {
   position: absolute;
   inset: 0;
   z-index: 1;
-  background: url("/pantallas/transicion.png") center / 100% 100% no-repeat;
+  background: url("/pantallas/transicion.png") center / cover no-repeat;
+  opacity: 0;
   pointer-events: none;
-  animation: impactScreenIn .58s ease-out both;
+  animation: impactScreenIn .58s ease-out .36s forwards;
 }
 
 @keyframes impactScreenIn {
@@ -370,10 +371,10 @@ h1 {
 .tablet-shell[data-step="sectors"] .sector-buttons {
   position: absolute;
   left: 22.3958%;
-  top: 58.0833%;
+  top: 58.9815%;
   width: 55.1563%;
   display: grid;
-  gap: .1667svh;
+  gap: .1852svh;
   margin: 0;
 }
 
@@ -394,7 +395,7 @@ h1 {
 
 .tablet-shell[data-step="sectors"] .sector-card {
   width: 100%;
-  height: 10.3333svh;
+  height: 11.4815svh;
   min-height: 0;
   padding: 0;
   border: 0 !important;
@@ -425,7 +426,8 @@ h1 {
   transform: translateY(-2px);
 }
 
-.tablet-shell[data-step="sectors"] .sector-card.selected {
+.tablet-shell[data-step="sectors"] .sector-card.selected,
+.tablet-shell[data-step="sectors"] .sector-card.completed {
   display: grid;
   place-items: center;
   border: 0 !important;
@@ -434,10 +436,12 @@ h1 {
   color: #fff;
   outline: 0;
   box-shadow: none;
+  opacity: 1;
   transform: none;
 }
 
-.tablet-shell[data-step="sectors"] .sector-card.selected::after {
+.tablet-shell[data-step="sectors"] .sector-card.selected::after,
+.tablet-shell[data-step="sectors"] .sector-card.completed::after {
   content: "\2192";
   position: absolute;
   right: 3.35%;
@@ -452,10 +456,6 @@ h1 {
 .sector-card.completed {
   border-color: rgba(124, 240, 179, .44);
   opacity: .56;
-}
-
-.tablet-shell[data-step="sectors"] .sector-card.completed {
-  opacity: 1;
 }
 
 .tablet-shell[data-step="sectors"] .sector-card.recommended {
@@ -491,34 +491,31 @@ h1 {
   font-size: 0;
 }
 
-.tablet-shell[data-step="sectors"] .sector-card.selected strong::before {
+.tablet-shell[data-step="sectors"] .sector-card.selected strong::before,
+.tablet-shell[data-step="sectors"] .sector-card.completed strong::before {
   font-size: clamp(42px, 4.75vw, 66px);
   font-weight: 400;
   letter-spacing: .03em;
   line-height: 1;
 }
 
-.tablet-shell[data-step="sectors"] .sector-card[data-id="intermediaries"].selected strong::before {
+.tablet-shell[data-step="sectors"] .sector-card[data-id="intermediaries"].selected strong::before,
+.tablet-shell[data-step="sectors"] .sector-card[data-id="intermediaries"].completed strong::before {
   content: "INTERMEDIARIOS";
 }
 
-.tablet-shell[data-step="sectors"] .sector-card[data-id="investors"].selected strong::before {
+.tablet-shell[data-step="sectors"] .sector-card[data-id="investors"].selected strong::before,
+.tablet-shell[data-step="sectors"] .sector-card[data-id="investors"].completed strong::before {
   content: "INVERSIONISTAS";
 }
 
-.tablet-shell[data-step="sectors"] .sector-card[data-id="insurers"].selected strong::before {
+.tablet-shell[data-step="sectors"] .sector-card[data-id="insurers"].selected strong::before,
+.tablet-shell[data-step="sectors"] .sector-card[data-id="insurers"].completed strong::before {
   content: "ASEGURADORAS";
 }
 
 .tablet-shell[data-step="sectors"][data-impact-ready="true"] .sector-card {
-  background: transparent;
-  color: transparent;
   pointer-events: none;
-}
-
-.tablet-shell[data-step="sectors"][data-impact-ready="true"] .sector-card.selected::after,
-.tablet-shell[data-step="sectors"][data-impact-ready="true"] .sector-card.selected strong::before {
-  content: "";
 }
 
 .sector-card small {
@@ -564,12 +561,12 @@ h1 {
 
 .tablet-shell[data-step="sectors"][data-impact-ready="true"] .transformation-button {
   left: 58.2813%;
-  top: 68.5833%;
+  top: 70.6481%;
   right: auto;
   bottom: auto;
   z-index: 3;
   width: 29.8438%;
-  height: 10.3333%;
+  height: 11.4815%;
   min-height: 0;
   border-radius: 999px;
   background: transparent !important;
