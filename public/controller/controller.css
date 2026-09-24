@@ -329,6 +329,27 @@ h1 {
   box-shadow: none;
 }
 
+.tablet-shell[data-step="sectors"][data-impact-ready="true"] .sector-step .wire-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: url("/pantallas/transicion.png") center / 100% 100% no-repeat;
+  pointer-events: none;
+  animation: impactScreenIn .58s ease-out both;
+}
+
+@keyframes impactScreenIn {
+  from {
+    opacity: .82;
+    transform: translateX(10%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
 .tablet-shell[data-step="sectors"] #sectorTitle,
 .tablet-shell[data-step="sectors"] #sectorCopy {
   position: absolute;
@@ -489,6 +510,17 @@ h1 {
   content: "ASEGURADORAS";
 }
 
+.tablet-shell[data-step="sectors"][data-impact-ready="true"] .sector-card {
+  background: transparent;
+  color: transparent;
+  pointer-events: none;
+}
+
+.tablet-shell[data-step="sectors"][data-impact-ready="true"] .sector-card.selected::after,
+.tablet-shell[data-step="sectors"][data-impact-ready="true"] .sector-card.selected strong::before {
+  content: "";
+}
+
 .sector-card small {
   display: none;
 }
@@ -530,6 +562,21 @@ h1 {
   text-transform: none;
 }
 
+.tablet-shell[data-step="sectors"][data-impact-ready="true"] .transformation-button {
+  left: 58.2813%;
+  top: 68.5833%;
+  right: auto;
+  bottom: auto;
+  z-index: 3;
+  width: 29.8438%;
+  height: 10.3333%;
+  min-height: 0;
+  border-radius: 999px;
+  background: transparent !important;
+  color: transparent !important;
+  box-shadow: none;
+}
+
 .pictogram {
   width: 40px;
   height: 40px;
@@ -548,6 +595,7 @@ h1 {
 .tablet-shell[data-step="sectors"] .tablet-nav {
   position: absolute;
   inset: 0;
+  z-index: 4;
   display: block;
   margin: 0;
   pointer-events: none;

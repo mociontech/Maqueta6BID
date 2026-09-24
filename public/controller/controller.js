@@ -194,6 +194,7 @@ function nextPendingSectorId() {
 function updateSectorGuidance(activeId = selectedSectorId, waiting = false) {
   const allCompleted = sectorOrder.length > 0 && sectorOrder.every(id => completedSectors.has(id));
   const nextId = waiting || allCompleted ? null : nextPendingSectorId();
+  els.shell.dataset.impactReady = allCompleted ? 'true' : 'false';
   els.sectors.querySelectorAll('.sector-card').forEach(button => {
     const id = button.dataset.id;
     button.classList.toggle('selected', id === activeId);
@@ -202,6 +203,8 @@ function updateSectorGuidance(activeId = selectedSectorId, waiting = false) {
   });
   if (els.viewTransformation) {
     els.viewTransformation.hidden = !allCompleted;
+    els.viewTransformation.textContent = 'VER IMPACTO';
+    els.viewTransformation.setAttribute('aria-label', 'Ver impacto');
   }
 }
 
