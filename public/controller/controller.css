@@ -35,10 +35,17 @@ button:disabled {
   width: 100%;
   max-width: none;
   min-height: 100svh;
-  padding: clamp(24px, 4vw, 64px);
-  background:
-    radial-gradient(circle at 50% 25%, rgba(255, 255, 255, .1), transparent 28%),
-    linear-gradient(180deg, #08a0d6 0%, #0b67ff 24%, #9b4ca0 64%, #ff4b12 100%);
+  padding: 0;
+  background: #0b67ff;
+  overflow: hidden;
+}
+
+.tablet-shell[data-step="intro"] {
+  background: url("/pantallas/tablet1.png") center / cover no-repeat;
+}
+
+.tablet-shell[data-step="active"] {
+  background: url("/pantallas/tablet2.png") center / cover no-repeat;
 }
 
 .tablet-topbar {
@@ -104,26 +111,16 @@ button:disabled {
 }
 
 .brand-screen {
-  min-height: calc(100svh - clamp(48px, 8vw, 128px));
-  align-content: stretch;
-  justify-items: stretch;
-  gap: 0;
+  min-height: 100svh;
+  display: block;
   padding: 0;
   border: 0;
   background: transparent;
   box-shadow: none;
-  color: #fff;
 }
 
 .bid-brand {
-  align-self: start;
-  display: inline-flex;
-  align-items: center;
-  gap: clamp(14px, 2.4vw, 28px);
-  color: #fff;
-  font-size: clamp(42px, 5.5vw, 86px);
-  font-weight: 900;
-  line-height: 1;
+  display: none;
 }
 
 .bid-mark {
@@ -158,69 +155,47 @@ button:disabled {
 
 .intro-step .brand-screen h1,
 .active-route-step .brand-screen h1 {
-  align-self: center;
-  max-width: 1120px;
-  margin: clamp(44px, 10vh, 120px) auto 0;
-  color: #fff;
-  font-size: clamp(64px, 8.3vw, 128px);
-  font-weight: 900;
-  line-height: .95;
-  text-align: center;
-  text-wrap: balance;
-}
-
-.active-route-step .brand-screen h1 {
-  max-width: 1080px;
-  margin-top: clamp(80px, 14vh, 178px);
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }
 
 .intro-step .brand-screen p,
 .active-route-step .brand-screen p {
-  max-width: 1380px;
-  margin: clamp(28px, 4vh, 48px) auto 0;
-  color: rgba(255, 255, 255, .96);
-  font-size: clamp(30px, 3.6vw, 52px);
-  font-weight: 780;
-  line-height: 1.16;
-  text-align: center;
-  text-wrap: balance;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }
 
 .brand-screen .start-hint {
-  align-self: end;
-  justify-self: center;
-  margin-top: auto;
-  margin-bottom: clamp(20px, 3vh, 32px);
-  color: rgba(255, 255, 255, .95);
-  font-size: clamp(28px, 3.4vw, 50px);
-  font-weight: 400;
+  display: none;
 }
 
 .brand-screen .activate-bank-button {
-  align-self: end;
-  justify-self: center;
-  width: min(76vw, 960px);
+  position: absolute;
+  left: 50%;
+  bottom: 8.6%;
+  width: min(50vw, 960px);
   min-width: 0;
-  min-height: clamp(92px, 11vh, 136px);
-  margin-bottom: clamp(46px, 7vh, 86px);
+  height: min(11.4vh, 136px);
+  min-height: 72px;
+  margin: 0;
   border: 0 !important;
   border-radius: 999px;
-  background: #151515 !important;
-  color: #fff !important;
-  box-shadow: 0 22px 56px rgba(0, 0, 0, .18);
-  font-size: clamp(36px, 4.4vw, 60px);
-  font-weight: 900;
-  line-height: 1.05;
-  text-transform: none;
+  background: transparent !important;
+  color: transparent !important;
+  box-shadow: none;
+  transform: translateX(-50%);
 }
 
 .wait-progress {
-  align-self: end;
-  justify-self: center;
-  display: flex;
-  gap: 28px;
-  margin-top: auto;
-  margin-bottom: clamp(26px, 4vh, 40px);
+  display: none;
 }
 
 .wait-progress span {
@@ -235,13 +210,7 @@ button:disabled {
 }
 
 .brand-screen .animation-status {
-  align-self: end;
-  justify-self: center;
-  margin: 0 0 clamp(54px, 8vh, 92px);
-  color: rgba(255, 255, 255, .92);
-  font-size: clamp(34px, 4vw, 54px);
-  font-weight: 400;
-  line-height: 1;
+  display: none;
 }
 
 .tablet-shell[data-locked="true"] .wire-card::after {
@@ -572,40 +541,17 @@ h1 {
 @media (max-width: 900px) {
   .tablet-shell[data-step="intro"],
   .tablet-shell[data-step="active"] {
-    padding: 28px;
+    padding: 0;
   }
 
   .intro-step .brand-screen,
   .active-route-step .brand-screen {
-    min-height: calc(100svh - 56px);
+    min-height: 100svh;
     padding: 0;
   }
 
-  .bid-brand {
-    font-size: clamp(34px, 8vw, 56px);
-  }
-
-  .bid-mark {
-    width: clamp(56px, 10vw, 78px);
-  }
-
-  .intro-step .brand-screen h1,
-  .active-route-step .brand-screen h1 {
-    font-size: clamp(46px, 11vw, 84px);
-  }
-
-  .intro-step .brand-screen p,
-  .active-route-step .brand-screen p {
-    font-size: clamp(22px, 5vw, 38px);
-  }
-
   .brand-screen .activate-bank-button {
-    width: min(92vw, 720px);
-    min-height: 86px;
-    font-size: clamp(28px, 6vw, 44px);
-  }
-
-  .brand-screen .animation-status {
-    font-size: clamp(28px, 6vw, 42px);
+    width: 58vw;
+    height: 11vh;
   }
 }
