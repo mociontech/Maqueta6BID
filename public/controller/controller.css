@@ -48,6 +48,15 @@ button:disabled {
   background: url("/pantallas/tablet2.png") center / cover no-repeat;
 }
 
+.tablet-shell[data-step="sectors"] {
+  width: 100%;
+  max-width: none;
+  min-height: 100svh;
+  padding: 0;
+  overflow: hidden;
+  background: url("/pantallas/soluciones.png") center / cover no-repeat #0965ff;
+}
+
 .tablet-topbar {
   display: flex;
   justify-content: flex-end;
@@ -302,11 +311,47 @@ h1 {
   gap: 15px;
 }
 
+.tablet-shell[data-step="sectors"] .tablet-topbar {
+  display: none;
+}
+
+.tablet-shell[data-step="sectors"] .sector-step {
+  align-self: stretch;
+}
+
+.tablet-shell[data-step="sectors"] .sector-step .wire-card {
+  min-height: 100svh;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.tablet-shell[data-step="sectors"] #sectorTitle,
+.tablet-shell[data-step="sectors"] #sectorCopy {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
 .sector-buttons {
   width: min(100%, 390px);
   display: grid;
   gap: 14px;
   margin-top: 6px;
+}
+
+.tablet-shell[data-step="sectors"] .sector-buttons {
+  position: absolute;
+  left: 22.4%;
+  top: 64.2%;
+  width: 55.2%;
+  display: grid;
+  gap: 0;
+  margin: 0;
 }
 
 .sector-card {
@@ -324,6 +369,20 @@ h1 {
   transition: border-color .25s ease, box-shadow .25s ease, opacity .25s ease, transform .25s ease;
 }
 
+.tablet-shell[data-step="sectors"] .sector-card {
+  width: 100%;
+  height: 11.7svh;
+  min-height: 92px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: transparent;
+  opacity: 1;
+  transform: none;
+}
+
 .sector-card.selected {
   border-color: #58b8ff;
   box-shadow:
@@ -332,9 +391,39 @@ h1 {
   transform: translateY(-2px);
 }
 
+.tablet-shell[data-step="sectors"] .sector-card.selected {
+  display: grid;
+  place-items: center;
+  background: #151515;
+  color: #fff;
+  box-shadow: 0 22px 54px rgba(0, 0, 0, .22);
+  transform: none;
+}
+
+.tablet-shell[data-step="sectors"] .sector-card.selected::after {
+  content: "\2192";
+  position: absolute;
+  right: 3.2%;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #fff;
+  font-size: clamp(46px, 5vw, 82px);
+  font-weight: 300;
+  line-height: 1;
+}
+
 .sector-card.completed {
   border-color: rgba(124, 240, 179, .44);
   opacity: .56;
+}
+
+.tablet-shell[data-step="sectors"] .sector-card.completed {
+  opacity: 1;
+}
+
+.tablet-shell[data-step="sectors"] .sector-card.recommended {
+  animation: none;
+  box-shadow: none;
 }
 
 .sector-card.recommended {
@@ -361,6 +450,29 @@ h1 {
   line-height: 1.08;
 }
 
+.tablet-shell[data-step="sectors"] .sector-card strong {
+  font-size: 0;
+}
+
+.tablet-shell[data-step="sectors"] .sector-card.selected strong::before {
+  font-size: clamp(44px, 5.2vw, 70px);
+  font-weight: 400;
+  letter-spacing: .03em;
+  line-height: 1;
+}
+
+.tablet-shell[data-step="sectors"] .sector-card[data-id="intermediaries"].selected strong::before {
+  content: "INTERMEDIARIOS";
+}
+
+.tablet-shell[data-step="sectors"] .sector-card[data-id="investors"].selected strong::before {
+  content: "INVERSIONISTAS";
+}
+
+.tablet-shell[data-step="sectors"] .sector-card[data-id="insurers"].selected strong::before {
+  content: "ASEGURADORAS";
+}
+
 .sector-card small {
   display: none;
 }
@@ -383,6 +495,26 @@ h1 {
   display: none;
 }
 
+.tablet-shell[data-step="sectors"] .transformation-button {
+  position: absolute;
+  left: 50%;
+  bottom: 3.2%;
+  width: min(50vw, 760px);
+  min-width: 0;
+  min-height: 72px;
+  margin: 0;
+  border: 0 !important;
+  border-radius: 999px;
+  background: #151515 !important;
+  color: #fff !important;
+  box-shadow: 0 18px 46px rgba(0, 0, 0, .24);
+  font-size: clamp(26px, 3vw, 42px);
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: none;
+  transform: translateX(-50%);
+}
+
 .pictogram {
   width: 40px;
   height: 40px;
@@ -398,9 +530,36 @@ h1 {
   margin-top: 8px;
 }
 
+.tablet-shell[data-step="sectors"] .tablet-nav {
+  position: absolute;
+  inset: 0;
+  display: block;
+  margin: 0;
+  pointer-events: none;
+}
+
 .tablet-nav button {
   min-width: 106px;
   background: transparent;
+}
+
+.tablet-shell[data-step="sectors"] #backHome {
+  display: none;
+}
+
+.tablet-shell[data-step="sectors"] #goHome {
+  position: absolute;
+  right: 4.5%;
+  top: 6.2%;
+  width: 10%;
+  height: 10.2%;
+  min-width: 0;
+  min-height: 0;
+  border: 0;
+  background: transparent !important;
+  color: transparent !important;
+  box-shadow: none;
+  pointer-events: auto;
 }
 
 .eyebrow {
