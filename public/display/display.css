@@ -2854,3 +2854,85 @@ button {
     filter: url(#routeGlow) brightness(1);
   }
 }
+
+.physical-mode[data-phase="idle"] .stage {
+  background: url("/TV/TV-MOMENTO1.png") center / cover no-repeat #08111d;
+}
+
+.physical-mode[data-phase="idle"] .stage > * {
+  opacity: 0 !important;
+  pointer-events: none;
+}
+
+.physical-mode[data-phase="idle"] .physical-layout {
+  opacity: 1 !important;
+}
+
+.physical-mode[data-phase="idle"] .physical-layout > * {
+  opacity: 0 !important;
+}
+
+.physical-mode[data-phase="idle"] .connection-status {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.physical-mode[data-phase="idle"] .physical-layout::before,
+.physical-mode[data-phase="idle"] .physical-layout::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+}
+
+.physical-mode[data-phase="idle"] .physical-layout::before {
+  left: 35.737%;
+  top: 14.933%;
+  width: 28.526%;
+  height: 9.217%;
+  border: 3px solid rgba(82, 232, 255, .95);
+  border-radius: 14px;
+  box-shadow:
+    0 0 18px rgba(82, 232, 255, .72),
+    0 0 44px rgba(0, 136, 255, .45),
+    inset 0 0 22px rgba(82, 232, 255, .22);
+  animation: idleTabletCtaPulse 1.8s ease-in-out infinite;
+}
+
+.physical-mode[data-phase="idle"] .physical-layout::after {
+  left: 35.737%;
+  top: 14.933%;
+  width: 28.526%;
+  height: 9.217%;
+  border-radius: 14px;
+  background:
+    linear-gradient(105deg, transparent 0 38%, rgba(97, 241, 255, .82) 48%, transparent 58%) -60% 0 / 42% 100% no-repeat;
+  mix-blend-mode: screen;
+  filter: drop-shadow(0 0 14px rgba(82, 232, 255, .8));
+  animation: idleTabletCtaScan 2.2s linear infinite;
+}
+
+@keyframes idleTabletCtaPulse {
+  0%, 100% {
+    border-color: rgba(82, 232, 255, .82);
+    box-shadow:
+      0 0 14px rgba(82, 232, 255, .52),
+      0 0 34px rgba(0, 136, 255, .34),
+      inset 0 0 16px rgba(82, 232, 255, .14);
+  }
+  50% {
+    border-color: rgba(167, 250, 255, 1);
+    box-shadow:
+      0 0 26px rgba(82, 232, 255, .96),
+      0 0 74px rgba(0, 136, 255, .58),
+      inset 0 0 28px rgba(82, 232, 255, .28);
+  }
+}
+
+@keyframes idleTabletCtaScan {
+  from {
+    background-position: -60% 0;
+  }
+  to {
+    background-position: 160% 0;
+  }
+}
