@@ -165,9 +165,11 @@ function applyClientPatch(patch, source = 'client') {
 
   if (patch.phase === 'bankIntro' || patch.phase === 'closing') {
     clearRouteTimer();
-    const lockedUntil = patch.phase === 'bankIntro'
-      ? Date.now() + INTRO_LOCK_MS
-      : Date.now() + Number(patch.lockedMs || TRANSFORMATION_LOCK_MS);
+    const lockedUntil = patch.lockedUntil !== undefined
+      ? Number(patch.lockedUntil)
+      : patch.phase === 'bankIntro'
+        ? Date.now() + INTRO_LOCK_MS
+        : Date.now() + (patch.lockedMs !== undefined ? Number(patch.lockedMs) : TRANSFORMATION_LOCK_MS);
     setState({
       segmentId: patch.segmentId === undefined ? state.segmentId : patch.segmentId,
       instrumentId: patch.instrumentId === undefined ? state.instrumentId : patch.instrumentId,

@@ -172,13 +172,13 @@ export function createExperienceSocket(onState) {
 
     if (message.type === 'setState' && message.patch) {
       clearTimeout(phaseTimer);
-      const lockedUntil = message.patch.lockedUntil || (
-        message.patch.phase === 'bankIntro'
+      const lockedUntil = message.patch.lockedUntil !== undefined
+        ? Number(message.patch.lockedUntil)
+        : message.patch.phase === 'bankIntro'
           ? Date.now() + 31000
           : message.patch.phase === 'closing'
-            ? Date.now() + Number(message.patch.lockedMs || 20000)
-            : undefined
-      );
+            ? Date.now() + (message.patch.lockedMs !== undefined ? Number(message.patch.lockedMs) : 20000)
+            : undefined;
       writeStaticState({ ...current, ...message.patch, lockedUntil, runId }, message.source || 'static-preview');
       return true;
     }

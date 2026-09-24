@@ -394,6 +394,26 @@ function viewTransformation() {
   });
 }
 
+function viewFullInfo() {
+  if (shouldIgnoreInteraction()) return;
+  clearAutoRun();
+  clearSectorReadTimer();
+  state = {
+    ...state,
+    phase: 'closing',
+    selectionMode: 'fullInfo',
+    lockedUntil: Date.now()
+  };
+  setRouteStatus();
+  showStep(els.finalStep, 'final');
+  updateInteractionLock();
+  socket.send({
+    type: 'setState',
+    source: 'controller',
+    patch: { phase: 'closing', selectionMode: 'fullInfo', lockedMs: 0, lockedUntil: Date.now() }
+  });
+}
+
 function syncFromServer() {
   setRouteStatus();
   updateInteractionLock();
@@ -438,7 +458,7 @@ els.newSector?.addEventListener('click', () => goToSectors(false));
 els.changeSector.addEventListener('click', () => goToSectors(true));
 els.finish.addEventListener('click', finishExperience);
 els.viewTransformation?.addEventListener('click', viewTransformation);
-els.exploreAgain.addEventListener('click', viewTransformation);
+els.exploreAgain.addEventListener('click', viewFullInfo);
 els.restart.addEventListener('click', () => goToIntro(true));
 els.resetGlobal.addEventListener('click', () => goToIntro(true));
 
