@@ -2921,12 +2921,10 @@ button {
   top: 14.933%;
   width: 28.526%;
   height: 9.217%;
-  border: 3px solid rgba(207, 225, 255, .95);
-  border-radius: 14px;
+  border-radius: 18px;
   box-shadow:
-    0 0 18px rgba(207, 225, 255, .72),
-    0 0 44px rgba(207, 225, 255, .45),
-    inset 0 0 22px rgba(207, 225, 255, .22);
+    0 0 18px rgba(207, 225, 255, .55),
+    0 0 42px rgba(207, 225, 255, .34);
   animation: idleTabletCtaPulse 1.8s ease-in-out infinite;
 }
 
@@ -2945,18 +2943,14 @@ button {
 
 @keyframes idleTabletCtaPulse {
   0%, 100% {
-    border-color: rgba(207, 225, 255, .82);
     box-shadow:
-      0 0 14px rgba(207, 225, 255, .52),
-      0 0 34px rgba(207, 225, 255, .34),
-      inset 0 0 16px rgba(207, 225, 255, .14);
+      0 0 14px rgba(207, 225, 255, .42),
+      0 0 32px rgba(207, 225, 255, .24);
   }
   50% {
-    border-color: rgba(207, 225, 255, 1);
     box-shadow:
-      0 0 26px rgba(207, 225, 255, .96),
-      0 0 74px rgba(207, 225, 255, .58),
-      inset 0 0 28px rgba(207, 225, 255, .28);
+      0 0 28px rgba(207, 225, 255, .84),
+      0 0 70px rgba(207, 225, 255, .48);
   }
 }
 
