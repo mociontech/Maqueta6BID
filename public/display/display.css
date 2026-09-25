@@ -2856,7 +2856,7 @@ button {
 }
 
 .physical-mode[data-phase="idle"] .stage {
-  background: url("/TV/tvinicial.png") center / cover no-repeat #08111d;
+  background: url("/TV/pantallainico.png") center / cover no-repeat #08111d;
 }
 
 .physical-mode[data-phase="idle"] .stage > * {
@@ -2875,31 +2875,31 @@ button {
 .physical-mode[data-phase="idle"] .idle-media-poster {
   position: absolute;
   overflow: hidden;
-  background: #cfe1ff;
+  background: transparent;
   opacity: 1 !important;
 }
 
 .physical-mode[data-phase="idle"] .idle-media-informal {
-  left: 3.301%;
-  top: 13.903%;
-  width: 20.475%;
-  height: 36.406%;
-  border-radius: 26px;
+  left: 5.5%;
+  top: 74.35%;
+  width: 17.2%;
+  height: 24.67%;
+  border-radius: 0;
 }
 
 .physical-mode[data-phase="idle"] .idle-media-formal {
-  left: 75.818%;
-  top: 57.673%;
-  width: 20.475%;
-  height: 36.406%;
-  border-radius: 26px;
+  left: 76.15%;
+  top: 14.98%;
+  width: 20.82%;
+  height: 29.82%;
+  border-radius: 0;
 }
 
 .physical-mode[data-phase="idle"] .idle-media-poster video {
   width: 100%;
   height: 100%;
   display: block;
-  object-fit: cover;
+  object-fit: contain;
   opacity: 1;
   filter: none;
 }
