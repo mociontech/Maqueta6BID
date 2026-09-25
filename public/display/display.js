@@ -51,6 +51,8 @@ const els = {
   resultLabel: document.querySelector('#resultLabel'),
   informalVideo: document.querySelector('#informalVideo'),
   formalVideo: document.querySelector('#formalVideo'),
+  idleInformalVideo: document.querySelector('#idleInformalVideo'),
+  idleFormalVideo: document.querySelector('#idleFormalVideo'),
   informalPoster: document.querySelector('#informalPoster'),
   formalPoster: document.querySelector('#formalPoster'),
   problemBullets: document.querySelector('#problemBullets'),
@@ -139,7 +141,7 @@ function setVideoSource(video, poster, src) {
 }
 
 function playVideo(video, options = {}) {
-  if (!video || !video.src) return;
+  if (!video || (!video.src && !video.currentSrc)) return;
   const card = video.closest('.video-card');
   card?.classList.remove('video-off', 'video-ended', 'video-paused-visible');
   video.loop = Boolean(options.loop);
@@ -183,16 +185,19 @@ function estimateVideoDurationMs(video, fallbackMs = 10000) {
 
 function revealBankIntroSequence(token) {
   const barrierRoute = routeById('route-barrier');
+  const introVideo = els.idleInformalVideo || els.informalVideo;
   setSequenceSteps('maquette');
-  stopVideo(els.informalVideo, true, true);
+  stopVideo(els.informalVideo, true, false);
   stopVideo(els.formalVideo);
+  stopVideo(els.idleInformalVideo, true, true);
+  stopVideo(els.idleFormalVideo);
 
   later(() => setSequenceSteps('maquette', 'problem'), 3000, token);
 
   later(() => {
     setSequenceSteps('maquette', 'problem', 'video');
-    playVideo(els.informalVideo, { restart: true, keepVisibleOnEnd: true });
-    const videoMs = estimateVideoDurationMs(els.informalVideo, 10000);
+    playVideo(introVideo, { restart: true, keepVisibleOnEnd: true });
+    const videoMs = estimateVideoDurationMs(introVideo, 10000);
 
     later(() => {
       setSequenceSteps('maquette', 'problem', 'video', 'bridge');
@@ -623,6 +628,8 @@ function renderExperience() {
     playedVideoRun = { informal: null, formal: null };
     stopVideo(els.informalVideo, true, true);
     stopVideo(els.formalVideo);
+    stopVideo(els.idleInformalVideo, true, true);
+    stopVideo(els.idleFormalVideo);
     showInitialMessage();
     return;
   }

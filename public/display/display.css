@@ -2853,13 +2853,41 @@ button {
   background: url("/TV/ahorasi1.png") center / cover no-repeat #08111d;
 }
 
+.physical-mode[data-phase="bankIntro"] .stage {
+  background: url("/TV/ahorasi1.png") center / cover no-repeat #08111d;
+}
+
 .physical-mode[data-phase="idle"] .stage > * {
   opacity: 0 !important;
   pointer-events: none;
 }
 
+.physical-mode[data-phase="bankIntro"] .stage > *:not(.physical-layout):not(.route-layer) {
+  display: none !important;
+}
+
 .physical-mode[data-phase="idle"] .physical-layout {
   opacity: 1 !important;
+}
+
+.physical-mode[data-phase="bankIntro"] .physical-layout {
+  opacity: 1 !important;
+}
+
+.physical-mode[data-phase="bankIntro"] .main-title,
+.physical-mode[data-phase="bankIntro"] .main-subtitle,
+.physical-mode[data-phase="bankIntro"] .main-copy,
+.physical-mode[data-phase="bankIntro"] .zone-title,
+.physical-mode[data-phase="bankIntro"] .slot-caption,
+.physical-mode[data-phase="bankIntro"] .private-title-physical,
+.physical-mode[data-phase="bankIntro"] .formal-title-physical,
+.physical-mode[data-phase="bankIntro"] .result-bubble,
+.physical-mode[data-phase="bankIntro"] .private-popup,
+.physical-mode[data-phase="bankIntro"] .private-label,
+.physical-mode[data-phase="bankIntro"] .slot-private,
+.physical-mode[data-phase="bankIntro"] .private-pad,
+.physical-mode[data-phase="bankIntro"] .slot-formal {
+  opacity: 0 !important;
 }
 
 .physical-mode[data-phase="idle"] .physical-layout > * {
@@ -2903,8 +2931,36 @@ button {
   filter: none;
 }
 
-.physical-mode:not([data-phase="idle"]) .idle-media-poster {
+.physical-mode:not([data-phase="idle"]):not([data-phase="bankIntro"]) .idle-media-poster {
   display: none;
+}
+
+.physical-mode[data-phase="bankIntro"] .idle-media-poster {
+  position: absolute;
+  overflow: hidden;
+  background: transparent;
+  opacity: 1;
+}
+
+.physical-mode[data-phase="bankIntro"] .idle-media-informal {
+  left: 5.5%;
+  top: 74.35%;
+  width: 17.2%;
+  height: 24.67%;
+  border-radius: 0;
+}
+
+.physical-mode[data-phase="bankIntro"] .idle-media-formal {
+  display: none;
+}
+
+.physical-mode[data-phase="bankIntro"] .idle-media-poster video {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+  opacity: 1;
+  filter: none;
 }
 
 .physical-mode[data-phase="bankIntro"] .right-title {
