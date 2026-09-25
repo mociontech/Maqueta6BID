@@ -2113,13 +2113,9 @@ button {
   height: 100px;
   opacity: 0;
   transform: translateY(8px) scale(.98);
-  filter:
-    drop-shadow(0 0 16px rgba(207, 225, 255, .62))
-    drop-shadow(0 0 38px rgba(207, 225, 255, .3));
   transition: opacity .4s ease, transform .4s ease;
 }
 
-.solutions-cta::before,
 .solutions-cta::after {
   content: "";
   position: absolute;
@@ -2127,21 +2123,13 @@ button {
   z-index: 1;
 }
 
-.solutions-cta::before {
-  inset: -2px;
-  border-radius: 18px;
-  box-shadow:
-    0 0 16px rgba(207, 225, 255, .42),
-    0 0 38px rgba(207, 225, 255, .26);
-  animation: idleTabletCtaPulse 1.8s ease-in-out infinite;
-}
-
 .solutions-cta::after {
   inset: 0;
-  border-radius: 16px;
   background:
     linear-gradient(105deg, transparent 0 38%, rgba(255, 255, 255, .72) 48%, transparent 58%) -60% 0 / 42% 100% no-repeat;
   mix-blend-mode: screen;
+  -webkit-mask: url("/TV/instruccion2.png") center / contain no-repeat;
+  mask: url("/TV/instruccion2.png") center / contain no-repeat;
   animation: idleTabletCtaScan 2.2s linear infinite;
 }
 
