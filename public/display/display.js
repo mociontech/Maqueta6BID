@@ -256,8 +256,13 @@ function revealPrivateSectorRead(sector, token) {
   animatePath(centerRoute, 3000, '#cfe1ff', token, 1);
 
   later(() => {
-    completePath(centerRoute, '#cfe1ff');
-    setSequenceSteps('private-bridge', 'private-read', step);
+    centerRoute?.classList.remove('active', 'complete');
+    centerRoute?.style.removeProperty('--route-color');
+    if (centerRoute) {
+      centerRoute.style.strokeDasharray = '';
+      centerRoute.style.strokeDashoffset = '';
+    }
+    setSequenceSteps('private-read', step);
     animatePath(sectorRoute, 3000, '#cfe1ff', token, 2);
   }, 3000, token);
 }

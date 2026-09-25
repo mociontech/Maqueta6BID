@@ -2568,12 +2568,31 @@ button {
 
 .physical-mode[data-phase="problem"] .holo-bridge,
 .physical-mode[data-phase="solutions"] .holo-bridge {
-  opacity: 0;
-  animation: none;
+  opacity: 1;
+}
+
+.physical-mode[data-phase="problem"] .holo-bridge-deck,
+.physical-mode[data-phase="solutions"] .holo-bridge-deck {
+  animation: holoDeckFlow 2.4s linear infinite;
+}
+
+.physical-mode[data-phase="problem"] .holo-bridge-rail,
+.physical-mode[data-phase="solutions"] .holo-bridge-rail {
+  animation: holoRailFlow 1.7s linear infinite;
+}
+
+.physical-mode[data-phase="problem"] .holo-bridge-scan,
+.physical-mode[data-phase="solutions"] .holo-bridge-scan {
+  animation: holoScan 1.45s ease-in-out infinite;
 }
 
 .physical-mode[data-phase="problem"] .bridge-copy-left,
-.physical-mode[data-phase="solutions"] .bridge-copy-left,
+.physical-mode[data-phase="solutions"] .bridge-copy-left {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0s;
+}
+
 .physical-mode[data-phase="problem"] .private-copy,
 .physical-mode[data-phase="solutions"] .private-copy {
   opacity: 0;
@@ -2895,6 +2914,61 @@ button {
   stroke: #5ee6aa;
   stroke-width: 12;
   stroke-dasharray: 80 320;
+}
+
+.physical-mode .private-holo-bridge {
+  display: none;
+  fill: none;
+  opacity: 0;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: url(#routeGlow);
+  pointer-events: none;
+}
+
+.physical-mode .private-holo-bridge-shadow {
+  stroke: rgba(36, 128, 255, .28);
+  stroke-width: 50;
+}
+
+.physical-mode .private-holo-bridge-deck {
+  stroke: rgba(63, 169, 255, .62);
+  stroke-width: 36;
+  stroke-dasharray: 5 10;
+}
+
+.physical-mode .private-holo-bridge-rail {
+  stroke: rgba(214, 255, 255, .92);
+  stroke-width: 5;
+  stroke-dasharray: 22 18;
+}
+
+.physical-mode .private-holo-bridge-scan {
+  stroke: #d8ff29;
+  stroke-width: 11;
+  stroke-dasharray: 42 130;
+}
+
+.physical-mode[data-phase="problem"][data-sequence~="private-bridge"] .private-holo-bridge,
+.physical-mode[data-phase="solutions"][data-sequence~="private-bridge"] .private-holo-bridge {
+  display: block;
+  opacity: 1;
+  animation: holoBridgeArrive 3s ease-out both;
+}
+
+.physical-mode[data-phase="problem"][data-sequence~="private-bridge"] .private-holo-bridge-deck,
+.physical-mode[data-phase="solutions"][data-sequence~="private-bridge"] .private-holo-bridge-deck {
+  animation: holoBridgeArrive 3s ease-out both, holoDeckFlow 2.4s linear infinite 3s;
+}
+
+.physical-mode[data-phase="problem"][data-sequence~="private-bridge"] .private-holo-bridge-rail,
+.physical-mode[data-phase="solutions"][data-sequence~="private-bridge"] .private-holo-bridge-rail {
+  animation: holoBridgeArrive 3s ease-out both, holoRailFlow 1.7s linear infinite 3s;
+}
+
+.physical-mode[data-phase="problem"][data-sequence~="private-bridge"] .private-holo-bridge-scan,
+.physical-mode[data-phase="solutions"][data-sequence~="private-bridge"] .private-holo-bridge-scan {
+  animation: holoBridgeArrive 3s ease-out both, holoScan 1.45s ease-in-out infinite 3s;
 }
 
 .physical-mode[data-phase="closing"][data-sequence~="formal-bridge"] .formal-holo-bridge,
