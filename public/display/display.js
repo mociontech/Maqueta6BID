@@ -250,10 +250,9 @@ function revealPrivateSectorRead(sector, token) {
   const step = privateStepForSector(sector.id);
   const centerRoute = routeById('route-private-center');
   const sectorRoute = routeForSector(sector.id);
-  revealedPrivateSectors.clear();
   revealedPrivateSectors.add(sector.id);
-  setSequenceSteps('private-bridge');
-  animatePath(centerRoute, 3000, '#cfe1ff', token, 1);
+  setSequenceSteps('private-bridge', ...currentPrivateSteps());
+  animatePath(centerRoute, 6000, '#cfe1ff', token, 1);
 
   later(() => {
     centerRoute?.classList.remove('active', 'complete');
@@ -262,9 +261,9 @@ function revealPrivateSectorRead(sector, token) {
       centerRoute.style.strokeDasharray = '';
       centerRoute.style.strokeDashoffset = '';
     }
-    setSequenceSteps('private-read', step);
+    setSequenceSteps('private-read', ...currentPrivateSteps());
     animatePath(sectorRoute, 3000, '#cfe1ff', token, 2);
-  }, 3000, token);
+  }, 6000, token);
 }
 
 function setFormalSequenceSteps(...steps) {

@@ -2953,22 +2953,22 @@ button {
 .physical-mode[data-phase="solutions"][data-sequence~="private-bridge"] .private-holo-bridge {
   display: block;
   opacity: 1;
-  animation: holoBridgeArrive 3s ease-out both;
+  animation: holoBridgeArrive 6s ease-out both;
 }
 
 .physical-mode[data-phase="problem"][data-sequence~="private-bridge"] .private-holo-bridge-deck,
 .physical-mode[data-phase="solutions"][data-sequence~="private-bridge"] .private-holo-bridge-deck {
-  animation: holoBridgeArrive 3s ease-out both, holoDeckFlow 2.4s linear infinite 3s;
+  animation: holoBridgeArrive 6s ease-out both, holoDeckFlow 2.4s linear infinite 6s;
 }
 
 .physical-mode[data-phase="problem"][data-sequence~="private-bridge"] .private-holo-bridge-rail,
 .physical-mode[data-phase="solutions"][data-sequence~="private-bridge"] .private-holo-bridge-rail {
-  animation: holoBridgeArrive 3s ease-out both, holoRailFlow 1.7s linear infinite 3s;
+  animation: holoBridgeArrive 6s ease-out both, holoRailFlow 1.7s linear infinite 6s;
 }
 
 .physical-mode[data-phase="problem"][data-sequence~="private-bridge"] .private-holo-bridge-scan,
 .physical-mode[data-phase="solutions"][data-sequence~="private-bridge"] .private-holo-bridge-scan {
-  animation: holoBridgeArrive 3s ease-out both, holoScan 1.45s ease-in-out infinite 3s;
+  animation: holoBridgeArrive 6s ease-out both, holoScan 1.45s ease-in-out infinite 6s;
 }
 
 .physical-mode[data-phase="closing"][data-sequence~="formal-bridge"] .formal-holo-bridge,
