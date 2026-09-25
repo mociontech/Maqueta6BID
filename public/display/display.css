@@ -2105,12 +2105,61 @@ button {
   transition: opacity .4s ease, transform .4s ease;
 }
 
+.solutions-cta {
+  position: absolute;
+  left: 760px;
+  top: 656px;
+  width: 389px;
+  height: 100px;
+  opacity: 0;
+  transform: translateY(8px) scale(.98);
+  filter:
+    drop-shadow(0 0 16px rgba(207, 225, 255, .62))
+    drop-shadow(0 0 38px rgba(207, 225, 255, .3));
+  transition: opacity .4s ease, transform .4s ease;
+}
+
+.solutions-cta::before,
+.solutions-cta::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.solutions-cta::before {
+  inset: -2px;
+  border-radius: 18px;
+  box-shadow:
+    0 0 16px rgba(207, 225, 255, .42),
+    0 0 38px rgba(207, 225, 255, .26);
+  animation: idleTabletCtaPulse 1.8s ease-in-out infinite;
+}
+
+.solutions-cta::after {
+  inset: 0;
+  border-radius: 16px;
+  background:
+    linear-gradient(105deg, transparent 0 38%, rgba(255, 255, 255, .72) 48%, transparent 58%) -60% 0 / 42% 100% no-repeat;
+  mix-blend-mode: screen;
+  animation: idleTabletCtaScan 2.2s linear infinite;
+}
+
+.solutions-cta img {
+  position: relative;
+  z-index: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
 .physical-mode[data-phase="route"] .private-copy,
 .physical-mode[data-phase="providers"] .private-copy,
 .physical-mode[data-phase="result"] .private-copy,
 .physical-mode[data-phase="closing"] .private-copy {
-  opacity: 1;
-  transform: translateY(0);
+  opacity: 0;
+  transform: translateY(8px);
 }
 
 .video-copy {
@@ -2497,7 +2546,7 @@ button {
   transform: translateY(8px);
 }
 
-.physical-mode[data-phase="bankIntro"][data-sequence~="center-copy"] .private-copy {
+.physical-mode[data-phase="bankIntro"][data-sequence~="center-copy"] .solutions-cta {
   opacity: 1;
   transform: translateY(0);
 }
