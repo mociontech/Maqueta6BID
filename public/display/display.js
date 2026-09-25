@@ -35,6 +35,7 @@ let playedVideoRun = {
   formal: null
 };
 const revealedPrivateSectors = new Set();
+let pendingRevealSectorId = null;
 
 const els = {
   shell: document.querySelector('.display-shell'),
@@ -247,23 +248,62 @@ function revealPrivateSectorRead(sector, token) {
     return;
   }
 
-  const step = privateStepForSector(sector.id);
   const centerRoute = routeById('route-private-center');
   const sectorRoute = routeForSector(sector.id);
-  revealedPrivateSectors.add(sector.id);
-  setSequenceSteps('private-bridge', ...currentPrivateSteps());
-  animatePath(centerRoute, 6000, '#cfe1ff', token, 1);
 
-  later(() => {
-    centerRoute?.classList.remove('active', 'complete');
-    centerRoute?.style.removeProperty('--route-color');
-    if (centerRoute) {
-      centerRoute.style.strokeDasharray = '';
-      centerRoute.style.strokeDashoffset = '';
-    }
+  // Si se cambio de sector antes de que terminara la animacion anterior,
+  // no perder ese puente: completarlo de inmediato en vez de borrarlo.
+  if (pendingRevealSectorId && pendingRevealSectorId !== sector.id && !revealedPrivateSectors.has(pendingRevealSectorId)) {
+    completePath(routeForSector(pendingRevealSectorId), '#cfe1ff');
+    revealedPrivateSectors.add(pendingRevealSectorId);
+  }
+  pendingRevealSectorId = null;
+
+  const hadAnyReveal = revealedPrivateSectors.size > 0;
+  const alreadyRevealed = revealedPrivateSectors.has(sector.id);
+
+  // Mantener dibujados todos los puentes laterales ya revelados; nunca borrarlos.
+  for (const revealedId of revealedPrivateSectors) {
+    completePath(routeForSector(revealedId), '#cfe1ff');
+  }
+
+  if (alreadyRevealed) {
     setSequenceSteps('private-read', ...currentPrivateSteps());
-    animatePath(sectorRoute, 3000, '#cfe1ff', token, 2);
-  }, 6000, token);
+    return;
+  }
+
+  const finishReveal = () => {
+    revealedPrivateSectors.add(sector.id);
+    pendingRevealSectorId = null;
+    setSequenceSteps('private-read', ...currentPrivateSteps());
+  };
+
+  const revealLateralBridge = () => {
+    pendingRevealSectorId = sector.id;
+    setSequenceSteps(...currentPrivateSteps());
+    animatePath(sectorRoute, 4000, '#cfe1ff', token, 2);
+    later(finishReveal, 4000, token);
+  };
+
+  if (!hadAnyReveal) {
+    // El puente principal (central) solo se anima la primera vez, dura 6s y luego se borra para siempre.
+    pendingRevealSectorId = sector.id;
+    setSequenceSteps('private-bridge', ...currentPrivateSteps());
+    animatePath(centerRoute, 6000, '#cfe1ff', token, 1);
+
+    later(() => {
+      centerRoute?.classList.remove('active', 'complete');
+      centerRoute?.style.removeProperty('--route-color');
+      if (centerRoute) {
+        centerRoute.style.strokeDasharray = '';
+        centerRoute.style.strokeDashoffset = '';
+      }
+      revealLateralBridge();
+    }, 6000, token);
+    return;
+  }
+
+  revealLateralBridge();
 }
 
 function setFormalSequenceSteps(...steps) {
@@ -653,6 +693,7 @@ function renderExperience() {
 
   if (phase === 'idle') {
     revealedPrivateSectors.clear();
+    pendingRevealSectorId = null;
     els.informalPanel.classList.remove('dim');
     els.formalPanel.classList.add('dim');
     document.querySelectorAll('.sector-node').forEach(node => node.classList.remove('active', 'dim'));
@@ -667,6 +708,7 @@ function renderExperience() {
 
   if (phase === 'bankIntro') {
     revealedPrivateSectors.clear();
+    pendingRevealSectorId = null;
     els.informalPanel.classList.add('active');
     els.formalPanel.classList.add('dim');
     document.querySelectorAll('.sector-node').forEach(node => node.classList.remove('active', 'dim'));
