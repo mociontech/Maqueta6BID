@@ -2856,7 +2856,7 @@ button {
 }
 
 .physical-mode[data-phase="idle"] .stage {
-  background: url("/TV/TV-MOMENTO1.png") center / cover no-repeat #08111d;
+  background: url("/TV/tvinicial.png") center / cover no-repeat #08111d;
 }
 
 .physical-mode[data-phase="idle"] .stage > * {
@@ -2870,6 +2870,38 @@ button {
 
 .physical-mode[data-phase="idle"] .physical-layout > * {
   opacity: 0 !important;
+}
+
+.physical-mode[data-phase="idle"] .idle-media-poster {
+  position: absolute;
+  overflow: hidden;
+  background: #cfe1ff;
+  opacity: 1 !important;
+}
+
+.physical-mode[data-phase="idle"] .idle-media-informal {
+  left: 3.301%;
+  top: 13.903%;
+  width: 20.475%;
+  height: 36.406%;
+  border-radius: 26px;
+}
+
+.physical-mode[data-phase="idle"] .idle-media-formal {
+  left: 75.818%;
+  top: 57.673%;
+  width: 20.475%;
+  height: 36.406%;
+  border-radius: 26px;
+}
+
+.physical-mode[data-phase="idle"] .idle-media-poster video {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  opacity: 1;
+  filter: none;
 }
 
 .physical-mode[data-phase="idle"] .connection-status {
@@ -2889,12 +2921,12 @@ button {
   top: 14.933%;
   width: 28.526%;
   height: 9.217%;
-  border: 3px solid rgba(82, 232, 255, .95);
+  border: 3px solid rgba(207, 225, 255, .95);
   border-radius: 14px;
   box-shadow:
-    0 0 18px rgba(82, 232, 255, .72),
-    0 0 44px rgba(0, 136, 255, .45),
-    inset 0 0 22px rgba(82, 232, 255, .22);
+    0 0 18px rgba(207, 225, 255, .72),
+    0 0 44px rgba(207, 225, 255, .45),
+    inset 0 0 22px rgba(207, 225, 255, .22);
   animation: idleTabletCtaPulse 1.8s ease-in-out infinite;
 }
 
@@ -2905,26 +2937,26 @@ button {
   height: 9.217%;
   border-radius: 14px;
   background:
-    linear-gradient(105deg, transparent 0 38%, rgba(97, 241, 255, .82) 48%, transparent 58%) -60% 0 / 42% 100% no-repeat;
+    linear-gradient(105deg, transparent 0 38%, rgba(207, 225, 255, .82) 48%, transparent 58%) -60% 0 / 42% 100% no-repeat;
   mix-blend-mode: screen;
-  filter: drop-shadow(0 0 14px rgba(82, 232, 255, .8));
+  filter: drop-shadow(0 0 14px rgba(207, 225, 255, .8));
   animation: idleTabletCtaScan 2.2s linear infinite;
 }
 
 @keyframes idleTabletCtaPulse {
   0%, 100% {
-    border-color: rgba(82, 232, 255, .82);
+    border-color: rgba(207, 225, 255, .82);
     box-shadow:
-      0 0 14px rgba(82, 232, 255, .52),
-      0 0 34px rgba(0, 136, 255, .34),
-      inset 0 0 16px rgba(82, 232, 255, .14);
+      0 0 14px rgba(207, 225, 255, .52),
+      0 0 34px rgba(207, 225, 255, .34),
+      inset 0 0 16px rgba(207, 225, 255, .14);
   }
   50% {
-    border-color: rgba(167, 250, 255, 1);
+    border-color: rgba(207, 225, 255, 1);
     box-shadow:
-      0 0 26px rgba(82, 232, 255, .96),
-      0 0 74px rgba(0, 136, 255, .58),
-      inset 0 0 28px rgba(82, 232, 255, .28);
+      0 0 26px rgba(207, 225, 255, .96),
+      0 0 74px rgba(207, 225, 255, .58),
+      inset 0 0 28px rgba(207, 225, 255, .28);
   }
 }
 
