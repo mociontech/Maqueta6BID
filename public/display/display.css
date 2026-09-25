@@ -2827,10 +2827,46 @@ button {
 
 .physical-mode[data-phase="problem"] .private-pad,
 .physical-mode[data-phase="solutions"] .private-pad {
-  opacity: 0 !important;
+  opacity: .32 !important;
   background: transparent !important;
-  border-color: transparent !important;
-  box-shadow: none !important;
+  border: 2px solid rgba(207, 225, 255, .34) !important;
+  box-shadow:
+    0 0 12px rgba(207, 225, 255, .16),
+    inset 0 0 14px rgba(207, 225, 255, .08) !important;
+  transform: translateY(0) scale(1) !important;
+}
+
+.physical-mode[data-phase="problem"] .private-pad::before,
+.physical-mode[data-phase="problem"] .private-pad::after,
+.physical-mode[data-phase="solutions"] .private-pad::before,
+.physical-mode[data-phase="solutions"] .private-pad::after {
+  opacity: 0 !important;
+  animation: none !important;
+}
+
+.physical-mode[data-phase="problem"][data-sequence~="private-1"] .private-pad-intermediaries,
+.physical-mode[data-phase="solutions"][data-sequence~="private-1"] .private-pad-intermediaries,
+.physical-mode[data-phase="problem"][data-sequence~="private-2"] .private-pad-investors,
+.physical-mode[data-phase="solutions"][data-sequence~="private-2"] .private-pad-investors,
+.physical-mode[data-phase="problem"][data-sequence~="private-3"] .private-pad-insurers,
+.physical-mode[data-phase="solutions"][data-sequence~="private-3"] .private-pad-insurers {
+  opacity: 1 !important;
+  background: transparent !important;
+  border-color: #cfe1ff !important;
+  box-shadow:
+    0 0 22px rgba(207, 225, 255, .62),
+    0 0 52px rgba(207, 225, 255, .32),
+    inset 0 0 22px rgba(207, 225, 255, .16) !important;
+  animation: privateBoxPulse 1.8s ease-in-out infinite;
+}
+
+@keyframes privateBoxPulse {
+  0%, 100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.35);
+  }
 }
 
 .physical-mode .route-transformation {
@@ -3038,12 +3074,27 @@ button {
   background: url("/TV/melo1.png") center / cover no-repeat #08111d;
 }
 
+.physical-mode[data-phase="problem"] .stage,
+.physical-mode[data-phase="solutions"] .stage,
+.physical-mode[data-phase="instrument"] .stage,
+.physical-mode[data-phase="route"] .stage,
+.physical-mode[data-phase="providers"] .stage,
+.physical-mode[data-phase="result"] .stage {
+  background: url("/TV/melo1.png") center / cover no-repeat #08111d;
+}
+
 .physical-mode[data-phase="idle"] .stage > * {
   opacity: 0 !important;
   pointer-events: none;
 }
 
-.physical-mode[data-phase="bankIntro"] .stage > *:not(.physical-layout):not(.route-layer) {
+.physical-mode[data-phase="bankIntro"] .stage > *:not(.physical-layout):not(.route-layer),
+.physical-mode[data-phase="problem"] .stage > *:not(.physical-layout):not(.route-layer),
+.physical-mode[data-phase="solutions"] .stage > *:not(.physical-layout):not(.route-layer),
+.physical-mode[data-phase="instrument"] .stage > *:not(.physical-layout):not(.route-layer),
+.physical-mode[data-phase="route"] .stage > *:not(.physical-layout):not(.route-layer),
+.physical-mode[data-phase="providers"] .stage > *:not(.physical-layout):not(.route-layer),
+.physical-mode[data-phase="result"] .stage > *:not(.physical-layout):not(.route-layer) {
   display: none !important;
 }
 
@@ -3051,7 +3102,13 @@ button {
   opacity: 1 !important;
 }
 
-.physical-mode[data-phase="bankIntro"] .physical-layout {
+.physical-mode[data-phase="bankIntro"] .physical-layout,
+.physical-mode[data-phase="problem"] .physical-layout,
+.physical-mode[data-phase="solutions"] .physical-layout,
+.physical-mode[data-phase="instrument"] .physical-layout,
+.physical-mode[data-phase="route"] .physical-layout,
+.physical-mode[data-phase="providers"] .physical-layout,
+.physical-mode[data-phase="result"] .physical-layout {
   opacity: 1 !important;
 }
 
@@ -3068,7 +3125,29 @@ button {
 .physical-mode[data-phase="bankIntro"] .private-label,
 .physical-mode[data-phase="bankIntro"] .slot-private,
 .physical-mode[data-phase="bankIntro"] .private-pad,
-.physical-mode[data-phase="bankIntro"] .slot-formal {
+.physical-mode[data-phase="bankIntro"] .slot-formal,
+.physical-mode[data-phase="problem"] .main-title,
+.physical-mode[data-phase="problem"] .main-subtitle,
+.physical-mode[data-phase="problem"] .zone-title,
+.physical-mode[data-phase="problem"] .tablet-cta,
+.physical-mode[data-phase="problem"] .outer-frame,
+.physical-mode[data-phase="problem"] .slot-caption,
+.physical-mode[data-phase="problem"] .private-title-physical,
+.physical-mode[data-phase="problem"] .formal-title-physical,
+.physical-mode[data-phase="problem"] .result-bubble,
+.physical-mode[data-phase="problem"] .slot-private,
+.physical-mode[data-phase="problem"] .slot-formal,
+.physical-mode[data-phase="solutions"] .main-title,
+.physical-mode[data-phase="solutions"] .main-subtitle,
+.physical-mode[data-phase="solutions"] .zone-title,
+.physical-mode[data-phase="solutions"] .tablet-cta,
+.physical-mode[data-phase="solutions"] .outer-frame,
+.physical-mode[data-phase="solutions"] .slot-caption,
+.physical-mode[data-phase="solutions"] .private-title-physical,
+.physical-mode[data-phase="solutions"] .formal-title-physical,
+.physical-mode[data-phase="solutions"] .result-bubble,
+.physical-mode[data-phase="solutions"] .slot-private,
+.physical-mode[data-phase="solutions"] .slot-formal {
   opacity: 0 !important;
 }
 
@@ -3133,6 +3212,15 @@ button {
   opacity: 1;
 }
 
+.physical-mode[data-phase="problem"] .idle-media-poster,
+.physical-mode[data-phase="solutions"] .idle-media-poster {
+  position: absolute;
+  overflow: hidden;
+  background: transparent;
+  display: block !important;
+  opacity: 1 !important;
+}
+
 .physical-mode[data-phase="bankIntro"] .idle-media-informal {
   left: 64px;
   top: 730px;
@@ -3145,7 +3233,31 @@ button {
   display: none;
 }
 
+.physical-mode[data-phase="problem"] .idle-media-informal,
+.physical-mode[data-phase="solutions"] .idle-media-informal {
+  left: 64px;
+  top: 730px;
+  width: 394px;
+  height: 317px;
+  border-radius: 0;
+}
+
+.physical-mode[data-phase="problem"] .idle-media-formal,
+.physical-mode[data-phase="solutions"] .idle-media-formal {
+  display: none !important;
+}
+
 .physical-mode[data-phase="bankIntro"] .idle-media-poster video {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+  opacity: 1;
+  filter: none;
+}
+
+.physical-mode[data-phase="problem"] .idle-media-poster video,
+.physical-mode[data-phase="solutions"] .idle-media-poster video {
   width: 100%;
   height: 100%;
   display: block;

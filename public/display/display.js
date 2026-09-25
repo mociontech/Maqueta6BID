@@ -250,6 +250,7 @@ function revealPrivateSectorRead(sector, token) {
   const step = privateStepForSector(sector.id);
   const centerRoute = routeById('route-private-center');
   const sectorRoute = routeForSector(sector.id);
+  revealedPrivateSectors.clear();
   revealedPrivateSectors.add(sector.id);
   setSequenceSteps('private-bridge');
   animatePath(centerRoute, 2000, '#cfe1ff', token, 1);
@@ -706,6 +707,7 @@ function renderExperience() {
   const barrierRoute = routeById('route-barrier');
 
   if (phase === 'problem' || phase === 'solutions') {
+    playVideo(els.idleInformalVideo, { loop: true, keepVisibleOnEnd: true });
     revealPrivateSectorRead(sector, token);
     return;
   }
