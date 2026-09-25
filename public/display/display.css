@@ -1440,11 +1440,12 @@ button {
 }
 
 .informal-maquette-pad {
-  left: 86px;
-  top: 214px;
-  width: 396px;
-  height: 330px;
+  left: 64px;
+  top: 150px;
+  width: 394px;
+  height: 394px;
   border: 0;
+  border-radius: 26px;
   background: transparent;
   box-shadow: none;
   opacity: 1;
@@ -1454,7 +1455,8 @@ button {
 .informal-maquette-pad::after {
   content: "";
   position: absolute;
-  inset: -3px;
+  inset: 0;
+  border-radius: inherit;
   pointer-events: none;
 }
 
@@ -1552,10 +1554,10 @@ button {
 }
 
 .slot-bank {
-  left: 866px;
-  top: 388px;
-  width: 206px;
-  height: 206px;
+  left: 804px;
+  top: 286px;
+  width: 306px;
+  height: 306px;
   border-color: transparent;
   border-radius: 50%;
   background: transparent;
@@ -1564,18 +1566,18 @@ button {
 .slot-bank::before {
   content: "";
   position: absolute;
-  inset: -24px;
-  border: 2px solid rgba(216, 255, 41, .36);
+  inset: 0;
+  border: 2px solid rgba(207, 225, 255, .42);
   border-radius: 50%;
   opacity: 0;
-  box-shadow: 0 0 38px rgba(216, 255, 41, .26);
+  box-shadow: 0 0 38px rgba(207, 225, 255, .34);
 }
 
 .slot-bank::after {
-  border-width: 4px;
-  border-color: #d8ff29;
+  border-width: 3px;
+  border-color: rgba(207, 225, 255, .78);
   border-radius: 50%;
-  box-shadow: 0 0 22px rgba(216, 255, 41, .35), inset 0 0 20px rgba(216, 255, 41, .16);
+  box-shadow: 0 0 22px rgba(207, 225, 255, .35), inset 0 0 20px rgba(207, 225, 255, .16);
 }
 
 .physical-mode[data-phase="bankIntro"] .slot-bank::before,
@@ -1616,17 +1618,17 @@ button {
 
 @keyframes bankRingCharge {
   0%, 100% {
-    border-color: rgba(216, 255, 41, .84);
+    border-color: rgba(207, 225, 255, .72);
     box-shadow:
-      0 0 22px rgba(216, 255, 41, .36),
-      inset 0 0 18px rgba(216, 255, 41, .14);
+      0 0 22px rgba(207, 225, 255, .36),
+      inset 0 0 18px rgba(207, 225, 255, .14);
   }
   50% {
-    border-color: rgba(120, 255, 236, .98);
+    border-color: rgba(207, 225, 255, .98);
     box-shadow:
-      0 0 36px rgba(120, 255, 236, .68),
-      0 0 64px rgba(216, 255, 41, .28),
-      inset 0 0 26px rgba(120, 255, 236, .18);
+      0 0 36px rgba(207, 225, 255, .68),
+      0 0 64px rgba(207, 225, 255, .28),
+      inset 0 0 26px rgba(207, 225, 255, .18);
   }
 }
 
@@ -2267,9 +2269,9 @@ button {
 
 .physical-mode .route-barrier.active,
 .physical-mode .route-barrier.complete {
-  stroke: rgba(216, 255, 41, .28);
+  stroke: rgba(207, 225, 255, .48);
   stroke-width: 2;
-  opacity: .35;
+  opacity: .5;
 }
 
 .physical-mode .route-transformation.active,
@@ -2876,7 +2878,6 @@ button {
 
 .physical-mode[data-phase="bankIntro"] .main-title,
 .physical-mode[data-phase="bankIntro"] .main-subtitle,
-.physical-mode[data-phase="bankIntro"] .main-copy,
 .physical-mode[data-phase="bankIntro"] .zone-title,
 .physical-mode[data-phase="bankIntro"] .slot-caption,
 .physical-mode[data-phase="bankIntro"] .private-title-physical,
@@ -2888,6 +2889,35 @@ button {
 .physical-mode[data-phase="bankIntro"] .private-pad,
 .physical-mode[data-phase="bankIntro"] .slot-formal {
   opacity: 0 !important;
+}
+
+.physical-mode[data-phase="bankIntro"] .main-copy {
+  top: 120px;
+  left: 540px;
+  width: 840px;
+  color: #f2f4f8;
+  font-size: 23px;
+  line-height: 1.22;
+  z-index: 3;
+}
+
+.physical-mode[data-phase="bankIntro"][data-sequence~="main-copy"] .physical-layout::before {
+  content: "";
+  position: absolute;
+  left: 520px;
+  top: 136px;
+  width: 890px;
+  height: 128px;
+  border-radius: 8px;
+  background: linear-gradient(180deg, rgba(15, 25, 39, .96), rgba(15, 25, 39, .9));
+  box-shadow: 0 0 42px rgba(15, 25, 39, .92);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.physical-mode[data-phase="bankIntro"][data-sequence~="main-copy"] .main-copy {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .physical-mode[data-phase="idle"] .physical-layout > * {

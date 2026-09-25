@@ -152,6 +152,17 @@ function playVideo(video, options = {}) {
   video.play().catch(() => {});
 }
 
+function resetVideoToPoster(video) {
+  if (!video) return;
+  video.pause();
+  try { video.currentTime = 0; } catch {}
+  video.load();
+}
+
+[els.idleInformalVideo, els.idleFormalVideo].forEach(video => {
+  video?.addEventListener('ended', () => resetVideoToPoster(video));
+});
+
 function playVideoOnce(video, key, options = {}) {
   const runId = state.runId || 0;
   if (playedVideoRun[key] === runId) return;
@@ -200,8 +211,9 @@ function revealBankIntroSequence(token) {
     const videoMs = estimateVideoDurationMs(introVideo, 10000);
 
     later(() => {
+      resetVideoToPoster(introVideo);
       setSequenceSteps('maquette', 'problem', 'video', 'bridge');
-      animatePath(barrierRoute, 2300, '#d8ff29', token, 0);
+      animatePath(barrierRoute, 2300, '#cfe1ff', token, 0);
     }, videoMs, token);
 
     later(() => {
