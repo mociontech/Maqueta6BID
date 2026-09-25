@@ -253,13 +253,13 @@ function revealPrivateSectorRead(sector, token) {
   revealedPrivateSectors.clear();
   revealedPrivateSectors.add(sector.id);
   setSequenceSteps('private-bridge');
-  animatePath(centerRoute, 2000, '#cfe1ff', token, 1);
+  animatePath(centerRoute, 3000, '#cfe1ff', token, 1);
 
   later(() => {
     completePath(centerRoute, '#cfe1ff');
     setSequenceSteps('private-bridge', 'private-read', step);
     animatePath(sectorRoute, 3000, '#cfe1ff', token, 2);
-  }, 2000, token);
+  }, 3000, token);
 }
 
 function setFormalSequenceSteps(...steps) {

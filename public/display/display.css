@@ -2827,12 +2827,10 @@ button {
 
 .physical-mode[data-phase="problem"] .private-pad,
 .physical-mode[data-phase="solutions"] .private-pad {
-  opacity: .32 !important;
+  opacity: 0 !important;
   background: transparent !important;
-  border: 2px solid rgba(207, 225, 255, .34) !important;
-  box-shadow:
-    0 0 12px rgba(207, 225, 255, .16),
-    inset 0 0 14px rgba(207, 225, 255, .08) !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
   transform: translateY(0) scale(1) !important;
 }
 
@@ -2850,23 +2848,11 @@ button {
 .physical-mode[data-phase="solutions"][data-sequence~="private-2"] .private-pad-investors,
 .physical-mode[data-phase="problem"][data-sequence~="private-3"] .private-pad-insurers,
 .physical-mode[data-phase="solutions"][data-sequence~="private-3"] .private-pad-insurers {
-  opacity: 1 !important;
+  opacity: 0 !important;
   background: transparent !important;
-  border-color: #cfe1ff !important;
-  box-shadow:
-    0 0 22px rgba(207, 225, 255, .62),
-    0 0 52px rgba(207, 225, 255, .32),
-    inset 0 0 22px rgba(207, 225, 255, .16) !important;
-  animation: privateBoxPulse 1.8s ease-in-out infinite;
-}
-
-@keyframes privateBoxPulse {
-  0%, 100% {
-    filter: brightness(1);
-  }
-  50% {
-    filter: brightness(1.35);
-  }
+  border-color: transparent !important;
+  box-shadow: none !important;
+  animation: none !important;
 }
 
 .physical-mode .route-transformation {
