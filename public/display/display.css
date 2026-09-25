@@ -2795,7 +2795,7 @@ button {
 
 .physical-mode[data-phase="problem"] .private-popup,
 .physical-mode[data-phase="solutions"] .private-popup {
-  top: 674px !important;
+  top: 668px !important;
   min-height: 0;
   padding: 0;
   border: 0;
@@ -2820,21 +2820,21 @@ button {
 
 .physical-mode[data-phase="problem"] .private-popup-intermediaries,
 .physical-mode[data-phase="solutions"] .private-popup-intermediaries {
-  left: 650px !important;
+  left: 645px !important;
   width: 189px;
   height: 116px;
 }
 
 .physical-mode[data-phase="problem"] .private-popup-investors,
 .physical-mode[data-phase="solutions"] .private-popup-investors {
-  left: 862px !important;
+  left: 842px !important;
   width: 197px;
   height: 116px;
 }
 
 .physical-mode[data-phase="problem"] .private-popup-insurers,
 .physical-mode[data-phase="solutions"] .private-popup-insurers {
-  left: 1080px !important;
+  left: 1048px !important;
   width: 227px;
   height: 116px;
 }
