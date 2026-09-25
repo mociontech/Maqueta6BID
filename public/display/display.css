@@ -3001,10 +3001,10 @@ button {
 }
 
 .physical-mode[data-phase="idle"] .idle-media-informal {
-  left: 5.5%;
-  top: 74.35%;
-  width: 17.2%;
-  height: 24.67%;
+  left: 64px;
+  top: 730px;
+  width: 394px;
+  height: 317px;
   border-radius: 0;
 }
 
@@ -3042,10 +3042,10 @@ button {
 }
 
 .physical-mode[data-phase="bankIntro"] .idle-media-informal {
-  left: 5.5%;
-  top: 74.35%;
-  width: 17.2%;
-  height: 24.67%;
+  left: 64px;
+  top: 730px;
+  width: 394px;
+  height: 317px;
   border-radius: 0;
 }
 
