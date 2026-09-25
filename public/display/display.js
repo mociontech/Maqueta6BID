@@ -207,11 +207,10 @@ function revealBankIntroSequence(token) {
 
   later(() => {
     setSequenceSteps('maquette', 'problem', 'video');
-    playVideo(introVideo, { restart: true, keepVisibleOnEnd: true });
-    const videoMs = estimateVideoDurationMs(introVideo, 10000);
+    playVideo(introVideo, { restart: true, loop: true, keepVisibleOnEnd: true });
+    const videoMs = 10000;
 
     later(() => {
-      resetVideoToPoster(introVideo);
       setSequenceSteps('maquette', 'problem', 'video', 'bridge');
       animatePath(barrierRoute, 2300, '#cfe1ff', token, 0);
     }, videoMs, token);
