@@ -1292,11 +1292,7 @@ button {
 .physical-mode .stage {
   top: 0;
   height: 1080px;
-  background:
-    linear-gradient(rgba(255, 255, 255, .026) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, .026) 1px, transparent 1px),
-    radial-gradient(ellipse at 50% 52%, rgba(11, 37, 54, .48), rgba(4, 7, 10, .96) 60%, #020304 100%);
-  background-size: 86px 86px, 86px 86px, auto;
+  background: url("/TV/melo1.png") center / cover no-repeat #08111d;
 }
 
 .physical-layout {
@@ -1359,15 +1355,69 @@ button {
 }
 
 .physical-mode .main-copy {
-  top: 170px;
-  left: 690px;
-  width: 560px;
+  top: 152px;
+  left: 558px;
+  width: 804px;
   color: #e6e9ee;
-  font-size: 21px;
-  line-height: 1.25;
+  font-size: 23px;
+  line-height: 1.22;
   opacity: 0;
   transform: translateY(10px);
   transition: opacity .42s ease, transform .42s ease;
+}
+
+.physical-mode .tablet-cta {
+  position: absolute;
+  left: 35.72%;
+  top: 14.92%;
+  width: 28.56%;
+  height: 9.24%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 18px;
+  background: #cfe1ff;
+  color: #07090f;
+  text-align: center;
+  letter-spacing: 0;
+  text-shadow: none;
+  opacity: 0;
+  box-shadow:
+    0 0 18px rgba(207, 225, 255, .55),
+    0 0 42px rgba(207, 225, 255, .34);
+  transition: opacity .35s ease;
+  overflow: hidden;
+}
+
+.physical-mode .tablet-cta::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(105deg, transparent 0 38%, rgba(255, 255, 255, .72) 48%, transparent 58%) -60% 0 / 42% 100% no-repeat;
+  mix-blend-mode: screen;
+  pointer-events: none;
+  animation: idleTabletCtaScan 2.2s linear infinite;
+}
+
+.physical-mode .tablet-cta strong,
+.physical-mode .tablet-cta span {
+  position: relative;
+  z-index: 1;
+  display: block;
+  font-weight: 900;
+  line-height: .98;
+}
+
+.physical-mode .tablet-cta strong {
+  color: #005cff;
+  font-size: 38px;
+}
+
+.physical-mode .tablet-cta span {
+  color: #07090f;
+  font-size: 34px;
 }
 
 .physical-mode[data-phase="bankIntro"][data-sequence~="bank-ring"][data-sequence~="main-copy"] .main-copy {
@@ -2852,15 +2902,11 @@ button {
 }
 
 .physical-mode[data-phase="idle"] .stage {
-  background: url("/TV/ahorasi1.png") center / cover no-repeat #08111d;
+  background: url("/TV/melo1.png") center / cover no-repeat #08111d;
 }
 
 .physical-mode[data-phase="bankIntro"] .stage {
-  background: url("/TV/ahorasi1.png") center / cover no-repeat #08111d;
-}
-
-.physical-mode[data-phase="bankIntro"][data-sequence~="main-copy"] .stage {
-  background-image: url("/TV/Group%202147213196.png");
+  background: url("/TV/melo1.png") center / cover no-repeat #08111d;
 }
 
 .physical-mode[data-phase="idle"] .stage > * {
@@ -2882,8 +2928,8 @@ button {
 
 .physical-mode[data-phase="bankIntro"] .main-title,
 .physical-mode[data-phase="bankIntro"] .main-subtitle,
-.physical-mode[data-phase="bankIntro"] .main-copy,
 .physical-mode[data-phase="bankIntro"] .zone-title,
+.physical-mode[data-phase="bankIntro"] .tablet-cta,
 .physical-mode[data-phase="bankIntro"] .outer-frame,
 .physical-mode[data-phase="bankIntro"] .slot-caption,
 .physical-mode[data-phase="bankIntro"] .private-title-physical,
@@ -2899,6 +2945,15 @@ button {
 
 .physical-mode[data-phase="idle"] .physical-layout > * {
   opacity: 0 !important;
+}
+
+.physical-mode[data-phase="idle"] .tablet-cta {
+  opacity: 1 !important;
+}
+
+.physical-mode[data-phase="bankIntro"][data-sequence~="main-copy"] .main-copy {
+  opacity: 1 !important;
+  transform: translateY(0);
 }
 
 .physical-mode[data-phase="idle"] .idle-media-poster {
