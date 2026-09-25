@@ -2893,6 +2893,7 @@ button {
   width: 20.82%;
   height: 29.82%;
   border-radius: 0;
+  display: none;
 }
 
 .physical-mode[data-phase="idle"] .idle-media-poster video {
