@@ -2879,6 +2879,7 @@ button {
 .physical-mode[data-phase="bankIntro"] .main-title,
 .physical-mode[data-phase="bankIntro"] .main-subtitle,
 .physical-mode[data-phase="bankIntro"] .zone-title,
+.physical-mode[data-phase="bankIntro"] .outer-frame,
 .physical-mode[data-phase="bankIntro"] .slot-caption,
 .physical-mode[data-phase="bankIntro"] .private-title-physical,
 .physical-mode[data-phase="bankIntro"] .formal-title-physical,
@@ -2904,13 +2905,13 @@ button {
 .physical-mode[data-phase="bankIntro"][data-sequence~="main-copy"] .physical-layout::before {
   content: "";
   position: absolute;
-  left: 520px;
-  top: 136px;
-  width: 890px;
-  height: 128px;
+  left: 600px;
+  top: 126px;
+  width: 560px;
+  height: 108px;
   border-radius: 8px;
-  background: linear-gradient(180deg, rgba(15, 25, 39, .96), rgba(15, 25, 39, .9));
-  box-shadow: 0 0 42px rgba(15, 25, 39, .92);
+  background: linear-gradient(180deg, rgba(18, 31, 47, .98), rgba(18, 31, 47, .96));
+  box-shadow: 0 0 34px rgba(18, 31, 47, .95);
   pointer-events: none;
   z-index: 2;
 }
