@@ -2856,20 +2856,7 @@ button {
 }
 
 .physical-mode[data-phase="idle"] .stage {
-  background: url("/TV/pantallainico.png") center / cover no-repeat #08111d;
-}
-
-.physical-mode[data-phase="idle"] .stage::before {
-  content: "";
-  position: absolute;
-  left: 67.8%;
-  top: 7.1%;
-  width: 30.5%;
-  height: 6.4%;
-  z-index: 1;
-  pointer-events: none;
-  background:
-    linear-gradient(90deg, rgba(15, 19, 25, .96), rgba(16, 21, 29, .98) 45%, rgba(13, 17, 23, .96));
+  background: url("/TV/ahorasi1.png") center / cover no-repeat #08111d;
 }
 
 .physical-mode[data-phase="idle"] .stage > * {
