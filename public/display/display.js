@@ -241,9 +241,24 @@ function currentPrivateSteps() {
     .filter(Boolean);
 }
 
-function revealPrivateSectorRead(sector) {
-  if (sector?.id) revealedPrivateSectors.add(sector.id);
-  setSequenceSteps(...currentPrivateSteps());
+function revealPrivateSectorRead(sector, token) {
+  if (!sector?.id) {
+    setSequenceSteps(...currentPrivateSteps());
+    return;
+  }
+
+  const step = privateStepForSector(sector.id);
+  const centerRoute = routeById('route-private-center');
+  const sectorRoute = routeForSector(sector.id);
+  revealedPrivateSectors.add(sector.id);
+  setSequenceSteps('private-bridge');
+  animatePath(centerRoute, 2000, '#cfe1ff', token, 1);
+
+  later(() => {
+    completePath(centerRoute, '#cfe1ff');
+    setSequenceSteps('private-bridge', 'private-read', step);
+    animatePath(sectorRoute, 3000, '#cfe1ff', token, 2);
+  }, 2000, token);
 }
 
 function setFormalSequenceSteps(...steps) {
@@ -691,7 +706,7 @@ function renderExperience() {
   const barrierRoute = routeById('route-barrier');
 
   if (phase === 'problem' || phase === 'solutions') {
-    revealPrivateSectorRead(sector);
+    revealPrivateSectorRead(sector, token);
     return;
   }
 

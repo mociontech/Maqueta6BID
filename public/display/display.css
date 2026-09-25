@@ -2232,8 +2232,19 @@ button {
 }
 
 .physical-mode .route-sector,
+.physical-mode .route-private-center,
 .physical-mode .route-transformation {
   display: none;
+}
+
+.physical-mode .route-private-center.active,
+.physical-mode .route-private-center.complete,
+.physical-mode .route-sector.active,
+.physical-mode .route-sector.complete {
+  display: block;
+  stroke: #cfe1ff;
+  stroke-width: 2.5;
+  opacity: .92;
 }
 
 .physical-mode .holo-bridge {
@@ -2747,6 +2758,79 @@ button {
 .physical-mode[data-phase="solutions"][data-sequence~="private-3"] .private-label-insurers {
   opacity: 1;
   transform: translateY(0);
+}
+
+.physical-mode[data-phase="problem"] .route-private-center.active,
+.physical-mode[data-phase="problem"] .route-private-center.complete,
+.physical-mode[data-phase="problem"] .route-sector.active,
+.physical-mode[data-phase="problem"] .route-sector.complete,
+.physical-mode[data-phase="solutions"] .route-private-center.active,
+.physical-mode[data-phase="solutions"] .route-private-center.complete,
+.physical-mode[data-phase="solutions"] .route-sector.active,
+.physical-mode[data-phase="solutions"] .route-sector.complete {
+  display: block;
+  stroke: #cfe1ff;
+  stroke-width: 2.5;
+  opacity: .92;
+}
+
+.physical-mode[data-phase="problem"] .private-popup,
+.physical-mode[data-phase="solutions"] .private-popup {
+  top: 674px !important;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  display: block;
+}
+
+.physical-mode[data-phase="problem"] .private-popup::after,
+.physical-mode[data-phase="solutions"] .private-popup::after {
+  content: none;
+}
+
+.physical-mode[data-phase="problem"] .private-popup img,
+.physical-mode[data-phase="solutions"] .private-popup img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.physical-mode[data-phase="problem"] .private-popup-intermediaries,
+.physical-mode[data-phase="solutions"] .private-popup-intermediaries {
+  left: 650px !important;
+  width: 189px;
+  height: 116px;
+}
+
+.physical-mode[data-phase="problem"] .private-popup-investors,
+.physical-mode[data-phase="solutions"] .private-popup-investors {
+  left: 862px !important;
+  width: 197px;
+  height: 116px;
+}
+
+.physical-mode[data-phase="problem"] .private-popup-insurers,
+.physical-mode[data-phase="solutions"] .private-popup-insurers {
+  left: 1080px !important;
+  width: 227px;
+  height: 116px;
+}
+
+.physical-mode[data-phase="problem"] .private-label,
+.physical-mode[data-phase="solutions"] .private-label {
+  display: none !important;
+}
+
+.physical-mode[data-phase="problem"] .private-pad,
+.physical-mode[data-phase="solutions"] .private-pad {
+  opacity: 0 !important;
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
 }
 
 .physical-mode .route-transformation {
