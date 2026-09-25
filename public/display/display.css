@@ -2896,6 +2896,10 @@ button {
   display: none;
 }
 
+.physical-mode[data-phase="idle"] .right-title {
+  opacity: 0 !important;
+}
+
 .physical-mode[data-phase="idle"] .idle-media-poster video {
   width: 100%;
   height: 100%;
