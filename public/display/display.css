@@ -2067,10 +2067,18 @@ button {
 .bridge-copy-left {
   left: 584px;
   top: 378px;
-  width: 190px;
+  width: 208px;
+  height: 43px;
   opacity: 0;
   transform: translateY(8px);
   transition: opacity .32s ease, transform .32s ease;
+}
+
+.bridge-copy-left img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .physical-mode[data-phase="bankIntro"] .bridge-copy-left,
