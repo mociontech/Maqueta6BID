@@ -54,6 +54,7 @@ const els = {
   formalVideo: document.querySelector('#formalVideo'),
   idleInformalVideo: document.querySelector('#idleInformalVideo'),
   idleFormalVideo: document.querySelector('#idleFormalVideo'),
+  finalFormalVideo: document.querySelector('#finalFormalVideo'),
   informalPoster: document.querySelector('#informalPoster'),
   formalPoster: document.querySelector('#formalPoster'),
   problemBullets: document.querySelector('#problemBullets'),
@@ -307,26 +308,32 @@ function revealPrivateSectorRead(sector, token) {
 }
 
 function setFormalSequenceSteps(...steps) {
-  setSequenceSteps(...currentPrivateSteps(), ...steps);
+  setSequenceSteps(...steps);
 }
 
 function revealFormalTransformationSequence(token) {
   setFormalSequenceSteps('formal-bridge');
   stopVideo(els.formalVideo);
-  animatePath(routeById('route-formal-bridge'), 4000, '#5ee6aa', token, 0);
+  stopVideo(els.finalFormalVideo);
+  animatePath(routeById('route-formal-bridge'), 4000, '#cfe1ff', token, 0);
 
   later(() => {
-    setFormalSequenceSteps('formal-bridge', 'formal-copy');
+    setFormalSequenceSteps('formal-bridge', 'formal-popup5');
   }, 4000, token);
 
   later(() => {
-    setFormalSequenceSteps('formal-bridge', 'formal-copy', 'formal-slot');
-  }, 8000, token);
+    setFormalSequenceSteps('formal-bridge', 'formal-popup5', 'formal-popup7');
+  }, 5600, token);
 
   later(() => {
-    setFormalSequenceSteps('formal-bridge', 'formal-copy', 'formal-slot', 'formal-video');
-    playVideo(els.formalVideo, { restart: true, keepVisibleOnEnd: true });
-  }, 11000, token);
+    setFormalSequenceSteps('formal-bridge', 'formal-popup5', 'formal-popup7', 'formal-video');
+    playVideo(els.finalFormalVideo, { restart: true, keepVisibleOnEnd: true });
+  }, 7600, token);
+
+  later(() => {
+    stopVideo(els.finalFormalVideo, false, true);
+    setFormalSequenceSteps('formal-bridge', 'formal-popup5', 'formal-popup7', 'formal-video', 'formal-popup8');
+  }, 17600, token);
 }
 
 function buildScene() {
@@ -347,6 +354,7 @@ function buildScene() {
   els.formalPoster.src = formalPoster;
   setVideoSource(els.informalVideo, informalPoster, media.informalVideo);
   setVideoSource(els.formalVideo, formalPoster, media.formalVideo);
+  setVideoSource(els.finalFormalVideo, '/TV/aaaa%201.png', media.formalVideo);
   els.developmentBankImage.src = media.developmentBank || '/assets/scenes/scene-development-bank-house.png';
 
   els.problemBullets.innerHTML = (problem.bullets || [])
@@ -440,6 +448,7 @@ function resetVisualStates() {
   });
   els.annotation.hidden = true;
   els.annotation.innerHTML = '';
+  stopVideo(els.finalFormalVideo);
 }
 
 function routeById(id) {
