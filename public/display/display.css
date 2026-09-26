@@ -3117,9 +3117,9 @@ button {
 }
 
 .physical-mode .formal-video-title {
-  left: 1414px;
-  top: 118px;
-  width: 420px;
+  left: 1472px;
+  top: 113px;
+  width: 361px;
   height: auto;
   z-index: 29;
 }
@@ -3131,10 +3131,10 @@ button {
 }
 
 .physical-mode .final-formal-video {
-  left: 1456px;
+  left: 1455px;
   top: 160px;
-  width: 414px;
-  height: 322px;
+  width: 393px;
+  height: 294px;
   overflow: hidden;
   border: 2px solid rgba(207, 225, 255, .88);
   border-radius: 0;
