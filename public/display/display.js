@@ -224,9 +224,13 @@ function bridgeLoopStart(video) {
   return loopStart;
 }
 
-function seekBridgeLoopStart(video) {
+function seekBridgeLoopStart(video, offsetSeconds = 0) {
   if (!video) return;
-  try { video.currentTime = bridgeLoopStart(video); } catch {}
+  const loopStart = bridgeLoopStart(video);
+  const target = Number.isFinite(video.duration) && video.duration > 0
+    ? Math.min(loopStart + offsetSeconds, Math.max(loopStart, video.duration - .25))
+    : loopStart + offsetSeconds;
+  try { video.currentTime = target; } catch {}
 }
 
 function seekBridgeIntroStart(video) {
@@ -234,196 +238,125 @@ function seekBridgeIntroStart(video) {
   try { video.currentTime = 0; } catch {}
 }
 
-function playFirstBridgeVideo({ restart = false, loopOnly = false } = {}) {
-  const video = els.bridgeVideo1;
-  if (!video || (!video.src && !video.currentSrc)) return;
-  video.muted = true;
-  video.loop = false;
-  video.playbackRate = FIRST_BRIDGE_PLAYBACK_RATE;
-  video.playsInline = true;
-  video.dataset.loopActive = 'true';
-  video.closest('.bridge-video')?.classList.add('is-active');
-  els.shell.dataset.firstBridgeVideo = 'active';
+function requestBridgePlayback(video) {
+  const play = () => video.play().catch(() => {});
+  const token = `${Date.now()}-${Math.random()}`;
+  video.dataset.playWatchdog = token;
+  video.dataset.lastPlayTime = String(video.currentTime);
+  play();
 
-  const play = () => {
-    if (restart || video.ended) seekBridgeIntroStart(video);
-    else if (loopOnly && video.currentTime < bridgeLoopStart(video)) seekBridgeLoopStart(video);
-    video.play().catch(() => {});
+  window.setTimeout(() => {
+    if (video.dataset.loopActive !== 'true') return;
+    if (video.paused) play();
+  }, 120);
+
+  const watch = () => {
+    if (video.dataset.playWatchdog !== token || video.dataset.loopActive !== 'true') return;
+    const lastTime = Number(video.dataset.lastPlayTime || video.currentTime);
+    const currentTime = video.currentTime;
+    if (video.paused) {
+      play();
+    } else if (Math.abs(currentTime - lastTime) < .04) {
+      const maxTime = Number.isFinite(video.duration) && video.duration > 0
+        ? Math.max(0, video.duration - .25)
+        : currentTime + .35;
+      try { video.currentTime = Math.min(currentTime + .35, maxTime); } catch {}
+      play();
+    }
+    video.dataset.lastPlayTime = String(video.currentTime);
+    window.setTimeout(watch, 850);
   };
 
-  if (video.readyState >= 1) play();
-  else video.addEventListener('loadedmetadata', play, { once: true });
+  window.setTimeout(watch, 850);
 }
 
-function playFinalBridgeVideo({ restart = false, loopOnly = false } = {}) {
-  const video = els.bridgeVideo2;
+function playBridgeVideo(video, datasetKey, { restart = false, loopOnly = false, loopOffset = 0 } = {}, playbackRate = 1) {
   if (!video || (!video.src && !video.currentSrc)) return;
   video.muted = true;
   video.loop = false;
-  video.playbackRate = 1;
+  video.playbackRate = playbackRate;
   video.playsInline = true;
   video.dataset.loopActive = 'true';
   video.closest('.bridge-video')?.classList.add('is-active');
-  els.shell.dataset.finalBridgeVideo = 'active';
+  els.shell.dataset[datasetKey] = 'active';
 
   const play = () => {
     if (restart || video.ended) seekBridgeIntroStart(video);
-    else if (loopOnly && video.currentTime < bridgeLoopStart(video)) seekBridgeLoopStart(video);
-    video.play().catch(() => {});
+    else if (loopOnly) seekBridgeLoopStart(video, loopOffset);
+    requestBridgePlayback(video);
   };
 
-  if (video.readyState >= 1) play();
-  else video.addEventListener('loadedmetadata', play, { once: true });
+  if (video.readyState >= 1) {
+    play();
+  } else {
+    video.addEventListener('loadedmetadata', play, { once: true });
+    try { video.load(); } catch {}
+  }
 }
 
-function playPrivateBridgeVideo({ restart = false, loopOnly = false } = {}) {
-  const video = els.bridgeVideo3;
-  if (!video || (!video.src && !video.currentSrc)) return;
-  video.muted = true;
-  video.loop = false;
-  video.playbackRate = 1;
-  video.playsInline = true;
-  video.dataset.loopActive = 'true';
-  video.closest('.bridge-video')?.classList.add('is-active');
-  els.shell.dataset.privateBridgeVideo = 'active';
-
-  const play = () => {
-    if (restart || video.ended) seekBridgeIntroStart(video);
-    else if (loopOnly && video.currentTime < bridgeLoopStart(video)) seekBridgeLoopStart(video);
-    video.play().catch(() => {});
-  };
-
-  if (video.readyState >= 1) play();
-  else video.addEventListener('loadedmetadata', play, { once: true });
+function playFirstBridgeVideo(options = {}) {
+  playBridgeVideo(els.bridgeVideo1, 'firstBridgeVideo', options, FIRST_BRIDGE_PLAYBACK_RATE);
 }
 
-function playLeftBridgeVideo({ restart = false, loopOnly = false } = {}) {
-  const video = els.bridgeVideo4;
-  if (!video || (!video.src && !video.currentSrc)) return;
-  video.muted = true;
-  video.loop = false;
-  video.playbackRate = 1;
-  video.playsInline = true;
-  video.dataset.loopActive = 'true';
-  video.closest('.bridge-video')?.classList.add('is-active');
-  els.shell.dataset.leftBridgeVideo = 'active';
-
-  const play = () => {
-    if (restart || video.ended) seekBridgeIntroStart(video);
-    else if (loopOnly && video.currentTime < bridgeLoopStart(video)) seekBridgeLoopStart(video);
-    video.play().catch(() => {});
-  };
-
-  if (video.readyState >= 1) play();
-  else video.addEventListener('loadedmetadata', play, { once: true });
+function playFinalBridgeVideo(options = {}) {
+  playBridgeVideo(els.bridgeVideo2, 'finalBridgeVideo', options);
 }
 
-function playMiddleBridgeVideo({ restart = false, loopOnly = false } = {}) {
-  const video = els.bridgeVideo6;
-  if (!video || (!video.src && !video.currentSrc)) return;
-  video.muted = true;
-  video.loop = false;
-  video.playbackRate = 1;
-  video.playsInline = true;
-  video.dataset.loopActive = 'true';
-  video.closest('.bridge-video')?.classList.add('is-active');
-  els.shell.dataset.middleBridgeVideo = 'active';
-
-  const play = () => {
-    if (restart || video.ended) seekBridgeIntroStart(video);
-    else if (loopOnly && video.currentTime < bridgeLoopStart(video)) seekBridgeLoopStart(video);
-    video.play().catch(() => {});
-  };
-
-  if (video.readyState >= 1) play();
-  else video.addEventListener('loadedmetadata', play, { once: true });
+function playPrivateBridgeVideo(options = {}) {
+  playBridgeVideo(els.bridgeVideo3, 'privateBridgeVideo', options);
 }
 
-function playRightBridgeVideo({ restart = false, loopOnly = false } = {}) {
-  const video = els.bridgeVideo5;
-  if (!video || (!video.src && !video.currentSrc)) return;
-  video.muted = true;
-  video.loop = false;
-  video.playbackRate = 1;
-  video.playsInline = true;
-  video.dataset.loopActive = 'true';
-  video.closest('.bridge-video')?.classList.add('is-active');
-  els.shell.dataset.rightBridgeVideo = 'active';
+function playLeftBridgeVideo(options = {}) {
+  playBridgeVideo(els.bridgeVideo4, 'leftBridgeVideo', options);
+}
 
-  const play = () => {
-    if (restart || video.ended) seekBridgeIntroStart(video);
-    else if (loopOnly && video.currentTime < bridgeLoopStart(video)) seekBridgeLoopStart(video);
-    video.play().catch(() => {});
-  };
+function playMiddleBridgeVideo(options = {}) {
+  playBridgeVideo(els.bridgeVideo6, 'middleBridgeVideo', options);
+}
 
-  if (video.readyState >= 1) play();
-  else video.addEventListener('loadedmetadata', play, { once: true });
+function playRightBridgeVideo(options = {}) {
+  playBridgeVideo(els.bridgeVideo5, 'rightBridgeVideo', options);
+}
+
+function stopBridgeVideo(video, datasetKey, reset = true) {
+  if (!video) return;
+  video.dataset.loopActive = 'false';
+  delete video.dataset.playWatchdog;
+  delete video.dataset.lastPlayTime;
+  video.pause();
+  if (reset) seekBridgeIntroStart(video);
+  video.closest('.bridge-video')?.classList.remove('is-active');
+  delete els.shell.dataset[datasetKey];
 }
 
 function stopFirstBridgeVideo(reset = true) {
-  const video = els.bridgeVideo1;
-  if (!video) return;
-  video.dataset.loopActive = 'false';
-  video.pause();
-  if (reset) seekBridgeIntroStart(video);
-  video.closest('.bridge-video')?.classList.remove('is-active');
-  delete els.shell.dataset.firstBridgeVideo;
+  stopBridgeVideo(els.bridgeVideo1, 'firstBridgeVideo', reset);
 }
 
 function stopFinalBridgeVideo(reset = true) {
-  const video = els.bridgeVideo2;
-  if (!video) return;
-  video.dataset.loopActive = 'false';
-  video.pause();
-  if (reset) seekBridgeIntroStart(video);
-  video.closest('.bridge-video')?.classList.remove('is-active');
-  delete els.shell.dataset.finalBridgeVideo;
+  stopBridgeVideo(els.bridgeVideo2, 'finalBridgeVideo', reset);
 }
 
 function stopPrivateBridgeVideo(reset = true) {
-  const video = els.bridgeVideo3;
-  if (!video) return;
-  video.dataset.loopActive = 'false';
-  video.pause();
-  if (reset) seekBridgeIntroStart(video);
-  video.closest('.bridge-video')?.classList.remove('is-active');
-  delete els.shell.dataset.privateBridgeVideo;
+  stopBridgeVideo(els.bridgeVideo3, 'privateBridgeVideo', reset);
 }
 
 function stopLeftBridgeVideo(reset = true) {
-  const video = els.bridgeVideo4;
-  if (!video) return;
-  video.dataset.loopActive = 'false';
-  video.pause();
-  if (reset) seekBridgeIntroStart(video);
-  video.closest('.bridge-video')?.classList.remove('is-active');
-  delete els.shell.dataset.leftBridgeVideo;
+  stopBridgeVideo(els.bridgeVideo4, 'leftBridgeVideo', reset);
 }
 
 function stopMiddleBridgeVideo(reset = true) {
-  const video = els.bridgeVideo6;
-  if (!video) return;
-  video.dataset.loopActive = 'false';
-  video.pause();
-  if (reset) seekBridgeIntroStart(video);
-  video.closest('.bridge-video')?.classList.remove('is-active');
-  delete els.shell.dataset.middleBridgeVideo;
+  stopBridgeVideo(els.bridgeVideo6, 'middleBridgeVideo', reset);
 }
 
 function stopRightBridgeVideo(reset = true) {
-  const video = els.bridgeVideo5;
-  if (!video) return;
-  video.dataset.loopActive = 'false';
-  video.pause();
-  if (reset) seekBridgeIntroStart(video);
-  video.closest('.bridge-video')?.classList.remove('is-active');
-  delete els.shell.dataset.rightBridgeVideo;
+  stopBridgeVideo(els.bridgeVideo5, 'rightBridgeVideo', reset);
 }
 
 function loopBridgeVideoFromConfiguredStart(video) {
   if (!video || video.dataset.loopActive !== 'true') return;
   seekBridgeLoopStart(video);
-  video.play().catch(() => {});
+  requestBridgePlayback(video);
 }
 
 [els.bridgeVideo1, els.bridgeVideo2, els.bridgeVideo3, els.bridgeVideo4, els.bridgeVideo5, els.bridgeVideo6].forEach(video => {
@@ -649,12 +582,12 @@ function revealFullInfoSequence() {
 }
 
 function playAllBridgeVideosForFullInfo() {
-  playFirstBridgeVideo({ loopOnly: true });
-  playPrivateBridgeVideo({ loopOnly: true });
-  playLeftBridgeVideo({ loopOnly: true });
-  playMiddleBridgeVideo({ loopOnly: true });
-  playRightBridgeVideo({ loopOnly: true });
-  playFinalBridgeVideo({ loopOnly: true });
+  stopPrivateBridgeVideo();
+  playFirstBridgeVideo({ loopOnly: true, loopOffset: .35 });
+  playLeftBridgeVideo({ loopOnly: true, loopOffset: .5 });
+  playMiddleBridgeVideo({ loopOnly: true, loopOffset: .65 });
+  playRightBridgeVideo({ loopOnly: true, loopOffset: .8 });
+  playFinalBridgeVideo({ loopOnly: true, loopOffset: .45 });
 }
 
 function buildScene() {
