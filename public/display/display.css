@@ -3412,6 +3412,71 @@ button {
   animation: maquettePadTrace 2.8s linear infinite;
 }
 
+.physical-mode[data-phase="closing"][data-mode="fullInfo"] .formal-popup-7 {
+  display: none !important;
+  opacity: 0 !important;
+}
+
+.physical-mode[data-phase="closing"][data-mode="fullInfo"] .private-popup {
+  display: block !important;
+  top: 668px !important;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.physical-mode[data-phase="closing"][data-mode="fullInfo"] .private-popup::after {
+  content: none;
+}
+
+.physical-mode[data-phase="closing"][data-mode="fullInfo"] .private-popup img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.physical-mode[data-phase="closing"][data-mode="fullInfo"] .private-popup-intermediaries {
+  left: 645px !important;
+  width: 189px;
+  height: 116px;
+}
+
+.physical-mode[data-phase="closing"][data-mode="fullInfo"] .private-popup-investors {
+  left: 842px !important;
+  width: 197px;
+  height: 116px;
+}
+
+.physical-mode[data-phase="closing"][data-mode="fullInfo"] .private-popup-insurers {
+  left: 1048px !important;
+  width: 227px;
+  height: 116px;
+}
+
+.physical-mode[data-phase="closing"][data-mode="fullInfo"] .private-label,
+.physical-mode[data-phase="closing"][data-mode="fullInfo"] .private-pad,
+.physical-mode[data-phase="closing"][data-mode="fullInfo"] .private-pad::before,
+.physical-mode[data-phase="closing"][data-mode="fullInfo"] .private-pad::after {
+  opacity: 0 !important;
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  animation: none !important;
+}
+
+.physical-mode[data-phase="closing"][data-mode="fullInfo"] .route-sector.complete {
+  display: block;
+  stroke: #cfe1ff;
+  stroke-width: 2.5;
+  opacity: .92;
+}
+
 .physical-mode[data-phase="idle"] .physical-layout > * {
   opacity: 0 !important;
 }

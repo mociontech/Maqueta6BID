@@ -255,6 +255,12 @@ function currentPrivateSteps() {
     .filter(Boolean);
 }
 
+function allPrivateSteps() {
+  return data.segments
+    .map(item => privateStepForSector(item.id))
+    .filter(Boolean);
+}
+
 function revealPrivateSectorRead(sector, token) {
   if (!sector?.id) {
     setSequenceSteps(...currentPrivateSteps());
@@ -347,6 +353,25 @@ function revealFormalTransformationSequence(token) {
   }, 17600, token);
 }
 
+function revealFullInfoSequence() {
+  stopVideo(els.formalVideo);
+  stopVideo(els.finalFormalVideo);
+
+  for (const item of data.segments) {
+    completePath(routeForSector(item.id), '#cfe1ff');
+  }
+  completePath(routeById('route-formal-bridge'), '#cfe1ff');
+
+  setFormalSequenceSteps(
+    'formal-bridge',
+    'formal-popup5',
+    'formal-video',
+    'formal-popup8',
+    ...allPrivateSteps()
+  );
+  playVideo(els.finalFormalVideo, { restart: true, loop: true, keepVisibleOnEnd: true });
+}
+
 function buildScene() {
   const media = data.meta.media || {};
   const problem = data.meta.problem || {};
@@ -436,6 +461,7 @@ function resetVisualStates() {
   els.shell.dataset.phase = state.phase || 'idle';
   els.shell.dataset.sector = state.segmentId || '';
   els.shell.dataset.instrument = state.instrumentId || '';
+  els.shell.dataset.mode = state.selectionMode || '';
   els.shell.dataset.sequence = '';
   els.informalPanel.classList.remove('active', 'dim');
   els.formalPanel.classList.remove('active', 'dim');
@@ -705,6 +731,7 @@ function renderExperience() {
   els.shell.dataset.phase = phase;
   els.shell.dataset.sector = sector?.id || '';
   els.shell.dataset.instrument = instrument?.id || '';
+  els.shell.dataset.mode = state.selectionMode || '';
   els.stepBadge.textContent = badge;
   els.stepTitle.textContent = title;
   els.stepSubtitle.textContent = sector
@@ -751,7 +778,8 @@ function renderExperience() {
     playVideo(els.idleInformalVideo, { loop: true, keepVisibleOnEnd: true });
     els.annotation.hidden = true;
     revealPrivateSectorRead(null);
-    revealFormalTransformationSequence(token);
+    if (state.selectionMode === 'fullInfo') revealFullInfoSequence(token);
+    else revealFormalTransformationSequence(token);
     pulseBid();
     return;
   }
