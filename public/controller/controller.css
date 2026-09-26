@@ -823,12 +823,12 @@ h1 {
 
 .tablet-shell[data-step="sectors"] .sector-buttons {
   left: 22.3958%;
-  top: 61.6667%;
+  top: 58.4167%;
   width: 55.1563%;
   height: 31%;
   display: grid;
   grid-template-rows: repeat(3, 1fr);
-  gap: 2.3%;
+  gap: 0;
   transition:
     left .76s cubic-bezier(.2, .78, .18, 1),
     top .76s cubic-bezier(.2, .78, .18, 1),
@@ -838,6 +838,8 @@ h1 {
 }
 
 .tablet-shell[data-step="sectors"] .sector-card {
+  --box-opacity: 0;
+  --arrow-opacity: 0;
   height: 100%;
   display: grid;
   place-items: center;
@@ -848,12 +850,13 @@ h1 {
   color: transparent;
   opacity: 1;
   transition:
-    opacity .32s ease,
     background-color .28s ease,
     transform .76s cubic-bezier(.2, .78, .18, 1);
 }
 
 .tablet-shell[data-step="sectors"] .sector-card .sector-label {
+  position: relative;
+  z-index: 1;
   width: min(51%, 540px);
   max-height: 50%;
   object-fit: contain;
@@ -864,16 +867,28 @@ h1 {
     opacity .32s ease;
 }
 
-.tablet-shell[data-step="sectors"] .sector-card.selected {
+.tablet-shell[data-step="sectors"] .sector-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
   background: #151515;
+  opacity: var(--box-opacity);
+  transition: opacity .28s ease;
 }
 
-.tablet-shell[data-step="sectors"] .sector-card.completed:not(.selected) {
-  background: transparent;
+.tablet-shell[data-step="sectors"] .sector-card.selected {
+  --box-opacity: 1;
+  --arrow-opacity: 1;
+}
+
+.tablet-shell[data-step="sectors"] .sector-card.completed {
+  --box-opacity: 1;
+  --arrow-opacity: 1;
 }
 
 .tablet-shell[data-step="sectors"] .sector-card.dimmed {
-  opacity: .1;
+  --box-opacity: .1;
+  --arrow-opacity: .1;
 }
 
 .tablet-shell[data-step="sectors"] .sector-card.selected::after,
@@ -886,19 +901,17 @@ h1 {
   height: 43%;
   background: url("/pantallas/Union.png") center / contain no-repeat;
   transform: translateY(-50%);
+  opacity: var(--arrow-opacity);
   filter: drop-shadow(0 0 8px rgba(207, 225, 255, .46));
-}
-
-.tablet-shell[data-step="sectors"] .sector-card.completed:not(.selected)::after {
-  display: none;
+  transition: opacity .28s ease;
 }
 
 .sector-motion {
   position: absolute;
-  left: 31.1%;
-  top: 50.3%;
+  left: 43.4375%;
+  top: 54.4167%;
   z-index: 2;
-  width: 6.2%;
+  width: 12.0313%;
   opacity: 0;
   transform: translateX(-24px);
   pointer-events: none;
@@ -909,7 +922,7 @@ h1 {
   display: block;
   width: 100%;
   height: auto;
-  opacity: .7;
+  opacity: .34;
   filter:
     drop-shadow(0 0 10px rgba(207, 225, 255, .42))
     drop-shadow(0 0 22px rgba(207, 225, 255, .18));
@@ -918,13 +931,13 @@ h1 {
 
 @keyframes tabletArrowGlow {
   0%, 100% {
-    opacity: .52;
+    opacity: .26;
     filter:
       drop-shadow(0 0 8px rgba(207, 225, 255, .34))
       drop-shadow(0 0 18px rgba(207, 225, 255, .12));
   }
   50% {
-    opacity: .92;
+    opacity: .46;
     filter:
       drop-shadow(0 0 14px rgba(207, 225, 255, .74))
       drop-shadow(0 0 30px rgba(207, 225, 255, .32));
@@ -932,16 +945,18 @@ h1 {
 }
 
 .tablet-shell[data-step="sectors"][data-impact-ready="true"] .sector-buttons {
-  left: 3.6%;
-  top: 49.4%;
-  width: 24.4%;
-  height: 17.6%;
-  gap: 11%;
+  left: 12.2396%;
+  top: 61.25%;
+  width: 28.125%;
+  height: 25.9167%;
+  gap: 0;
 }
 
 .tablet-shell[data-step="sectors"][data-impact-ready="true"] .sector-card,
 .tablet-shell[data-step="sectors"][data-impact-ready="true"] .sector-card.selected,
 .tablet-shell[data-step="sectors"][data-impact-ready="true"] .sector-card.completed {
+  --box-opacity: 0;
+  --arrow-opacity: 0;
   justify-items: start;
   background: transparent;
   pointer-events: none;
@@ -949,23 +964,24 @@ h1 {
 
 .tablet-shell[data-step="sectors"][data-impact-ready="true"] .sector-card .sector-label {
   width: 100%;
-  max-height: 74%;
+  max-height: 50px;
 }
 
-.tablet-shell[data-step="sectors"][data-impact-ready="true"] .sector-card.selected::after,
-.tablet-shell[data-step="sectors"][data-impact-ready="true"] .sector-card.completed::after {
-  display: none;
-}
-
-.tablet-shell[data-step="sectors"][data-impact-ready="true"] .sector-card.selected::before {
+.tablet-shell[data-step="sectors"][data-impact-ready="true"] .sector-card::after {
   content: "";
   position: absolute;
-  left: 0;
-  right: -7%;
-  bottom: -15%;
+  left: -17%;
+  right: -36%;
+  bottom: -1.2%;
   height: 3px;
   background: url("/pantallas/Line%203.png") left center / 100% 3px no-repeat;
   filter: drop-shadow(0 0 5px rgba(255, 255, 255, .4));
+  opacity: 1;
+  transform: none;
+}
+
+.tablet-shell[data-step="sectors"][data-impact-ready="true"] .sector-card:nth-child(3)::after {
+  display: none;
 }
 
 .tablet-shell[data-step="sectors"][data-impact-ready="true"] .sector-motion {
@@ -978,8 +994,8 @@ h1 {
 }
 
 .tablet-shell[data-step="sectors"][data-impact-ready="true"] .transformation-button {
-  left: 42.5%;
-  top: 49.9%;
+  left: 58.2813%;
+  top: 68.5833%;
   right: auto;
   bottom: auto;
   z-index: 3;
