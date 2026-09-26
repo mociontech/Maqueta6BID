@@ -67,6 +67,7 @@ const els = {
   idleFormalVideo: document.querySelector('#idleFormalVideo'),
   finalFormalVideo: document.querySelector('#finalFormalVideo'),
   bridgeVideo1: document.querySelector('#bridgeVideo1'),
+  bridgeVideo2: document.querySelector('#bridgeVideo2'),
   bridgeVideo3: document.querySelector('#bridgeVideo3'),
   bridgeVideo4: document.querySelector('#bridgeVideo4'),
   bridgeVideo5: document.querySelector('#bridgeVideo5'),
@@ -233,7 +234,7 @@ function seekBridgeIntroStart(video) {
   try { video.currentTime = 0; } catch {}
 }
 
-function playFirstBridgeVideo({ restart = false } = {}) {
+function playFirstBridgeVideo({ restart = false, loopOnly = false } = {}) {
   const video = els.bridgeVideo1;
   if (!video || (!video.src && !video.currentSrc)) return;
   video.muted = true;
@@ -246,6 +247,28 @@ function playFirstBridgeVideo({ restart = false } = {}) {
 
   const play = () => {
     if (restart || video.ended) seekBridgeIntroStart(video);
+    else if (loopOnly && video.currentTime < bridgeLoopStart(video)) seekBridgeLoopStart(video);
+    video.play().catch(() => {});
+  };
+
+  if (video.readyState >= 1) play();
+  else video.addEventListener('loadedmetadata', play, { once: true });
+}
+
+function playFinalBridgeVideo({ restart = false, loopOnly = false } = {}) {
+  const video = els.bridgeVideo2;
+  if (!video || (!video.src && !video.currentSrc)) return;
+  video.muted = true;
+  video.loop = false;
+  video.playbackRate = 1;
+  video.playsInline = true;
+  video.dataset.loopActive = 'true';
+  video.closest('.bridge-video')?.classList.add('is-active');
+  els.shell.dataset.finalBridgeVideo = 'active';
+
+  const play = () => {
+    if (restart || video.ended) seekBridgeIntroStart(video);
+    else if (loopOnly && video.currentTime < bridgeLoopStart(video)) seekBridgeLoopStart(video);
     video.play().catch(() => {});
   };
 
@@ -347,6 +370,16 @@ function stopFirstBridgeVideo(reset = true) {
   delete els.shell.dataset.firstBridgeVideo;
 }
 
+function stopFinalBridgeVideo(reset = true) {
+  const video = els.bridgeVideo2;
+  if (!video) return;
+  video.dataset.loopActive = 'false';
+  video.pause();
+  if (reset) seekBridgeIntroStart(video);
+  video.closest('.bridge-video')?.classList.remove('is-active');
+  delete els.shell.dataset.finalBridgeVideo;
+}
+
 function stopPrivateBridgeVideo(reset = true) {
   const video = els.bridgeVideo3;
   if (!video) return;
@@ -393,7 +426,7 @@ function loopBridgeVideoFromConfiguredStart(video) {
   video.play().catch(() => {});
 }
 
-[els.bridgeVideo1, els.bridgeVideo3, els.bridgeVideo4, els.bridgeVideo5, els.bridgeVideo6].forEach(video => {
+[els.bridgeVideo1, els.bridgeVideo2, els.bridgeVideo3, els.bridgeVideo4, els.bridgeVideo5, els.bridgeVideo6].forEach(video => {
   video?.addEventListener('ended', () => {
     loopBridgeVideoFromConfiguredStart(video);
   });
@@ -575,7 +608,7 @@ function revealFormalTransformationSequence(token) {
   setFormalSequenceSteps('formal-bridge');
   stopVideo(els.formalVideo);
   stopVideo(els.finalFormalVideo);
-  animatePath(routeById('route-formal-bridge'), 4000, '#cfe1ff', token, 0);
+  playFinalBridgeVideo({ restart: true });
 
   later(() => {
     setFormalSequenceSteps('formal-bridge', 'formal-popup5');
@@ -598,6 +631,7 @@ function revealFormalTransformationSequence(token) {
 function revealFullInfoSequence() {
   stopVideo(els.formalVideo);
   stopVideo(els.finalFormalVideo);
+  playAllBridgeVideosForFullInfo();
 
   for (const item of data.segments) {
     completePath(routeForSector(item.id), '#cfe1ff');
@@ -612,6 +646,15 @@ function revealFullInfoSequence() {
     ...allPrivateSteps()
   );
   playVideo(els.finalFormalVideo, { restart: true, loop: true, keepVisibleOnEnd: true });
+}
+
+function playAllBridgeVideosForFullInfo() {
+  playFirstBridgeVideo({ loopOnly: true });
+  playPrivateBridgeVideo({ loopOnly: true });
+  playLeftBridgeVideo({ loopOnly: true });
+  playMiddleBridgeVideo({ loopOnly: true });
+  playRightBridgeVideo({ loopOnly: true });
+  playFinalBridgeVideo({ loopOnly: true });
 }
 
 function buildScene() {
@@ -729,6 +772,7 @@ function resetVisualStates() {
   els.annotation.innerHTML = '';
   stopVideo(els.finalFormalVideo);
   stopFirstBridgeVideo();
+  stopFinalBridgeVideo();
   stopPrivateBridgeVideo();
   stopLeftBridgeVideo();
   stopMiddleBridgeVideo();

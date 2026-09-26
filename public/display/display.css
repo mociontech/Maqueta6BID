@@ -3759,7 +3759,8 @@ button {
 }
 
 .bridge-video-middle,
-.bridge-video-right {
+.bridge-video-right,
+.bridge-video-final {
   left: 0;
   top: 0;
   width: 1920px;
@@ -3794,6 +3795,13 @@ button {
 .physical-mode[data-middle-bridge-video="active"] .route-private-center,
 .physical-mode[data-middle-bridge-video="active"] .route-sector-investors,
 .physical-mode[data-right-bridge-video="active"] .route-sector-insurers {
+  display: none !important;
+  opacity: 0 !important;
+  animation: none !important;
+}
+
+.physical-mode[data-final-bridge-video="active"] .formal-holo-bridge,
+.physical-mode[data-final-bridge-video="active"] .route-formal-bridge {
   display: none !important;
   opacity: 0 !important;
   animation: none !important;
