@@ -49,7 +49,7 @@
     }
   },
   "animationTimings": {
-    "mandatoryIntroLockMs": 31000,
+    "mandatoryIntroLockMs": 26000,
     "privateSectorReadMs": 5000,
     "transformationLockMs": 20000,
     "segmentFocusMs": 900,
