@@ -327,11 +327,10 @@ function revealFormalTransformationSequence(token) {
 
   later(() => {
     setFormalSequenceSteps('formal-bridge', 'formal-popup5', 'formal-popup7', 'formal-video');
-    playVideo(els.finalFormalVideo, { restart: true, keepVisibleOnEnd: true });
+    playVideo(els.finalFormalVideo, { restart: true, loop: true, keepVisibleOnEnd: true });
   }, 7600, token);
 
   later(() => {
-    stopVideo(els.finalFormalVideo, false, true);
     setFormalSequenceSteps('formal-bridge', 'formal-popup5', 'formal-popup7', 'formal-video', 'formal-popup8');
   }, 17600, token);
 }
