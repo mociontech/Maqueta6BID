@@ -19,7 +19,7 @@ const PHASE_COPY = {
   closing: ['CIERRE', 'Conectar para transformar']
 };
 const FIRST_BRIDGE_LOOP_START_SECONDS = 5;
-const FIRST_BRIDGE_PLAYBACK_RATE = 0.5;
+const FIRST_BRIDGE_PLAYBACK_RATE = 1;
 const FIRST_BRIDGE_VISIBLE_PHASES = new Set(['problem', 'solutions', 'instrument', 'route', 'providers', 'result', 'closing']);
 
 let state = {
@@ -216,6 +216,11 @@ function seekBridgeLoopStart(video) {
   try { video.currentTime = bridgeLoopStart(video); } catch {}
 }
 
+function seekBridgeIntroStart(video) {
+  if (!video) return;
+  try { video.currentTime = 0; } catch {}
+}
+
 function playFirstBridgeVideo({ restart = false } = {}) {
   const video = els.bridgeVideo1;
   if (!video || (!video.src && !video.currentSrc)) return;
@@ -228,7 +233,7 @@ function playFirstBridgeVideo({ restart = false } = {}) {
   els.shell.dataset.firstBridgeVideo = 'active';
 
   const play = () => {
-    if (restart || video.currentTime < bridgeLoopStart(video)) seekBridgeLoopStart(video);
+    if (restart || video.ended) seekBridgeIntroStart(video);
     video.play().catch(() => {});
   };
 
@@ -241,7 +246,7 @@ function stopFirstBridgeVideo(reset = true) {
   if (!video) return;
   video.dataset.loopActive = 'false';
   video.pause();
-  if (reset) seekBridgeLoopStart(video);
+  if (reset) seekBridgeIntroStart(video);
   video.closest('.bridge-video')?.classList.remove('is-active');
   delete els.shell.dataset.firstBridgeVideo;
 }
