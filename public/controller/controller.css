@@ -795,14 +795,16 @@ h1 {
   align-items: center;
   justify-content: center;
   border-radius: 999px;
-  font-size: clamp(28px, 3vw, 58px);
+  font-size: clamp(34px, 3.35vw, 64px);
   font-weight: 800;
   line-height: 1;
+  white-space: nowrap;
   transition: background-color .12s ease, color .12s ease;
 }
 
 .tablet-shell[data-step="final"] #exploreAgain:active,
-.tablet-shell[data-step="final"] #exploreAgain.is-pressed {
+.tablet-shell[data-step="final"] #exploreAgain.is-pressed,
+.tablet-shell[data-step="final"] #exploreAgain.is-active {
   background: #141414 !important;
   color: #ffffff !important;
 }
@@ -829,7 +831,7 @@ h1 {
     top: 75.0833svh;
     width: 55.25svh;
     height: 9.5833svh;
-    font-size: clamp(24px, 4.67svh, 58px);
+    font-size: clamp(34px, 5.7svh, 64px);
   }
 
   .tablet-shell[data-step="final"] #restart {

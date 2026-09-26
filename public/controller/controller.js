@@ -332,6 +332,7 @@ function clearLocalProgress() {
   clearSectorReadTimer();
   completedSectors.clear();
   selectedSectorId = null;
+  els.exploreAgain.classList.remove('is-active', 'is-pressed');
   updateSectorGuidance(null);
 }
 
@@ -457,11 +458,11 @@ function viewFullInfo() {
 
 function pressThenRun(button, action) {
   if (button.disabled || button.getAttribute('aria-disabled') === 'true') return;
-  button.classList.add('is-pressed');
+  button.classList.add('is-pressed', 'is-active');
   setTimeout(() => {
     button.classList.remove('is-pressed');
     action();
-  }, 180);
+  }, 120);
 }
 
 function syncFromServer() {
