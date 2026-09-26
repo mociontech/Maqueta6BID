@@ -804,6 +804,215 @@ h1 {
   height: 11.11%;
 }
 
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.tablet-shell[data-step="sectors"] {
+  background: url("/pantallas/solcuoiens%20limpio.png") center / cover no-repeat #0965ff;
+}
+
+.tablet-shell[data-step="sectors"][data-impact-ready="true"] .sector-step .wire-card::before {
+  display: none;
+}
+
+.tablet-shell[data-step="sectors"] .sector-buttons {
+  left: 22.3958%;
+  top: 61.6667%;
+  width: 55.1563%;
+  height: 31%;
+  display: grid;
+  grid-template-rows: repeat(3, 1fr);
+  gap: 2.3%;
+  transition:
+    left .76s cubic-bezier(.2, .78, .18, 1),
+    top .76s cubic-bezier(.2, .78, .18, 1),
+    width .76s cubic-bezier(.2, .78, .18, 1),
+    height .76s cubic-bezier(.2, .78, .18, 1),
+    gap .76s cubic-bezier(.2, .78, .18, 1);
+}
+
+.tablet-shell[data-step="sectors"] .sector-card {
+  height: 100%;
+  display: grid;
+  place-items: center;
+  overflow: visible;
+  border: 0 !important;
+  border-radius: 0;
+  background: transparent;
+  color: transparent;
+  opacity: 1;
+  transition:
+    opacity .32s ease,
+    background-color .28s ease,
+    transform .76s cubic-bezier(.2, .78, .18, 1);
+}
+
+.tablet-shell[data-step="sectors"] .sector-card .sector-label {
+  width: min(51%, 540px);
+  max-height: 50%;
+  object-fit: contain;
+  pointer-events: none;
+  transition:
+    width .76s cubic-bezier(.2, .78, .18, 1),
+    filter .32s ease,
+    opacity .32s ease;
+}
+
+.tablet-shell[data-step="sectors"] .sector-card.selected {
+  background: #151515;
+}
+
+.tablet-shell[data-step="sectors"] .sector-card.completed:not(.selected) {
+  background: transparent;
+}
+
+.tablet-shell[data-step="sectors"] .sector-card.dimmed {
+  opacity: .1;
+}
+
+.tablet-shell[data-step="sectors"] .sector-card.selected::after,
+.tablet-shell[data-step="sectors"] .sector-card.completed::after {
+  content: "";
+  position: absolute;
+  right: 3.3%;
+  top: 50%;
+  width: 5.1%;
+  height: 43%;
+  background: url("/pantallas/Union.png") center / contain no-repeat;
+  transform: translateY(-50%);
+  filter: drop-shadow(0 0 8px rgba(207, 225, 255, .46));
+}
+
+.tablet-shell[data-step="sectors"] .sector-card.completed:not(.selected)::after {
+  display: none;
+}
+
+.sector-motion {
+  position: absolute;
+  left: 31.1%;
+  top: 50.3%;
+  z-index: 2;
+  width: 6.2%;
+  opacity: 0;
+  transform: translateX(-24px);
+  pointer-events: none;
+  transition: opacity .5s ease .36s, transform .72s cubic-bezier(.2, .78, .18, 1) .22s;
+}
+
+.sector-arrow {
+  display: block;
+  width: 100%;
+  height: auto;
+  opacity: .7;
+  filter:
+    drop-shadow(0 0 10px rgba(207, 225, 255, .42))
+    drop-shadow(0 0 22px rgba(207, 225, 255, .18));
+  animation: tabletArrowGlow 1.8s ease-in-out infinite;
+}
+
+@keyframes tabletArrowGlow {
+  0%, 100% {
+    opacity: .52;
+    filter:
+      drop-shadow(0 0 8px rgba(207, 225, 255, .34))
+      drop-shadow(0 0 18px rgba(207, 225, 255, .12));
+  }
+  50% {
+    opacity: .92;
+    filter:
+      drop-shadow(0 0 14px rgba(207, 225, 255, .74))
+      drop-shadow(0 0 30px rgba(207, 225, 255, .32));
+  }
+}
+
+.tablet-shell[data-step="sectors"][data-impact-ready="true"] .sector-buttons {
+  left: 3.6%;
+  top: 49.4%;
+  width: 24.4%;
+  height: 17.6%;
+  gap: 11%;
+}
+
+.tablet-shell[data-step="sectors"][data-impact-ready="true"] .sector-card,
+.tablet-shell[data-step="sectors"][data-impact-ready="true"] .sector-card.selected,
+.tablet-shell[data-step="sectors"][data-impact-ready="true"] .sector-card.completed {
+  justify-items: start;
+  background: transparent;
+  pointer-events: none;
+}
+
+.tablet-shell[data-step="sectors"][data-impact-ready="true"] .sector-card .sector-label {
+  width: 100%;
+  max-height: 74%;
+}
+
+.tablet-shell[data-step="sectors"][data-impact-ready="true"] .sector-card.selected::after,
+.tablet-shell[data-step="sectors"][data-impact-ready="true"] .sector-card.completed::after {
+  display: none;
+}
+
+.tablet-shell[data-step="sectors"][data-impact-ready="true"] .sector-card.selected::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: -7%;
+  bottom: -15%;
+  height: 3px;
+  background: url("/pantallas/Line%203.png") left center / 100% 3px no-repeat;
+  filter: drop-shadow(0 0 5px rgba(255, 255, 255, .4));
+}
+
+.tablet-shell[data-step="sectors"][data-impact-ready="true"] .sector-motion {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.tablet-shell[data-step="sectors"] .transformation-button {
+  display: none;
+}
+
+.tablet-shell[data-step="sectors"][data-impact-ready="true"] .transformation-button {
+  left: 42.5%;
+  top: 49.9%;
+  right: auto;
+  bottom: auto;
+  z-index: 3;
+  width: 29.8438%;
+  height: auto;
+  min-height: 0;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0 !important;
+  border-radius: 999px;
+  background: transparent !important;
+  color: transparent !important;
+  box-shadow: none;
+  opacity: 1;
+}
+
+.tablet-shell[data-step="sectors"][data-impact-ready="true"] .transformation-button img {
+  display: block;
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+}
+
+.tablet-shell[data-step="sectors"][data-impact-ready="true"] .transformation-button span {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
 @media (max-width: 640px) {
   .tablet-shell {
     padding: 12px;

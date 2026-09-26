@@ -29,6 +29,11 @@ const autoRunDelayMs = 1200;
 const mandatoryIntroLockMs = data.animationTimings?.mandatoryIntroLockMs || 24000;
 const transformationLockMs = data.animationTimings?.transformationLockMs || 12000;
 const sectorOrder = data.segments.map(segment => segment.id);
+const sectorLabelAssets = {
+  intermediaries: '/pantallas/INTERMEDIARIOS.png',
+  investors: '/pantallas/INVERSIONISTAS.png',
+  insurers: '/pantallas/ASEGURADORAS.png'
+};
 
 let state = { segmentId: null, instrumentId: null, phase: 'idle', selectionMode: 'initial', runId: 0, lockedUntil: 0 };
 let selectedSectorId = null;
@@ -168,19 +173,21 @@ function renderSectors() {
   els.sectors.innerHTML = '';
   for (const sector of data.segments) {
     const color = sectorColor(sector.id);
-    const instrument = currentInstrument(sector);
     const button = document.createElement('button');
     button.type = 'button';
     button.className = 'sector-card';
     button.dataset.id = sector.id;
     button.style.setProperty('--accent', color);
-    const copy = document.createElement('span');
-    const title = document.createElement('strong');
-    const detail = document.createElement('small');
-    title.textContent = sector.label;
-    detail.textContent = instrument?.label || 'Solucion BD';
-    copy.append(title, detail);
-    button.append(iconSpan(sector.icon, color), copy);
+    button.setAttribute('aria-label', sector.shortLabel || sector.label);
+    const label = document.createElement('img');
+    label.className = 'sector-label';
+    label.src = sectorLabelAssets[sector.id] || '';
+    label.alt = '';
+    label.draggable = false;
+    const accessibleText = document.createElement('span');
+    accessibleText.className = 'sr-only';
+    accessibleText.textContent = sector.shortLabel || sector.label;
+    button.append(label, accessibleText);
     button.addEventListener('click', () => chooseSector(sector.id));
     els.sectors.append(button);
   }
@@ -195,10 +202,14 @@ function updateSectorGuidance(activeId = selectedSectorId, waiting = false) {
   const allCompleted = sectorOrder.length > 0 && sectorOrder.every(id => completedSectors.has(id));
   const nextId = waiting || allCompleted ? null : nextPendingSectorId();
   els.shell.dataset.impactReady = allCompleted ? 'true' : 'false';
+  els.shell.dataset.hasSectorSelection = completedSectors.size > 0 ? 'true' : 'false';
   els.sectors.querySelectorAll('.sector-card').forEach(button => {
     const id = button.dataset.id;
-    button.classList.toggle('selected', id === activeId);
-    button.classList.toggle('completed', completedSectors.has(id));
+    const isSelected = id === activeId;
+    const isCompleted = completedSectors.has(id);
+    button.classList.toggle('selected', isSelected);
+    button.classList.toggle('completed', isCompleted);
+    button.classList.toggle('dimmed', isCompleted && !isSelected);
     button.classList.toggle('recommended', Boolean(nextId) && id === nextId && id !== activeId);
   });
   if (els.viewTransformation) {
