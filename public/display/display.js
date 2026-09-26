@@ -19,6 +19,7 @@ const PHASE_COPY = {
   closing: ['CIERRE', 'Conectar para transformar']
 };
 const FIRST_BRIDGE_LOOP_START_SECONDS = 5;
+const FIRST_BRIDGE_PLAYBACK_RATE = 0.5;
 const FIRST_BRIDGE_VISIBLE_PHASES = new Set(['problem', 'solutions', 'instrument', 'route', 'providers', 'result', 'closing']);
 
 let state = {
@@ -220,7 +221,7 @@ function playFirstBridgeVideo({ restart = false } = {}) {
   if (!video || (!video.src && !video.currentSrc)) return;
   video.muted = true;
   video.loop = false;
-  video.playbackRate = 1;
+  video.playbackRate = FIRST_BRIDGE_PLAYBACK_RATE;
   video.playsInline = true;
   video.dataset.loopActive = 'true';
   video.closest('.bridge-video')?.classList.add('is-active');
