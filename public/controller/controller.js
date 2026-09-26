@@ -332,7 +332,6 @@ function clearLocalProgress() {
   clearSectorReadTimer();
   completedSectors.clear();
   selectedSectorId = null;
-  els.exploreAgain.classList.remove('is-active', 'is-pressed');
   updateSectorGuidance(null);
 }
 
@@ -456,15 +455,6 @@ function viewFullInfo() {
   });
 }
 
-function pressThenRun(button, action) {
-  if (button.disabled || button.getAttribute('aria-disabled') === 'true') return;
-  button.classList.add('is-pressed', 'is-active');
-  setTimeout(() => {
-    button.classList.remove('is-pressed');
-    action();
-  }, 120);
-}
-
 function syncFromServer() {
   setRouteStatus();
   updateInteractionLock();
@@ -509,7 +499,7 @@ els.newSector?.addEventListener('click', () => goToSectors(false));
 els.changeSector.addEventListener('click', () => goToSectors(true));
 els.finish.addEventListener('click', finishExperience);
 els.viewTransformation?.addEventListener('click', viewTransformation);
-els.exploreAgain.addEventListener('click', () => pressThenRun(els.exploreAgain, viewFullInfo));
+els.exploreAgain.addEventListener('click', viewFullInfo);
 els.restart.addEventListener('click', () => goToIntro(true));
 els.resetGlobal.addEventListener('click', () => goToIntro(true));
 
