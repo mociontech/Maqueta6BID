@@ -1384,9 +1384,10 @@ button {
   text-shadow: none;
   opacity: 0;
   box-shadow:
-    0 0 18px rgba(207, 225, 255, .55),
-    0 0 42px rgba(207, 225, 255, .34);
+    0 0 18px rgba(0, 92, 255, .52),
+    0 0 46px rgba(0, 92, 255, .34);
   transition: opacity .35s ease;
+  animation: idleTabletCtaPulse 1.8s ease-in-out infinite;
   overflow: hidden;
 }
 
@@ -1395,9 +1396,10 @@ button {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(105deg, transparent 0 38%, rgba(255, 255, 255, .72) 48%, transparent 58%) -60% 0 / 42% 100% no-repeat;
+    linear-gradient(105deg, transparent 0 38%, rgba(0, 92, 255, .72) 48%, transparent 58%) -60% 0 / 42% 100% no-repeat;
   mix-blend-mode: screen;
   pointer-events: none;
+  filter: drop-shadow(0 0 14px rgba(0, 92, 255, .76));
   animation: idleTabletCtaScan 2.2s linear infinite;
 }
 
@@ -2158,6 +2160,7 @@ button {
   opacity: 0;
   transform: translateY(8px) scale(.98);
   transition: opacity .4s ease, transform .4s ease;
+  animation: instructionCtaBluePulse 1.8s ease-in-out infinite;
 }
 
 .solutions-cta::after {
@@ -2170,7 +2173,7 @@ button {
 .solutions-cta::after {
   inset: 0;
   background:
-    linear-gradient(105deg, transparent 0 38%, rgba(255, 255, 255, .72) 48%, transparent 58%) -60% 0 / 42% 100% no-repeat;
+    linear-gradient(105deg, transparent 0 38%, rgba(0, 92, 255, .78) 48%, transparent 58%) -60% 0 / 42% 100% no-repeat;
   mix-blend-mode: screen;
   -webkit-mask: url("/TV/instruccion2.png") center / contain no-repeat;
   mask: url("/TV/instruccion2.png") center / contain no-repeat;
@@ -3749,8 +3752,8 @@ button {
   height: 9.217%;
   border-radius: 18px;
   box-shadow:
-    0 0 18px rgba(207, 225, 255, .55),
-    0 0 42px rgba(207, 225, 255, .34);
+    0 0 18px rgba(0, 92, 255, .56),
+    0 0 46px rgba(0, 92, 255, .36);
   animation: idleTabletCtaPulse 1.8s ease-in-out infinite;
 }
 
@@ -3761,22 +3764,35 @@ button {
   height: 9.217%;
   border-radius: 14px;
   background:
-    linear-gradient(105deg, transparent 0 38%, rgba(207, 225, 255, .82) 48%, transparent 58%) -60% 0 / 42% 100% no-repeat;
+    linear-gradient(105deg, transparent 0 38%, rgba(0, 92, 255, .84) 48%, transparent 58%) -60% 0 / 42% 100% no-repeat;
   mix-blend-mode: screen;
-  filter: drop-shadow(0 0 14px rgba(207, 225, 255, .8));
+  filter: drop-shadow(0 0 14px rgba(0, 92, 255, .82));
   animation: idleTabletCtaScan 2.2s linear infinite;
 }
 
 @keyframes idleTabletCtaPulse {
   0%, 100% {
     box-shadow:
-      0 0 14px rgba(207, 225, 255, .42),
-      0 0 32px rgba(207, 225, 255, .24);
+      0 0 14px rgba(0, 92, 255, .42),
+      0 0 34px rgba(0, 92, 255, .28);
   }
   50% {
     box-shadow:
-      0 0 28px rgba(207, 225, 255, .84),
-      0 0 70px rgba(207, 225, 255, .48);
+      0 0 28px rgba(0, 92, 255, .84),
+      0 0 72px rgba(0, 92, 255, .5);
+  }
+}
+
+@keyframes instructionCtaBluePulse {
+  0%, 100% {
+    filter:
+      drop-shadow(0 0 10px rgba(0, 92, 255, .36))
+      drop-shadow(0 0 22px rgba(0, 92, 255, .18));
+  }
+  50% {
+    filter:
+      drop-shadow(0 0 18px rgba(0, 92, 255, .72))
+      drop-shadow(0 0 42px rgba(0, 92, 255, .36));
   }
 }
 
