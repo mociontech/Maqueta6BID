@@ -3751,6 +3751,13 @@ button {
   height: 1080px;
 }
 
+.bridge-video-left {
+  left: 0;
+  top: 0;
+  width: 1920px;
+  height: 1080px;
+}
+
 .bridge-video.is-active {
   opacity: 1;
   transform: scale(1);
@@ -3764,6 +3771,12 @@ button {
 
 .physical-mode[data-private-bridge-video="active"] .private-holo-bridge,
 .physical-mode[data-private-bridge-video="active"] .route-private-center {
+  display: none !important;
+  opacity: 0 !important;
+  animation: none !important;
+}
+
+.physical-mode[data-left-bridge-video="active"] .route-sector-intermediaries {
   display: none !important;
   opacity: 0 !important;
   animation: none !important;

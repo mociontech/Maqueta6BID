@@ -21,6 +21,8 @@ const PHASE_COPY = {
 const FIRST_BRIDGE_LOOP_START_SECONDS = 5;
 const FIRST_BRIDGE_PLAYBACK_RATE = 1;
 const PRIVATE_BRIDGE_VIDEO_MS = 10000;
+const LEFT_BRIDGE_VIDEO_MS = 10000;
+const LEFT_BRIDGE_SECTOR_ID = 'intermediaries';
 const FIRST_BRIDGE_VISIBLE_PHASES = new Set(['problem', 'solutions', 'instrument', 'route', 'providers', 'result', 'closing']);
 
 let state = {
@@ -61,6 +63,7 @@ const els = {
   finalFormalVideo: document.querySelector('#finalFormalVideo'),
   bridgeVideo1: document.querySelector('#bridgeVideo1'),
   bridgeVideo3: document.querySelector('#bridgeVideo3'),
+  bridgeVideo4: document.querySelector('#bridgeVideo4'),
   informalPoster: document.querySelector('#informalPoster'),
   formalPoster: document.querySelector('#formalPoster'),
   problemBullets: document.querySelector('#problemBullets'),
@@ -263,6 +266,27 @@ function playPrivateBridgeVideo({ restart = false } = {}) {
   else video.addEventListener('loadedmetadata', play, { once: true });
 }
 
+function playLeftBridgeVideo({ restart = false, loopOnly = false } = {}) {
+  const video = els.bridgeVideo4;
+  if (!video || (!video.src && !video.currentSrc)) return;
+  video.muted = true;
+  video.loop = false;
+  video.playbackRate = 1;
+  video.playsInline = true;
+  video.dataset.loopActive = 'true';
+  video.closest('.bridge-video')?.classList.add('is-active');
+  els.shell.dataset.leftBridgeVideo = 'active';
+
+  const play = () => {
+    if (restart || video.ended) seekBridgeIntroStart(video);
+    else if (loopOnly && video.currentTime < bridgeLoopStart(video)) seekBridgeLoopStart(video);
+    video.play().catch(() => {});
+  };
+
+  if (video.readyState >= 1) play();
+  else video.addEventListener('loadedmetadata', play, { once: true });
+}
+
 function stopFirstBridgeVideo(reset = true) {
   const video = els.bridgeVideo1;
   if (!video) return;
@@ -283,13 +307,23 @@ function stopPrivateBridgeVideo(reset = true) {
   delete els.shell.dataset.privateBridgeVideo;
 }
 
+function stopLeftBridgeVideo(reset = true) {
+  const video = els.bridgeVideo4;
+  if (!video) return;
+  video.dataset.loopActive = 'false';
+  video.pause();
+  if (reset) seekBridgeIntroStart(video);
+  video.closest('.bridge-video')?.classList.remove('is-active');
+  delete els.shell.dataset.leftBridgeVideo;
+}
+
 function loopBridgeVideoFromConfiguredStart(video) {
   if (!video || video.dataset.loopActive !== 'true') return;
   seekBridgeLoopStart(video);
   video.play().catch(() => {});
 }
 
-[els.bridgeVideo1, els.bridgeVideo3].forEach(video => {
+[els.bridgeVideo1, els.bridgeVideo3, els.bridgeVideo4].forEach(video => {
   video?.addEventListener('ended', () => {
     loopBridgeVideoFromConfiguredStart(video);
   });
@@ -393,7 +427,11 @@ function revealPrivateSectorRead(sector, token) {
 
   // Mantener dibujados todos los puentes laterales ya revelados; nunca borrarlos.
   for (const revealedId of revealedPrivateSectors) {
-    completePath(routeForSector(revealedId), '#cfe1ff');
+    if (revealedId === LEFT_BRIDGE_SECTOR_ID) {
+      playLeftBridgeVideo({ loopOnly: true });
+    } else {
+      completePath(routeForSector(revealedId), '#cfe1ff');
+    }
   }
 
   if (alreadyRevealed) {
@@ -410,6 +448,12 @@ function revealPrivateSectorRead(sector, token) {
   const revealLateralBridge = () => {
     pendingRevealSectorId = sector.id;
     setSequenceSteps(...currentPrivateSteps());
+    if (sector.id === LEFT_BRIDGE_SECTOR_ID) {
+      playLeftBridgeVideo({ restart: true });
+      const leftBridgeMs = estimateVideoDurationMs(els.bridgeVideo4, LEFT_BRIDGE_VIDEO_MS);
+      later(finishReveal, leftBridgeMs, token);
+      return;
+    }
     animatePath(sectorRoute, 4000, '#cfe1ff', token, 2);
     later(finishReveal, 4000, token);
   };
@@ -599,6 +643,7 @@ function resetVisualStates() {
   stopVideo(els.finalFormalVideo);
   stopFirstBridgeVideo();
   stopPrivateBridgeVideo();
+  stopLeftBridgeVideo();
 }
 
 function routeById(id) {
