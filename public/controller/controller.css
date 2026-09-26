@@ -965,7 +965,16 @@ h1 {
   width: 28.125%;
   height: 25.9167%;
   gap: 0;
-  background: none;
+  background-image:
+    url("/pantallas/Line%203.png"),
+    url("/pantallas/Line%203.png");
+  background-repeat: no-repeat;
+  background-position:
+    center 33.3333%,
+    center 66.6667%;
+  background-size:
+    100% 3px,
+    100% 3px;
 }
 
 .tablet-shell[data-step="sectors"][data-impact-ready="true"] .sector-card,
@@ -984,19 +993,6 @@ h1 {
 }
 
 .tablet-shell[data-step="sectors"][data-impact-ready="true"] .sector-card::after {
-  content: "";
-  position: absolute;
-  left: -17%;
-  right: -36%;
-  bottom: -1.2%;
-  height: 3px;
-  background: url("/pantallas/Line%203.png") left center / 100% 3px no-repeat;
-  filter: drop-shadow(0 0 5px rgba(255, 255, 255, .4));
-  opacity: 1;
-  transform: none;
-}
-
-.tablet-shell[data-step="sectors"][data-impact-ready="true"] .sector-card:nth-child(3)::after {
   display: none;
 }
 
