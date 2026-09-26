@@ -829,6 +829,16 @@ h1 {
   display: grid;
   grid-template-rows: repeat(3, 1fr);
   gap: 0;
+  background-image:
+    url("/pantallas/Line%203.png"),
+    url("/pantallas/Line%203.png");
+  background-repeat: no-repeat;
+  background-position:
+    center 33.3333%,
+    center 66.6667%;
+  background-size:
+    100% 3px,
+    100% 3px;
   transition:
     left .76s cubic-bezier(.2, .78, .18, 1),
     top .76s cubic-bezier(.2, .78, .18, 1),
@@ -950,6 +960,7 @@ h1 {
   width: 28.125%;
   height: 25.9167%;
   gap: 0;
+  background: none;
 }
 
 .tablet-shell[data-step="sectors"][data-impact-ready="true"] .sector-card,
