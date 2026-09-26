@@ -1941,6 +1941,35 @@ button {
   }
 }
 
+@keyframes privatePadFrameGlow {
+  0%, 100% {
+    box-shadow:
+      0 0 18px rgba(207, 225, 255, .74),
+      0 0 40px rgba(74, 172, 255, .38),
+      inset 0 0 22px rgba(207, 225, 255, .2);
+  }
+  50% {
+    box-shadow:
+      0 0 30px rgba(207, 225, 255, 1),
+      0 0 70px rgba(74, 172, 255, .58),
+      inset 0 0 34px rgba(207, 225, 255, .3);
+  }
+}
+
+@keyframes privatePadBorderSweep {
+  0% {
+    transform: rotate(0deg);
+    opacity: .8;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: rotate(360deg);
+    opacity: .8;
+  }
+}
+
 .slot-formal {
   left: 1455px;
   top: 623px;
@@ -3486,16 +3515,22 @@ button {
 .physical-mode[data-phase="problem"][data-sector="insurers"] .private-pad-insurers,
 .physical-mode[data-phase="solutions"][data-sector="insurers"] .private-pad-insurers,
 .physical-mode[data-sequence~="private-3"] .private-pad-insurers {
+  display: block !important;
+  visibility: visible !important;
+  z-index: 35;
   opacity: 1 !important;
   background:
-    linear-gradient(180deg, rgba(207, 225, 255, .22), rgba(80, 130, 190, .18)),
-    rgba(11, 28, 50, .12) !important;
-  border-color: rgba(207, 225, 255, .94) !important;
+    linear-gradient(180deg, rgba(207, 225, 255, .3), rgba(80, 130, 190, .16)),
+    rgba(11, 28, 50, .06) !important;
+  border: 3px solid rgba(207, 225, 255, .98) !important;
   box-shadow:
-    0 0 18px rgba(207, 225, 255, .62),
-    0 0 36px rgba(74, 172, 255, .34),
-    inset 0 0 24px rgba(207, 225, 255, .18) !important;
+    0 0 24px rgba(207, 225, 255, .82),
+    0 0 54px rgba(74, 172, 255, .48),
+    inset 0 0 28px rgba(207, 225, 255, .24) !important;
+  outline: 2px solid rgba(255, 255, 255, .72);
+  outline-offset: -8px;
   transform: translateY(0) scale(1) !important;
+  animation: privatePadFrameGlow 1.8s ease-in-out infinite !important;
 }
 
 .physical-mode[data-phase="problem"][data-sector="intermediaries"] .private-pad-intermediaries::before,
@@ -3507,9 +3542,15 @@ button {
 .physical-mode[data-phase="problem"][data-sector="insurers"] .private-pad-insurers::before,
 .physical-mode[data-phase="solutions"][data-sector="insurers"] .private-pad-insurers::before,
 .physical-mode[data-sequence~="private-3"] .private-pad-insurers::before {
-  border-color: rgba(207, 225, 255, .98) !important;
+  inset: -7px;
+  border: 3px solid rgba(207, 225, 255, .98) !important;
+  border-radius: 24px;
   opacity: 1 !important;
-  animation: privatePadPulse 1.7s ease-in-out infinite !important;
+  box-shadow:
+    0 0 28px rgba(207, 225, 255, .88),
+    0 0 62px rgba(74, 172, 255, .42),
+    inset 0 0 22px rgba(207, 225, 255, .22) !important;
+  animation: privatePadFrameGlow 1.8s ease-in-out infinite !important;
 }
 
 .physical-mode[data-phase="problem"][data-sector="intermediaries"] .private-pad-intermediaries::after,
@@ -3521,8 +3562,27 @@ button {
 .physical-mode[data-phase="problem"][data-sector="insurers"] .private-pad-insurers::after,
 .physical-mode[data-phase="solutions"][data-sector="insurers"] .private-pad-insurers::after,
 .physical-mode[data-sequence~="private-3"] .private-pad-insurers::after {
+  inset: -9px !important;
+  left: -9px !important;
+  right: auto !important;
+  top: -9px !important;
+  width: calc(100% + 18px) !important;
+  height: calc(100% + 18px) !important;
+  border-radius: 26px !important;
+  background:
+    conic-gradient(from 0deg, transparent 0 18%, rgba(255, 255, 255, .98) 24%, rgba(116, 226, 255, .92) 30%, transparent 38% 100%) !important;
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  padding: 3px;
+  filter: drop-shadow(0 0 10px rgba(207, 225, 255, .92)) drop-shadow(0 0 22px rgba(74, 172, 255, .56));
   opacity: 1 !important;
-  animation: privatePadScan 1.5s ease-in-out infinite !important;
+  animation: privatePadBorderSweep 2s linear infinite !important;
 }
 
 .physical-mode[data-phase="idle"] .physical-layout > * {
