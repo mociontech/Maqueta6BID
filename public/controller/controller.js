@@ -381,6 +381,7 @@ function runSelectedSector(sector) {
 
 function chooseSector(id) {
   if (shouldIgnoreInteraction()) return;
+  if (completedSectors.has(id)) return;
   const sector = currentSector(id);
   if (!sector) return;
   clearAutoRun();
