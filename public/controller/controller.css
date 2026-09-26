@@ -899,7 +899,7 @@ h1 {
 }
 
 .tablet-shell[data-step="sectors"] .sector-card.dimmed {
-  --box-background: linear-gradient(180deg, rgba(4, 74, 204, .3), rgba(3, 82, 220, .18));
+  --box-background: rgb(2, 85, 232);
   --box-opacity: 1;
   --arrow-opacity: 0;
   cursor: not-allowed;
