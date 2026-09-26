@@ -21,7 +21,8 @@ const PHASE_COPY = {
 const FIRST_BRIDGE_LOOP_START_SECONDS = 5;
 const FIRST_BRIDGE_PLAYBACK_RATE = 1;
 const PRIVATE_BRIDGE_VIDEO_MS = 10000;
-const LEFT_BRIDGE_VIDEO_MS = 10000;
+const PRIVATE_BRIDGE_TO_LATERAL_MS = 3000;
+const LEFT_BRIDGE_TO_POPUP_MS = 3500;
 const LEFT_BRIDGE_SECTOR_ID = 'intermediaries';
 const FIRST_BRIDGE_VISIBLE_PHASES = new Set(['problem', 'solutions', 'instrument', 'route', 'providers', 'result', 'closing']);
 
@@ -450,8 +451,7 @@ function revealPrivateSectorRead(sector, token) {
     setSequenceSteps(...currentPrivateSteps());
     if (sector.id === LEFT_BRIDGE_SECTOR_ID) {
       playLeftBridgeVideo({ restart: true });
-      const leftBridgeMs = estimateVideoDurationMs(els.bridgeVideo4, LEFT_BRIDGE_VIDEO_MS);
-      later(finishReveal, leftBridgeMs, token);
+      later(finishReveal, LEFT_BRIDGE_TO_POPUP_MS, token);
       return;
     }
     animatePath(sectorRoute, 4000, '#cfe1ff', token, 2);
@@ -463,7 +463,10 @@ function revealPrivateSectorRead(sector, token) {
     pendingRevealSectorId = sector.id;
     setSequenceSteps('private-bridge', ...currentPrivateSteps());
     playPrivateBridgeVideo({ restart: true });
-    const privateBridgeMs = estimateVideoDurationMs(els.bridgeVideo3, PRIVATE_BRIDGE_VIDEO_MS);
+    const privateBridgeMs = Math.min(
+      estimateVideoDurationMs(els.bridgeVideo3, PRIVATE_BRIDGE_VIDEO_MS),
+      PRIVATE_BRIDGE_TO_LATERAL_MS
+    );
 
     later(() => {
       centerRoute?.classList.remove('active', 'complete');
