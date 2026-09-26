@@ -3516,14 +3516,17 @@ button {
 .physical-mode[data-phase="solutions"][data-sector="intermediaries"] .private-pad-intermediaries,
 .physical-mode[data-phase="problem"][data-private-revealed~="intermediaries"] .private-pad-intermediaries,
 .physical-mode[data-phase="solutions"][data-private-revealed~="intermediaries"] .private-pad-intermediaries,
+.physical-mode[data-phase="closing"][data-private-revealed~="intermediaries"] .private-pad-intermediaries,
 .physical-mode[data-phase="problem"][data-sector="investors"] .private-pad-investors,
 .physical-mode[data-phase="solutions"][data-sector="investors"] .private-pad-investors,
 .physical-mode[data-phase="problem"][data-private-revealed~="investors"] .private-pad-investors,
 .physical-mode[data-phase="solutions"][data-private-revealed~="investors"] .private-pad-investors,
+.physical-mode[data-phase="closing"][data-private-revealed~="investors"] .private-pad-investors,
 .physical-mode[data-phase="problem"][data-sector="insurers"] .private-pad-insurers,
 .physical-mode[data-phase="solutions"][data-sector="insurers"] .private-pad-insurers,
 .physical-mode[data-phase="problem"][data-private-revealed~="insurers"] .private-pad-insurers,
-.physical-mode[data-phase="solutions"][data-private-revealed~="insurers"] .private-pad-insurers {
+.physical-mode[data-phase="solutions"][data-private-revealed~="insurers"] .private-pad-insurers,
+.physical-mode[data-phase="closing"][data-private-revealed~="insurers"] .private-pad-insurers {
   display: block !important;
   visibility: visible !important;
   z-index: 35;
@@ -3544,14 +3547,17 @@ button {
 .physical-mode[data-phase="solutions"][data-sector="intermediaries"] .private-pad-intermediaries::before,
 .physical-mode[data-phase="problem"][data-private-revealed~="intermediaries"] .private-pad-intermediaries::before,
 .physical-mode[data-phase="solutions"][data-private-revealed~="intermediaries"] .private-pad-intermediaries::before,
+.physical-mode[data-phase="closing"][data-private-revealed~="intermediaries"] .private-pad-intermediaries::before,
 .physical-mode[data-phase="problem"][data-sector="investors"] .private-pad-investors::before,
 .physical-mode[data-phase="solutions"][data-sector="investors"] .private-pad-investors::before,
 .physical-mode[data-phase="problem"][data-private-revealed~="investors"] .private-pad-investors::before,
 .physical-mode[data-phase="solutions"][data-private-revealed~="investors"] .private-pad-investors::before,
+.physical-mode[data-phase="closing"][data-private-revealed~="investors"] .private-pad-investors::before,
 .physical-mode[data-phase="problem"][data-sector="insurers"] .private-pad-insurers::before,
 .physical-mode[data-phase="solutions"][data-sector="insurers"] .private-pad-insurers::before,
 .physical-mode[data-phase="problem"][data-private-revealed~="insurers"] .private-pad-insurers::before,
-.physical-mode[data-phase="solutions"][data-private-revealed~="insurers"] .private-pad-insurers::before {
+.physical-mode[data-phase="solutions"][data-private-revealed~="insurers"] .private-pad-insurers::before,
+.physical-mode[data-phase="closing"][data-private-revealed~="insurers"] .private-pad-insurers::before {
   inset: 0;
   border: 2px solid rgba(207, 225, 255, .98) !important;
   border-radius: 4px;
@@ -3567,14 +3573,17 @@ button {
 .physical-mode[data-phase="solutions"][data-sector="intermediaries"] .private-pad-intermediaries::after,
 .physical-mode[data-phase="problem"][data-private-revealed~="intermediaries"] .private-pad-intermediaries::after,
 .physical-mode[data-phase="solutions"][data-private-revealed~="intermediaries"] .private-pad-intermediaries::after,
+.physical-mode[data-phase="closing"][data-private-revealed~="intermediaries"] .private-pad-intermediaries::after,
 .physical-mode[data-phase="problem"][data-sector="investors"] .private-pad-investors::after,
 .physical-mode[data-phase="solutions"][data-sector="investors"] .private-pad-investors::after,
 .physical-mode[data-phase="problem"][data-private-revealed~="investors"] .private-pad-investors::after,
 .physical-mode[data-phase="solutions"][data-private-revealed~="investors"] .private-pad-investors::after,
+.physical-mode[data-phase="closing"][data-private-revealed~="investors"] .private-pad-investors::after,
 .physical-mode[data-phase="problem"][data-sector="insurers"] .private-pad-insurers::after,
 .physical-mode[data-phase="solutions"][data-sector="insurers"] .private-pad-insurers::after,
 .physical-mode[data-phase="problem"][data-private-revealed~="insurers"] .private-pad-insurers::after,
-.physical-mode[data-phase="solutions"][data-private-revealed~="insurers"] .private-pad-insurers::after {
+.physical-mode[data-phase="solutions"][data-private-revealed~="insurers"] .private-pad-insurers::after,
+.physical-mode[data-phase="closing"][data-private-revealed~="insurers"] .private-pad-insurers::after {
   inset: 0 !important;
   left: 0 !important;
   right: auto !important;
