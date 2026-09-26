@@ -1613,7 +1613,9 @@ button {
   height: 306px;
   border-color: transparent;
   border-radius: 50%;
-  background: transparent;
+  z-index: 22;
+  background: #cfe1ff;
+  box-shadow: 0 0 34px rgba(207, 225, 255, .36);
 }
 
 .slot-bank::before {
@@ -2105,7 +2107,7 @@ button {
 
 .bridge-copy-left {
   left: 584px;
-  top: 378px;
+  top: 342px;
   width: 208px;
   height: 43px;
   opacity: 0;

@@ -134,6 +134,7 @@ function setVideoSource(video, poster, src) {
   }
   video.muted = true;
   video.loop = false;
+  video.playbackRate = 1;
   video.playsInline = true;
   video.addEventListener('ended', () => {
     const card = video.closest('.video-card');
@@ -219,6 +220,7 @@ function playFirstBridgeVideo({ restart = false } = {}) {
   if (!video || (!video.src && !video.currentSrc)) return;
   video.muted = true;
   video.loop = false;
+  video.playbackRate = 1;
   video.playsInline = true;
   video.dataset.loopActive = 'true';
   video.closest('.bridge-video')?.classList.add('is-active');
