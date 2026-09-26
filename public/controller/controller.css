@@ -848,6 +848,7 @@ h1 {
 }
 
 .tablet-shell[data-step="sectors"] .sector-card {
+  --box-background: var(--box-color);
   --box-color: #151515;
   --box-opacity: 0;
   --arrow-opacity: 0;
@@ -882,7 +883,7 @@ h1 {
   content: "";
   position: absolute;
   inset: 0;
-  background: var(--box-color);
+  background: var(--box-background);
   opacity: var(--box-opacity);
   transition: opacity .28s ease;
 }
@@ -898,9 +899,9 @@ h1 {
 }
 
 .tablet-shell[data-step="sectors"] .sector-card.dimmed {
-  --box-color: rgba(20, 20, 20, .1);
+  --box-background: linear-gradient(180deg, rgba(4, 74, 204, .3), rgba(3, 82, 220, .18));
   --box-opacity: 1;
-  --arrow-opacity: .12;
+  --arrow-opacity: 0;
   cursor: not-allowed;
   pointer-events: none;
 }

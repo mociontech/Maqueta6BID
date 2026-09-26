@@ -239,7 +239,6 @@ function updateSectorGuidance(activeId = selectedSectorId, waiting = false) {
   });
   if (els.viewTransformation) {
     els.viewTransformation.hidden = !allCompleted;
-    els.viewTransformation.textContent = 'VER IMPACTO';
     els.viewTransformation.setAttribute('aria-label', 'Ver impacto');
   }
 }
