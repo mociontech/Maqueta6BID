@@ -3109,8 +3109,8 @@ button {
 
 .physical-mode .formal-popup-7 {
   left: 1168px;
-  top: 488px;
-  width: 252px;
+  top: 500px;
+  width: 224px;
 }
 
 .physical-mode .formal-video-title {
@@ -3371,6 +3371,41 @@ button {
 .physical-mode[data-phase="closing"] .slot-private,
 .physical-mode[data-phase="closing"] .slot-formal {
   opacity: 0 !important;
+}
+
+.physical-mode[data-phase="closing"] .slot-formal {
+  opacity: 1 !important;
+}
+
+.physical-mode[data-phase="closing"] .slot-formal::before,
+.physical-mode[data-phase="closing"] .slot-formal::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 24px;
+  pointer-events: none;
+}
+
+.physical-mode[data-phase="closing"] .slot-formal::before {
+  border: 2px solid rgba(207, 225, 255, .96);
+  box-shadow:
+    0 0 22px rgba(207, 225, 255, .72),
+    0 0 42px rgba(207, 225, 255, .32),
+    inset 0 0 18px rgba(207, 225, 255, .18);
+  opacity: 1;
+  animation: maquettePadCharge 2.2s ease-in-out infinite;
+}
+
+.physical-mode[data-phase="closing"] .slot-formal::after {
+  border: 0;
+  background:
+    linear-gradient(90deg, transparent 0 16%, #cfe1ff 22%, transparent 31%) top left / 100% 3px no-repeat,
+    linear-gradient(180deg, transparent 0 18%, #cfe1ff 25%, transparent 34%) top right / 3px 100% no-repeat,
+    linear-gradient(270deg, transparent 0 18%, #cfe1ff 26%, transparent 36%) bottom right / 100% 3px no-repeat,
+    linear-gradient(0deg, transparent 0 20%, #cfe1ff 28%, transparent 38%) bottom left / 3px 100% no-repeat;
+  filter: drop-shadow(0 0 10px rgba(207, 225, 255, .76));
+  opacity: 1;
+  animation: maquettePadTrace 2.8s linear infinite;
 }
 
 .physical-mode[data-phase="idle"] .physical-layout > * {
