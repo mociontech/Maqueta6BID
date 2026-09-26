@@ -3719,6 +3719,40 @@ button {
   filter: none;
 }
 
+.bridge-video {
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0;
+  transform: scale(.98);
+  transition: opacity .22s ease, transform .22s ease;
+}
+
+.bridge-video video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.bridge-video-first {
+  left: 0;
+  top: 0;
+  width: 1920px;
+  height: 1080px;
+}
+
+.bridge-video.is-active {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.physical-mode[data-first-bridge-video="active"] .holo-bridge,
+.physical-mode[data-first-bridge-video="active"] .route-barrier {
+  opacity: 0 !important;
+  animation: none !important;
+}
+
 .physical-mode[data-phase="problem"] .idle-media-poster video,
 .physical-mode[data-phase="solutions"] .idle-media-poster video,
 .physical-mode[data-phase="closing"] .idle-media-poster video {

@@ -18,6 +18,8 @@ const PHASE_COPY = {
   result: ['PASO 4', 'Transformacion de vivienda'],
   closing: ['CIERRE', 'Conectar para transformar']
 };
+const FIRST_BRIDGE_LOOP_START_SECONDS = 5;
+const FIRST_BRIDGE_VISIBLE_PHASES = new Set(['problem', 'solutions', 'instrument', 'route', 'providers', 'result', 'closing']);
 
 let state = {
   phase: 'idle',
@@ -55,6 +57,7 @@ const els = {
   idleInformalVideo: document.querySelector('#idleInformalVideo'),
   idleFormalVideo: document.querySelector('#idleFormalVideo'),
   finalFormalVideo: document.querySelector('#finalFormalVideo'),
+  bridgeVideo1: document.querySelector('#bridgeVideo1'),
   informalPoster: document.querySelector('#informalPoster'),
   formalPoster: document.querySelector('#formalPoster'),
   problemBullets: document.querySelector('#problemBullets'),
@@ -197,6 +200,65 @@ els.finalFormalVideo?.addEventListener('timeupdate', () => {
   }
 });
 
+function bridgeLoopStart(video) {
+  const configuredStart = Number(video?.dataset.loopStart);
+  const loopStart = Number.isFinite(configuredStart) ? configuredStart : FIRST_BRIDGE_LOOP_START_SECONDS;
+  if (video && Number.isFinite(video.duration) && video.duration > 0) {
+    return Math.min(loopStart, Math.max(0, video.duration - .2));
+  }
+  return loopStart;
+}
+
+function seekBridgeLoopStart(video) {
+  if (!video) return;
+  try { video.currentTime = bridgeLoopStart(video); } catch {}
+}
+
+function playFirstBridgeVideo({ restart = false } = {}) {
+  const video = els.bridgeVideo1;
+  if (!video || (!video.src && !video.currentSrc)) return;
+  video.muted = true;
+  video.loop = false;
+  video.playsInline = true;
+  video.dataset.loopActive = 'true';
+  video.closest('.bridge-video')?.classList.add('is-active');
+  els.shell.dataset.firstBridgeVideo = 'active';
+
+  const play = () => {
+    if (restart || video.currentTime < bridgeLoopStart(video)) seekBridgeLoopStart(video);
+    video.play().catch(() => {});
+  };
+
+  if (video.readyState >= 1) play();
+  else video.addEventListener('loadedmetadata', play, { once: true });
+}
+
+function stopFirstBridgeVideo(reset = true) {
+  const video = els.bridgeVideo1;
+  if (!video) return;
+  video.dataset.loopActive = 'false';
+  video.pause();
+  if (reset) seekBridgeLoopStart(video);
+  video.closest('.bridge-video')?.classList.remove('is-active');
+  delete els.shell.dataset.firstBridgeVideo;
+}
+
+els.bridgeVideo1?.addEventListener('ended', () => {
+  if (els.bridgeVideo1.dataset.loopActive !== 'true') return;
+  seekBridgeLoopStart(els.bridgeVideo1);
+  els.bridgeVideo1.play().catch(() => {});
+});
+
+els.bridgeVideo1?.addEventListener('timeupdate', () => {
+  const video = els.bridgeVideo1;
+  if (video.dataset.loopActive !== 'true') return;
+  if (!Number.isFinite(video.duration) || video.duration <= 0) return;
+  if (video.currentTime >= video.duration - .08) {
+    seekBridgeLoopStart(video);
+    video.play().catch(() => {});
+  }
+});
+
 function setSequenceSteps(...steps) {
   els.shell.dataset.sequence = steps.filter(Boolean).join(' ');
   updatePrivateRevealedState();
@@ -214,7 +276,6 @@ function estimateVideoDurationMs(video, fallbackMs = 10000) {
 }
 
 function revealBankIntroSequence(token) {
-  const barrierRoute = routeById('route-barrier');
   const introVideo = els.idleInformalVideo || els.informalVideo;
   setSequenceSteps('maquette');
   stopVideo(els.informalVideo, true, false);
@@ -231,7 +292,7 @@ function revealBankIntroSequence(token) {
 
     later(() => {
       setSequenceSteps('maquette', 'problem', 'video', 'bridge');
-      animatePath(barrierRoute, 2300, '#cfe1ff', token, 0);
+      playFirstBridgeVideo({ restart: true });
     }, videoMs, token);
 
     later(() => {
@@ -491,6 +552,7 @@ function resetVisualStates() {
   els.annotation.hidden = true;
   els.annotation.innerHTML = '';
   stopVideo(els.finalFormalVideo);
+  stopFirstBridgeVideo();
 }
 
 function routeById(id) {
@@ -742,6 +804,10 @@ function renderExperience() {
   els.stepSubtitle.textContent = sector
     ? `${data.meta.subtitle} · ${sector.shortLabel}`
     : data.meta.subtitle;
+
+  if (FIRST_BRIDGE_VISIBLE_PHASES.has(phase)) {
+    playFirstBridgeVideo();
+  }
 
   if (phase === 'idle') {
     revealedPrivateSectors.clear();
