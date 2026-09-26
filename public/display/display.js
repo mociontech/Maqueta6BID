@@ -199,6 +199,11 @@ els.finalFormalVideo?.addEventListener('timeupdate', () => {
 
 function setSequenceSteps(...steps) {
   els.shell.dataset.sequence = steps.filter(Boolean).join(' ');
+  updatePrivateRevealedState();
+}
+
+function updatePrivateRevealedState() {
+  els.shell.dataset.privateRevealed = [...revealedPrivateSectors].join(' ');
 }
 
 function estimateVideoDurationMs(video, fallbackMs = 10000) {
@@ -740,6 +745,7 @@ function renderExperience() {
 
   if (phase === 'idle') {
     revealedPrivateSectors.clear();
+    updatePrivateRevealedState();
     pendingRevealSectorId = null;
     els.informalPanel.classList.remove('dim');
     els.formalPanel.classList.add('dim');
@@ -755,6 +761,7 @@ function renderExperience() {
 
   if (phase === 'bankIntro') {
     revealedPrivateSectors.clear();
+    updatePrivateRevealedState();
     pendingRevealSectorId = null;
     els.informalPanel.classList.add('active');
     els.formalPanel.classList.add('dim');
@@ -774,6 +781,7 @@ function renderExperience() {
     for (const item of data.segments) {
       revealedPrivateSectors.add(item.id);
     }
+    updatePrivateRevealedState();
     stopVideo(els.informalVideo, false, true);
     playVideo(els.idleInformalVideo, { loop: true, keepVisibleOnEnd: true });
     els.annotation.hidden = true;
