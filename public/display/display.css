@@ -1698,12 +1698,9 @@ button {
 
 .private-pad {
   position: absolute;
-  top: 786px;
-  width: 186px;
-  height: 146px;
   box-sizing: border-box;
   border: 2px solid rgba(57, 165, 255, .34);
-  border-radius: 20px;
+  border-radius: 4px;
   background: rgba(3, 12, 18, .08);
   opacity: 0;
   transform: translateY(16px) scale(.97);
@@ -1722,7 +1719,7 @@ button {
 .private-pad::before {
   inset: -3px;
   border: 2px solid rgba(86, 220, 255, .72);
-  border-radius: 22px;
+  border-radius: 6px;
   opacity: .22;
   box-shadow:
     0 0 18px rgba(86, 220, 255, .35),
@@ -1741,15 +1738,24 @@ button {
 }
 
 .private-pad-intermediaries {
-  left: 682px;
+  left: 673px;
+  top: 832px;
+  width: 182px;
+  height: 185px;
 }
 
 .private-pad-investors {
-  left: 868px;
+  left: 879px;
+  top: 835px;
+  width: 179px;
+  height: 179px;
 }
 
 .private-pad-insurers {
-  left: 1054px;
+  left: 1094px;
+  top: 842px;
+  width: 162px;
+  height: 162px;
 }
 
 .private-popup {
