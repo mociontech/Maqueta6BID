@@ -792,9 +792,18 @@ h1 {
 
 .tablet-shell[data-step="final"] #exploreAgain {
   left: 13.54%;
-  top: 77.87%;
+  top: 75.08%;
   width: 34.32%;
-  height: 10.56%;
+  height: 9.67%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: #141414 !important;
+  color: #ffffff !important;
+  font-size: clamp(28px, 3vw, 56px);
+  font-weight: 800;
+  line-height: 1;
 }
 
 .tablet-shell[data-step="final"] #restart {
