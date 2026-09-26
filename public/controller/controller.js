@@ -104,10 +104,10 @@ function resetStaticReloadState() {
     localStorage.setItem(staticStateStorageKey, JSON.stringify({
       segmentId: null,
       instrumentId: null,
-      phase: 'bankIntro',
+      phase: 'idle',
       selectionMode: 'initial',
       runId: Number(previous.runId || 0) + 1,
-      lockedUntil: now,
+      lockedUntil: 0,
       updatedAt: now
     }));
   } catch {
@@ -327,12 +327,17 @@ function shouldIgnoreInteraction() {
   return true;
 }
 
-function goToIntro(reset = true) {
-  if (shouldIgnoreInteraction()) return;
+function clearLocalProgress() {
   clearAutoRun();
   clearSectorReadTimer();
   completedSectors.clear();
   selectedSectorId = null;
+  updateSectorGuidance(null);
+}
+
+function goToIntro(reset = true) {
+  if (shouldIgnoreInteraction()) return;
+  clearLocalProgress();
   showStep(els.introStep, 'intro');
   if (reset) socket.send({ type: 'reset', source: 'controller' });
 }
@@ -455,8 +460,8 @@ function syncFromServer() {
   updateInteractionLock();
   if (localFinal) return;
 
-  if (state.phase === 'idle' && els.shell.dataset.step !== 'sectors') {
-    selectedSectorId = null;
+  if (state.phase === 'idle') {
+    clearLocalProgress();
     showStep(els.introStep, 'intro');
     return;
   }
