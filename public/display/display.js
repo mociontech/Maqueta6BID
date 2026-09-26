@@ -146,6 +146,7 @@ function playVideo(video, options = {}) {
   if (!video || (!video.src && !video.currentSrc)) return;
   const card = video.closest('.video-card');
   card?.classList.remove('video-off', 'video-ended', 'video-paused-visible');
+  video.closest('.final-formal-video')?.classList.remove('video-ready');
   video.loop = Boolean(options.loop);
   video.dataset.keepVisibleOnEnd = options.keepVisibleOnEnd ? 'true' : 'false';
   if (options.restart) {
@@ -183,7 +184,18 @@ function stopVideo(video, reset = true, keepVisible = false) {
   const card = video.closest('.video-card');
   card?.classList.toggle('video-off', !keepVisible);
   card?.classList.toggle('video-paused-visible', keepVisible);
+  video.closest('.final-formal-video')?.classList.remove('video-ready');
 }
+
+els.finalFormalVideo?.addEventListener('playing', () => {
+  els.finalFormalVideo.closest('.final-formal-video')?.classList.add('video-ready');
+});
+
+els.finalFormalVideo?.addEventListener('timeupdate', () => {
+  if (els.finalFormalVideo.currentTime > 0.15) {
+    els.finalFormalVideo.closest('.final-formal-video')?.classList.add('video-ready');
+  }
+});
 
 function setSequenceSteps(...steps) {
   els.shell.dataset.sequence = steps.filter(Boolean).join(' ');

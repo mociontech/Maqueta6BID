@@ -3068,6 +3068,27 @@ button {
   display: none !important;
 }
 
+.physical-mode[data-phase="closing"] .physical-layout {
+  opacity: 1 !important;
+}
+
+.physical-mode[data-phase="closing"] .physical-layout > *:not(.formal-popup):not(.final-formal-video) {
+  display: none !important;
+}
+
+.physical-mode[data-phase="closing"] .holo-bridge,
+.physical-mode[data-phase="closing"] .private-holo-bridge,
+.physical-mode[data-phase="closing"] .route-barrier,
+.physical-mode[data-phase="closing"] .route-private-center,
+.physical-mode[data-phase="closing"] .route-sector {
+  display: none !important;
+  opacity: 0 !important;
+}
+
+.physical-mode[data-phase="closing"] .formal-video-title {
+  display: none !important;
+}
+
 .physical-mode .formal-popup,
 .physical-mode .final-formal-video,
 .physical-mode .formal-video-title {
@@ -3125,10 +3146,22 @@ button {
   transform: translateY(12px) scale(.985);
 }
 
+.physical-mode .final-video-poster {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 1;
+  transition: opacity .28s ease;
+}
+
 .physical-mode .final-formal-video::after {
   content: "";
   position: absolute;
   inset: -2px;
+  z-index: 3;
   border: 2px solid rgba(207, 225, 255, .9);
   pointer-events: none;
   box-shadow:
@@ -3139,11 +3172,24 @@ button {
 }
 
 .physical-mode .final-formal-video video {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
   width: 100%;
   height: 100%;
   display: block;
   object-fit: cover;
+  opacity: 0;
   filter: none;
+  transition: opacity .28s ease;
+}
+
+.physical-mode .final-formal-video.video-ready video {
+  opacity: .82;
+}
+
+.physical-mode .final-formal-video.video-ready .final-video-poster {
+  opacity: .46;
 }
 
 .physical-mode[data-phase="closing"][data-sequence~="formal-popup5"] .formal-popup-5,
@@ -3250,6 +3296,10 @@ button {
 .physical-mode[data-phase="providers"] .stage,
 .physical-mode[data-phase="result"] .stage {
   background: url("/TV/melo1.png") center / cover no-repeat #08111d;
+}
+
+.physical-mode[data-phase="closing"] .stage {
+  background: url("/TV/momento3.3.png") center / cover no-repeat #08111d;
 }
 
 .physical-mode[data-phase="idle"] .stage > * {
