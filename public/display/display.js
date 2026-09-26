@@ -26,6 +26,8 @@ const LEFT_BRIDGE_TO_POPUP_MS = 3500;
 const LEFT_BRIDGE_SECTOR_ID = 'intermediaries';
 const MIDDLE_BRIDGE_TO_POPUP_MS = 3500;
 const MIDDLE_BRIDGE_SECTOR_ID = 'investors';
+const RIGHT_BRIDGE_TO_POPUP_MS = 3500;
+const RIGHT_BRIDGE_SECTOR_ID = 'insurers';
 const FIRST_BRIDGE_VISIBLE_PHASES = new Set(['problem', 'solutions', 'instrument', 'route', 'providers', 'result', 'closing']);
 
 let state = {
@@ -67,6 +69,8 @@ const els = {
   bridgeVideo1: document.querySelector('#bridgeVideo1'),
   bridgeVideo3: document.querySelector('#bridgeVideo3'),
   bridgeVideo4: document.querySelector('#bridgeVideo4'),
+  bridgeVideo5: document.querySelector('#bridgeVideo5'),
+  bridgeVideo6: document.querySelector('#bridgeVideo6'),
   informalPoster: document.querySelector('#informalPoster'),
   formalPoster: document.querySelector('#formalPoster'),
   problemBullets: document.querySelector('#problemBullets'),
@@ -291,6 +295,48 @@ function playLeftBridgeVideo({ restart = false, loopOnly = false } = {}) {
   else video.addEventListener('loadedmetadata', play, { once: true });
 }
 
+function playMiddleBridgeVideo({ restart = false, loopOnly = false } = {}) {
+  const video = els.bridgeVideo6;
+  if (!video || (!video.src && !video.currentSrc)) return;
+  video.muted = true;
+  video.loop = false;
+  video.playbackRate = 1;
+  video.playsInline = true;
+  video.dataset.loopActive = 'true';
+  video.closest('.bridge-video')?.classList.add('is-active');
+  els.shell.dataset.middleBridgeVideo = 'active';
+
+  const play = () => {
+    if (restart || video.ended) seekBridgeIntroStart(video);
+    else if (loopOnly && video.currentTime < bridgeLoopStart(video)) seekBridgeLoopStart(video);
+    video.play().catch(() => {});
+  };
+
+  if (video.readyState >= 1) play();
+  else video.addEventListener('loadedmetadata', play, { once: true });
+}
+
+function playRightBridgeVideo({ restart = false, loopOnly = false } = {}) {
+  const video = els.bridgeVideo5;
+  if (!video || (!video.src && !video.currentSrc)) return;
+  video.muted = true;
+  video.loop = false;
+  video.playbackRate = 1;
+  video.playsInline = true;
+  video.dataset.loopActive = 'true';
+  video.closest('.bridge-video')?.classList.add('is-active');
+  els.shell.dataset.rightBridgeVideo = 'active';
+
+  const play = () => {
+    if (restart || video.ended) seekBridgeIntroStart(video);
+    else if (loopOnly && video.currentTime < bridgeLoopStart(video)) seekBridgeLoopStart(video);
+    video.play().catch(() => {});
+  };
+
+  if (video.readyState >= 1) play();
+  else video.addEventListener('loadedmetadata', play, { once: true });
+}
+
 function stopFirstBridgeVideo(reset = true) {
   const video = els.bridgeVideo1;
   if (!video) return;
@@ -321,13 +367,33 @@ function stopLeftBridgeVideo(reset = true) {
   delete els.shell.dataset.leftBridgeVideo;
 }
 
+function stopMiddleBridgeVideo(reset = true) {
+  const video = els.bridgeVideo6;
+  if (!video) return;
+  video.dataset.loopActive = 'false';
+  video.pause();
+  if (reset) seekBridgeIntroStart(video);
+  video.closest('.bridge-video')?.classList.remove('is-active');
+  delete els.shell.dataset.middleBridgeVideo;
+}
+
+function stopRightBridgeVideo(reset = true) {
+  const video = els.bridgeVideo5;
+  if (!video) return;
+  video.dataset.loopActive = 'false';
+  video.pause();
+  if (reset) seekBridgeIntroStart(video);
+  video.closest('.bridge-video')?.classList.remove('is-active');
+  delete els.shell.dataset.rightBridgeVideo;
+}
+
 function loopBridgeVideoFromConfiguredStart(video) {
   if (!video || video.dataset.loopActive !== 'true') return;
   seekBridgeLoopStart(video);
   video.play().catch(() => {});
 }
 
-[els.bridgeVideo1, els.bridgeVideo3, els.bridgeVideo4].forEach(video => {
+[els.bridgeVideo1, els.bridgeVideo3, els.bridgeVideo4, els.bridgeVideo5, els.bridgeVideo6].forEach(video => {
   video?.addEventListener('ended', () => {
     loopBridgeVideoFromConfiguredStart(video);
   });
@@ -434,7 +500,9 @@ function revealPrivateSectorRead(sector, token) {
     if (revealedId === LEFT_BRIDGE_SECTOR_ID) {
       playLeftBridgeVideo({ loopOnly: true });
     } else if (revealedId === MIDDLE_BRIDGE_SECTOR_ID) {
-      playPrivateBridgeVideo({ loopOnly: true });
+      playMiddleBridgeVideo({ loopOnly: true });
+    } else if (revealedId === RIGHT_BRIDGE_SECTOR_ID) {
+      playRightBridgeVideo({ loopOnly: true });
     } else {
       completePath(routeForSector(revealedId), '#cfe1ff');
     }
@@ -460,8 +528,14 @@ function revealPrivateSectorRead(sector, token) {
       return;
     }
     if (sector.id === MIDDLE_BRIDGE_SECTOR_ID) {
-      playPrivateBridgeVideo({ restart: true });
+      stopPrivateBridgeVideo();
+      playMiddleBridgeVideo({ restart: true });
       later(finishReveal, MIDDLE_BRIDGE_TO_POPUP_MS, token);
+      return;
+    }
+    if (sector.id === RIGHT_BRIDGE_SECTOR_ID) {
+      playRightBridgeVideo({ restart: true });
+      later(finishReveal, RIGHT_BRIDGE_TO_POPUP_MS, token);
       return;
     }
     animatePath(sectorRoute, 4000, '#cfe1ff', token, 2);
@@ -473,12 +547,10 @@ function revealPrivateSectorRead(sector, token) {
     pendingRevealSectorId = sector.id;
     setSequenceSteps('private-bridge', ...currentPrivateSteps());
     playPrivateBridgeVideo({ restart: true });
-    const privateBridgeMs = sector.id === MIDDLE_BRIDGE_SECTOR_ID
-      ? MIDDLE_BRIDGE_TO_POPUP_MS
-      : Math.min(
-        estimateVideoDurationMs(els.bridgeVideo3, PRIVATE_BRIDGE_VIDEO_MS),
-        PRIVATE_BRIDGE_TO_LATERAL_MS
-      );
+    const privateBridgeMs = Math.min(
+      estimateVideoDurationMs(els.bridgeVideo3, PRIVATE_BRIDGE_VIDEO_MS),
+      PRIVATE_BRIDGE_TO_LATERAL_MS
+    );
 
     later(() => {
       centerRoute?.classList.remove('active', 'complete');
@@ -487,8 +559,7 @@ function revealPrivateSectorRead(sector, token) {
         centerRoute.style.strokeDasharray = '';
         centerRoute.style.strokeDashoffset = '';
       }
-      if (sector.id === MIDDLE_BRIDGE_SECTOR_ID) finishReveal();
-      else revealLateralBridge();
+      revealLateralBridge();
     }, privateBridgeMs, token);
     return;
   }
@@ -660,6 +731,8 @@ function resetVisualStates() {
   stopFirstBridgeVideo();
   stopPrivateBridgeVideo();
   stopLeftBridgeVideo();
+  stopMiddleBridgeVideo();
+  stopRightBridgeVideo();
 }
 
 function routeById(id) {
