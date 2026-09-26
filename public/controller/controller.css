@@ -795,6 +795,21 @@ h1 {
   top: 75.08%;
   width: 34.32%;
   height: 9.67%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  font-size: clamp(20px, 3vw, 36px);
+  font-weight: 800;
+  line-height: 1;
+  transition: background-color .12s ease, color .12s ease, transform .12s ease;
+}
+
+.tablet-shell[data-step="final"] #exploreAgain:active,
+.tablet-shell[data-step="final"] #exploreAgain.is-pressed {
+  background: #141414 !important;
+  color: #ffffff !important;
+  transform: scale(.985);
 }
 
 .tablet-shell[data-step="final"] #restart {

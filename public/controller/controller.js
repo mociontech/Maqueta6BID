@@ -455,6 +455,15 @@ function viewFullInfo() {
   });
 }
 
+function pressThenRun(button, action) {
+  if (button.disabled || button.getAttribute('aria-disabled') === 'true') return;
+  button.classList.add('is-pressed');
+  setTimeout(() => {
+    button.classList.remove('is-pressed');
+    action();
+  }, 180);
+}
+
 function syncFromServer() {
   setRouteStatus();
   updateInteractionLock();
@@ -499,7 +508,7 @@ els.newSector?.addEventListener('click', () => goToSectors(false));
 els.changeSector.addEventListener('click', () => goToSectors(true));
 els.finish.addEventListener('click', finishExperience);
 els.viewTransformation?.addEventListener('click', viewTransformation);
-els.exploreAgain.addEventListener('click', viewFullInfo);
+els.exploreAgain.addEventListener('click', () => pressThenRun(els.exploreAgain, viewFullInfo));
 els.restart.addEventListener('click', () => goToIntro(true));
 els.resetGlobal.addEventListener('click', () => goToIntro(true));
 
