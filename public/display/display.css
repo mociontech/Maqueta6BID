@@ -3477,6 +3477,54 @@ button {
   opacity: .92;
 }
 
+.physical-mode[data-phase="problem"][data-sector="intermediaries"] .private-pad-intermediaries,
+.physical-mode[data-phase="solutions"][data-sector="intermediaries"] .private-pad-intermediaries,
+.physical-mode[data-sequence~="private-1"] .private-pad-intermediaries,
+.physical-mode[data-phase="problem"][data-sector="investors"] .private-pad-investors,
+.physical-mode[data-phase="solutions"][data-sector="investors"] .private-pad-investors,
+.physical-mode[data-sequence~="private-2"] .private-pad-investors,
+.physical-mode[data-phase="problem"][data-sector="insurers"] .private-pad-insurers,
+.physical-mode[data-phase="solutions"][data-sector="insurers"] .private-pad-insurers,
+.physical-mode[data-sequence~="private-3"] .private-pad-insurers {
+  opacity: 1 !important;
+  background:
+    linear-gradient(180deg, rgba(207, 225, 255, .22), rgba(80, 130, 190, .18)),
+    rgba(11, 28, 50, .12) !important;
+  border-color: rgba(207, 225, 255, .94) !important;
+  box-shadow:
+    0 0 18px rgba(207, 225, 255, .62),
+    0 0 36px rgba(74, 172, 255, .34),
+    inset 0 0 24px rgba(207, 225, 255, .18) !important;
+  transform: translateY(0) scale(1) !important;
+}
+
+.physical-mode[data-phase="problem"][data-sector="intermediaries"] .private-pad-intermediaries::before,
+.physical-mode[data-phase="solutions"][data-sector="intermediaries"] .private-pad-intermediaries::before,
+.physical-mode[data-sequence~="private-1"] .private-pad-intermediaries::before,
+.physical-mode[data-phase="problem"][data-sector="investors"] .private-pad-investors::before,
+.physical-mode[data-phase="solutions"][data-sector="investors"] .private-pad-investors::before,
+.physical-mode[data-sequence~="private-2"] .private-pad-investors::before,
+.physical-mode[data-phase="problem"][data-sector="insurers"] .private-pad-insurers::before,
+.physical-mode[data-phase="solutions"][data-sector="insurers"] .private-pad-insurers::before,
+.physical-mode[data-sequence~="private-3"] .private-pad-insurers::before {
+  border-color: rgba(207, 225, 255, .98) !important;
+  opacity: 1 !important;
+  animation: privatePadPulse 1.7s ease-in-out infinite !important;
+}
+
+.physical-mode[data-phase="problem"][data-sector="intermediaries"] .private-pad-intermediaries::after,
+.physical-mode[data-phase="solutions"][data-sector="intermediaries"] .private-pad-intermediaries::after,
+.physical-mode[data-sequence~="private-1"] .private-pad-intermediaries::after,
+.physical-mode[data-phase="problem"][data-sector="investors"] .private-pad-investors::after,
+.physical-mode[data-phase="solutions"][data-sector="investors"] .private-pad-investors::after,
+.physical-mode[data-sequence~="private-2"] .private-pad-investors::after,
+.physical-mode[data-phase="problem"][data-sector="insurers"] .private-pad-insurers::after,
+.physical-mode[data-phase="solutions"][data-sector="insurers"] .private-pad-insurers::after,
+.physical-mode[data-sequence~="private-3"] .private-pad-insurers::after {
+  opacity: 1 !important;
+  animation: privatePadScan 1.5s ease-in-out infinite !important;
+}
+
 .physical-mode[data-phase="idle"] .physical-layout > * {
   opacity: 0 !important;
 }
