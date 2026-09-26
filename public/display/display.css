@@ -2874,6 +2874,16 @@ button {
   animation: none !important;
 }
 
+.physical-mode[data-phase="closing"] .private-pad,
+.physical-mode[data-phase="closing"] .private-pad::before,
+.physical-mode[data-phase="closing"] .private-pad::after {
+  opacity: 0 !important;
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  animation: none !important;
+}
+
 .physical-mode .route-transformation {
   display: none;
 }
@@ -3057,36 +3067,22 @@ button {
   transform: translateY(0);
 }
 
-.physical-mode[data-phase="closing"] .connection-status,
 .physical-mode[data-phase="closing"] .bridge-copy-right,
 .physical-mode[data-phase="closing"] .before-copy,
 .physical-mode[data-phase="closing"] .after-copy,
 .physical-mode[data-phase="closing"] .private-popup,
 .physical-mode[data-phase="closing"] .informal-panel,
-.physical-mode[data-phase="closing"] .formal-panel,
-.physical-mode[data-phase="closing"] .idle-media-poster {
+.physical-mode[data-phase="closing"] .formal-panel {
   display: none !important;
-}
-
-.physical-mode[data-phase="closing"] .physical-layout {
-  opacity: 1 !important;
-}
-
-.physical-mode[data-phase="closing"] .physical-layout > *:not(.formal-popup):not(.final-formal-video) {
-  display: none !important;
-}
-
-.physical-mode[data-phase="closing"] .holo-bridge,
-.physical-mode[data-phase="closing"] .private-holo-bridge,
-.physical-mode[data-phase="closing"] .route-barrier,
-.physical-mode[data-phase="closing"] .route-private-center,
-.physical-mode[data-phase="closing"] .route-sector {
-  display: none !important;
-  opacity: 0 !important;
 }
 
 .physical-mode[data-phase="closing"] .formal-video-title {
   display: none !important;
+}
+
+.physical-mode[data-phase="closing"] .tablet-cta {
+  display: none !important;
+  opacity: 0 !important;
 }
 
 .physical-mode .formal-popup,
@@ -3185,11 +3181,11 @@ button {
 }
 
 .physical-mode .final-formal-video.video-ready video {
-  opacity: .82;
+  opacity: 1;
 }
 
 .physical-mode .final-formal-video.video-ready .final-video-poster {
-  opacity: .46;
+  opacity: 0;
 }
 
 .physical-mode[data-phase="closing"][data-sequence~="formal-popup5"] .formal-popup-5,
@@ -3298,10 +3294,6 @@ button {
   background: url("/TV/melo1.png") center / cover no-repeat #08111d;
 }
 
-.physical-mode[data-phase="closing"] .stage {
-  background: url("/TV/momento3.3.png") center / cover no-repeat #08111d;
-}
-
 .physical-mode[data-phase="idle"] .stage > * {
   opacity: 0 !important;
   pointer-events: none;
@@ -3366,7 +3358,18 @@ button {
 .physical-mode[data-phase="solutions"] .formal-title-physical,
 .physical-mode[data-phase="solutions"] .result-bubble,
 .physical-mode[data-phase="solutions"] .slot-private,
-.physical-mode[data-phase="solutions"] .slot-formal {
+.physical-mode[data-phase="solutions"] .slot-formal,
+.physical-mode[data-phase="closing"] .main-title,
+.physical-mode[data-phase="closing"] .main-subtitle,
+.physical-mode[data-phase="closing"] .zone-title,
+.physical-mode[data-phase="closing"] .tablet-cta,
+.physical-mode[data-phase="closing"] .outer-frame,
+.physical-mode[data-phase="closing"] .slot-caption,
+.physical-mode[data-phase="closing"] .private-title-physical,
+.physical-mode[data-phase="closing"] .formal-title-physical,
+.physical-mode[data-phase="closing"] .result-bubble,
+.physical-mode[data-phase="closing"] .slot-private,
+.physical-mode[data-phase="closing"] .slot-formal {
   opacity: 0 !important;
 }
 
@@ -3432,7 +3435,8 @@ button {
 }
 
 .physical-mode[data-phase="problem"] .idle-media-poster,
-.physical-mode[data-phase="solutions"] .idle-media-poster {
+.physical-mode[data-phase="solutions"] .idle-media-poster,
+.physical-mode[data-phase="closing"] .idle-media-poster {
   position: absolute;
   overflow: hidden;
   background: transparent;
@@ -3453,7 +3457,8 @@ button {
 }
 
 .physical-mode[data-phase="problem"] .idle-media-informal,
-.physical-mode[data-phase="solutions"] .idle-media-informal {
+.physical-mode[data-phase="solutions"] .idle-media-informal,
+.physical-mode[data-phase="closing"] .idle-media-informal {
   left: 64px;
   top: 730px;
   width: 394px;
@@ -3462,7 +3467,8 @@ button {
 }
 
 .physical-mode[data-phase="problem"] .idle-media-formal,
-.physical-mode[data-phase="solutions"] .idle-media-formal {
+.physical-mode[data-phase="solutions"] .idle-media-formal,
+.physical-mode[data-phase="closing"] .idle-media-formal {
   display: none !important;
 }
 
@@ -3476,7 +3482,8 @@ button {
 }
 
 .physical-mode[data-phase="problem"] .idle-media-poster video,
-.physical-mode[data-phase="solutions"] .idle-media-poster video {
+.physical-mode[data-phase="solutions"] .idle-media-poster video,
+.physical-mode[data-phase="closing"] .idle-media-poster video {
   width: 100%;
   height: 100%;
   display: block;

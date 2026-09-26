@@ -748,6 +748,7 @@ function renderExperience() {
       revealedPrivateSectors.add(item.id);
     }
     stopVideo(els.informalVideo, false, true);
+    playVideo(els.idleInformalVideo, { loop: true, keepVisibleOnEnd: true });
     els.annotation.hidden = true;
     revealPrivateSectorRead(null);
     revealFormalTransformationSequence(token);
