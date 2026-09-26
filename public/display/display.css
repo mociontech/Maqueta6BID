@@ -3033,10 +3033,6 @@ button {
 }
 
 .physical-mode[data-phase="closing"] .formal-panel {
-  display: none;
-}
-
-.physical-mode[data-phase="closing"] .formal-panel {
   left: 1448px;
   top: 214px;
 }
@@ -3061,16 +3057,13 @@ button {
   transform: translateY(0);
 }
 
+.physical-mode[data-phase="closing"] .connection-status,
 .physical-mode[data-phase="closing"] .bridge-copy-right,
+.physical-mode[data-phase="closing"] .before-copy,
 .physical-mode[data-phase="closing"] .after-copy,
-.physical-mode[data-phase="closing"] .slot-private,
-.physical-mode[data-phase="closing"] .private-pad,
-.physical-mode[data-phase="closing"] .private-label,
 .physical-mode[data-phase="closing"] .private-popup,
-.physical-mode[data-phase="closing"] .private-title-physical,
-.physical-mode[data-phase="closing"] .slot-formal,
-.physical-mode[data-phase="closing"] .formal-caption,
-.physical-mode[data-phase="closing"] .formal-title-physical,
+.physical-mode[data-phase="closing"] .informal-panel,
+.physical-mode[data-phase="closing"] .formal-panel,
 .physical-mode[data-phase="closing"] .idle-media-poster {
   display: none !important;
 }
