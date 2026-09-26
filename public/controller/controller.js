@@ -2,6 +2,13 @@ import { createExperienceSocket } from '/shared/ws.js';
 import { createDiagnosticsPanel } from '/shared/diagnostics.js';
 
 const data = await fetch('/data/experience.json').then(response => response.json());
+const staticStateStorageKey = 'maqueta6-banca-desarrollo-state';
+const isStaticHost = !['localhost', '127.0.0.1'].includes(location.hostname);
+const isReloadNavigation = performance.getEntriesByType('navigation')?.[0]?.type === 'reload';
+
+if (isStaticHost && isReloadNavigation) {
+  resetStaticReloadState();
+}
 
 const phaseLabels = {
   idle: 'Inicio',
@@ -88,6 +95,24 @@ socket.onConnectionChange((online, wsStatus) => {
 function retryLabel(wsStatus) {
   if (wsStatus?.reconnectInMs) return `Reconectando ${Math.round(wsStatus.reconnectInMs / 1000)} s`;
   return 'Sin conexion';
+}
+
+function resetStaticReloadState() {
+  try {
+    const previous = JSON.parse(localStorage.getItem(staticStateStorageKey) || '{}');
+    const now = Date.now();
+    localStorage.setItem(staticStateStorageKey, JSON.stringify({
+      segmentId: null,
+      instrumentId: null,
+      phase: 'bankIntro',
+      selectionMode: 'initial',
+      runId: Number(previous.runId || 0) + 1,
+      lockedUntil: now,
+      updatedAt: now
+    }));
+  } catch {
+    // If storage is unavailable, the socket fallback will use its clean initial state.
+  }
 }
 
 function escapeHtml(value = '') {
