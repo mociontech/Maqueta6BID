@@ -898,9 +898,9 @@ h1 {
 }
 
 .tablet-shell[data-step="sectors"] .sector-card.dimmed {
-  --box-color: rgba(53, 66, 82, .74);
+  --box-color: rgba(128, 128, 128, .15);
   --box-opacity: 1;
-  --arrow-opacity: .24;
+  --arrow-opacity: .18;
   cursor: not-allowed;
   pointer-events: none;
 }
