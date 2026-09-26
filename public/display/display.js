@@ -24,6 +24,8 @@ const PRIVATE_BRIDGE_VIDEO_MS = 10000;
 const PRIVATE_BRIDGE_TO_LATERAL_MS = 3000;
 const LEFT_BRIDGE_TO_POPUP_MS = 3500;
 const LEFT_BRIDGE_SECTOR_ID = 'intermediaries';
+const MIDDLE_BRIDGE_TO_POPUP_MS = 3500;
+const MIDDLE_BRIDGE_SECTOR_ID = 'investors';
 const FIRST_BRIDGE_VISIBLE_PHASES = new Set(['problem', 'solutions', 'instrument', 'route', 'providers', 'result', 'closing']);
 
 let state = {
@@ -247,7 +249,7 @@ function playFirstBridgeVideo({ restart = false } = {}) {
   else video.addEventListener('loadedmetadata', play, { once: true });
 }
 
-function playPrivateBridgeVideo({ restart = false } = {}) {
+function playPrivateBridgeVideo({ restart = false, loopOnly = false } = {}) {
   const video = els.bridgeVideo3;
   if (!video || (!video.src && !video.currentSrc)) return;
   video.muted = true;
@@ -260,6 +262,7 @@ function playPrivateBridgeVideo({ restart = false } = {}) {
 
   const play = () => {
     if (restart || video.ended) seekBridgeIntroStart(video);
+    else if (loopOnly && video.currentTime < bridgeLoopStart(video)) seekBridgeLoopStart(video);
     video.play().catch(() => {});
   };
 
@@ -430,6 +433,8 @@ function revealPrivateSectorRead(sector, token) {
   for (const revealedId of revealedPrivateSectors) {
     if (revealedId === LEFT_BRIDGE_SECTOR_ID) {
       playLeftBridgeVideo({ loopOnly: true });
+    } else if (revealedId === MIDDLE_BRIDGE_SECTOR_ID) {
+      playPrivateBridgeVideo({ loopOnly: true });
     } else {
       completePath(routeForSector(revealedId), '#cfe1ff');
     }
@@ -454,6 +459,11 @@ function revealPrivateSectorRead(sector, token) {
       later(finishReveal, LEFT_BRIDGE_TO_POPUP_MS, token);
       return;
     }
+    if (sector.id === MIDDLE_BRIDGE_SECTOR_ID) {
+      playPrivateBridgeVideo({ restart: true });
+      later(finishReveal, MIDDLE_BRIDGE_TO_POPUP_MS, token);
+      return;
+    }
     animatePath(sectorRoute, 4000, '#cfe1ff', token, 2);
     later(finishReveal, 4000, token);
   };
@@ -463,10 +473,12 @@ function revealPrivateSectorRead(sector, token) {
     pendingRevealSectorId = sector.id;
     setSequenceSteps('private-bridge', ...currentPrivateSteps());
     playPrivateBridgeVideo({ restart: true });
-    const privateBridgeMs = Math.min(
-      estimateVideoDurationMs(els.bridgeVideo3, PRIVATE_BRIDGE_VIDEO_MS),
-      PRIVATE_BRIDGE_TO_LATERAL_MS
-    );
+    const privateBridgeMs = sector.id === MIDDLE_BRIDGE_SECTOR_ID
+      ? MIDDLE_BRIDGE_TO_POPUP_MS
+      : Math.min(
+        estimateVideoDurationMs(els.bridgeVideo3, PRIVATE_BRIDGE_VIDEO_MS),
+        PRIVATE_BRIDGE_TO_LATERAL_MS
+      );
 
     later(() => {
       centerRoute?.classList.remove('active', 'complete');
@@ -475,7 +487,8 @@ function revealPrivateSectorRead(sector, token) {
         centerRoute.style.strokeDasharray = '';
         centerRoute.style.strokeDashoffset = '';
       }
-      revealLateralBridge();
+      if (sector.id === MIDDLE_BRIDGE_SECTOR_ID) finishReveal();
+      else revealLateralBridge();
     }, privateBridgeMs, token);
     return;
   }

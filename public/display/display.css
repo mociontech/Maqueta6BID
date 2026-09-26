@@ -3770,7 +3770,8 @@ button {
 }
 
 .physical-mode[data-private-bridge-video="active"] .private-holo-bridge,
-.physical-mode[data-private-bridge-video="active"] .route-private-center {
+.physical-mode[data-private-bridge-video="active"] .route-private-center,
+.physical-mode[data-private-bridge-video="active"] .route-sector-investors {
   display: none !important;
   opacity: 0 !important;
   animation: none !important;
