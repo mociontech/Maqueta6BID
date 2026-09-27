@@ -29,7 +29,7 @@ const MIDDLE_BRIDGE_SECTOR_ID = 'investors';
 const RIGHT_BRIDGE_TO_POPUP_MS = 3500;
 const RIGHT_BRIDGE_SECTOR_ID = 'insurers';
 const BANK_INTRO_VIDEO_TO_BRIDGE_MS = 7000;
-const FIRST_BRIDGE_VISIBLE_PHASES = new Set(['problem', 'solutions', 'instrument', 'route', 'providers', 'result']);
+const FIRST_BRIDGE_VISIBLE_PHASES = new Set(['problem', 'solutions', 'instrument', 'route', 'providers', 'result', 'closing']);
 
 let state = {
   phase: 'idle',
@@ -545,25 +545,14 @@ function revealFormalTransformationSequence(token) {
   playFinalBridgeVideo({ restart: true });
 
   later(() => {
-    setFormalSequenceSteps('formal-bridge', 'formal-copy');
-  }, 3200, token);
-
-  later(() => {
-    setFormalSequenceSteps('formal-bridge', 'formal-copy', 'formal-popup5');
+    setFormalSequenceSteps('formal-bridge', 'formal-popup7');
   }, 4000, token);
 
   later(() => {
-    setFormalSequenceSteps('formal-bridge', 'formal-copy', 'formal-popup5', 'formal-popup7');
-  }, 5600, token);
-
-  later(() => {
-    setFormalSequenceSteps('formal-bridge', 'formal-copy', 'formal-popup5', 'formal-popup7', 'formal-video');
+    setFormalSequenceSteps('formal-bridge', 'formal-popup7', 'formal-video');
     playVideo(els.finalFormalVideo, { restart: true, loop: true, keepVisibleOnEnd: true });
   }, 7600, token);
 
-  later(() => {
-    setFormalSequenceSteps('formal-bridge', 'formal-copy', 'formal-popup5', 'formal-popup7', 'formal-video', 'formal-popup8');
-  }, 17600, token);
 }
 
 function revealFullInfoSequence() {
