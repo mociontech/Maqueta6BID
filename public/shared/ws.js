@@ -6,6 +6,7 @@ export function createExperienceSocket(onState) {
   let cloudSendQueue = Promise.resolve();
   let cloudPendingSends = 0;
   let cloudGeneration = 0;
+  let cloudFailures = 0;
   let closedByClient = false;
   let staticMode = false;
   let cloudMode = false;
@@ -182,16 +183,28 @@ export function createExperienceSocket(onState) {
   }
 
   // Sync requests must never wait behind video/image downloads: high priority + hard timeout.
-  async function cloudFetch(url, options = {}, timeoutMs = 4000) {
+  // Grows after consecutive failures so a saturated connection (e.g. videos loading
+  // on the same Wi-Fi) still lets a request finish instead of aborting forever.
+  function cloudTimeout(baseMs) {
+    return [baseMs, baseMs * 2.5, baseMs * 4.5][Math.min(cloudFailures, 2)];
+  }
+
+  async function cloudFetch(url, options = {}, baseTimeoutMs = 4000) {
+    const timeoutMs = cloudTimeout(baseTimeoutMs);
     const controller = 'AbortController' in window ? new AbortController() : null;
     const timer = controller ? setTimeout(() => controller.abort(), timeoutMs) : null;
     try {
-      return await fetch(url, {
+      const response = await fetch(url, {
         cache: 'no-store',
         priority: 'high',
         ...options,
         signal: controller?.signal
       });
+      cloudFailures = response.ok ? 0 : cloudFailures + 1;
+      return response;
+    } catch (error) {
+      cloudFailures += 1;
+      throw error;
     } finally {
       clearTimeout(timer);
     }

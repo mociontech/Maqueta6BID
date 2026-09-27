@@ -1118,9 +1118,38 @@ const socket = createExperienceSocket(nextState => {
   renderExperience();
 });
 
+let connectionOnline = false;
+const preloadVideos = [...document.querySelectorAll('video[preload="auto"]')];
+
+function loadedVideoCount() {
+  return preloadVideos.filter(video => video.readyState >= 4 || video.dataset.loaded === 'true').length;
+}
+
+// Operator hint: the first load downloads the videos; start the experience once this says "Conectado".
+function updateConnectionLabel() {
+  const loaded = loadedVideoCount();
+  const loading = loaded < preloadVideos.length;
+  els.shell.dataset.loading = loading ? 'true' : 'false';
+  els.connection.classList.toggle('online', connectionOnline && !loading);
+  els.connection.lastChild.textContent = !connectionOnline
+    ? ' Reconectando'
+    : loading
+      ? ` Cargando videos ${loaded}/${preloadVideos.length}`
+      : ' Conectado';
+}
+
+for (const video of preloadVideos) {
+  const markLoaded = () => {
+    video.dataset.loaded = 'true';
+    updateConnectionLabel();
+  };
+  video.addEventListener('canplaythrough', markLoaded, { once: true });
+  video.addEventListener('error', markLoaded, { once: true });
+}
+
 socket.onConnectionChange(online => {
-  els.connection.classList.toggle('online', online);
-  els.connection.lastChild.textContent = online ? ' Conectado' : ' Reconectando';
+  connectionOnline = online;
+  updateConnectionLabel();
 });
 
 createDiagnosticsPanel({

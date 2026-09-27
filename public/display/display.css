@@ -3926,3 +3926,8 @@ button {
     background-position: 160% 0;
   }
 }
+
+/* Keep the status visible while the first load downloads the videos. */
+.physical-mode[data-loading="true"] .connection-status {
+  opacity: 1;
+}

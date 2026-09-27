@@ -51,6 +51,8 @@ let localFinal = false;
 let lockTimer = null;
 let cloudBusy = false;
 let localActionLockedUntil = 0;
+// Until the first state arrives the tablet is not in sync: taps would be lost silently.
+let syncReady = false;
 
 const els = {
   shell: document.querySelector('.tablet-shell'),
@@ -84,17 +86,25 @@ const els = {
 };
 els.activeActions = els.activeStep.querySelector('.action-stack');
 
+let lastConnection = { online: false, wsStatus: null };
+
 const socket = createExperienceSocket(next => {
+  const firstState = !syncReady;
+  syncReady = true;
   state = next;
+  if (firstState) renderConnection(lastConnection.online, lastConnection.wsStatus);
   syncFromServer();
 });
 
-socket.onConnectionChange((online, wsStatus) => {
+function renderConnection(online, wsStatus) {
+  lastConnection = { online, wsStatus };
   cloudBusy = wsStatus?.readyState === 'cloud-sending';
-  els.connection.textContent = cloudBusy ? 'Sincronizando' : online ? 'TV conectada' : retryLabel(wsStatus);
-  els.connection.classList.toggle('online', online && !cloudBusy);
+  els.connection.textContent = !syncReady ? 'Conectando…' : cloudBusy ? 'Sincronizando' : online ? 'TV conectada' : retryLabel(wsStatus);
+  els.connection.classList.toggle('online', syncReady && online && !cloudBusy);
   updateInteractionLock();
-});
+}
+
+socket.onConnectionChange(renderConnection);
 
 function retryLabel(wsStatus) {
   if (wsStatus?.reconnectInMs) return `Reconectando ${Math.round(wsStatus.reconnectInMs / 1000)} s`;
@@ -302,7 +312,7 @@ function updateInteractionLock() {
   }
 
   const locked = isInteractionLocked();
-  const blocked = locked || cloudBusy;
+  const blocked = locked || cloudBusy || !syncReady;
   const waitingIntro = state.phase === 'bankIntro' && els.shell.dataset.step === 'active';
   els.shell.dataset.locked = blocked ? 'true' : 'false';
   els.shell.dataset.syncing = cloudBusy ? 'true' : 'false';
@@ -345,7 +355,7 @@ function updateInteractionLock() {
 }
 
 function shouldIgnoreInteraction() {
-  if (!isInteractionLocked() && !cloudBusy) return false;
+  if (!isInteractionLocked() && !cloudBusy && syncReady) return false;
   setRouteStatus();
   updateInteractionLock();
   return true;
