@@ -42,7 +42,7 @@ const sectorLabelAssets = {
   insurers: '/pantallas/ASEGURADORAS.png'
 };
 
-let state = { segmentId: null, instrumentId: null, phase: 'idle', selectionMode: 'initial', runId: 0, lockedUntil: 0 };
+let state = { segmentId: null, instrumentId: null, phase: 'idle', selectionMode: 'initial', completedSegmentIds: [], runId: 0, lockedUntil: 0 };
 let selectedSectorId = null;
 let autoRunTimer = null;
 let sectorReadTimer = null;
@@ -110,6 +110,7 @@ function resetStaticReloadState() {
       instrumentId: null,
       phase: 'idle',
       selectionMode: 'initial',
+      completedSegmentIds: [],
       runId: Number(previous.runId || 0) + 1,
       lockedUntil: 0,
       updatedAt: now
@@ -225,6 +226,18 @@ function renderSectors() {
 
 function nextPendingSectorId() {
   return sectorOrder.find(id => !completedSectors.has(id)) || sectorOrder[0] || null;
+}
+
+function completedIds() {
+  return sectorOrder.filter(id => completedSectors.has(id));
+}
+
+function syncCompletedSectorsFromState() {
+  if (!Array.isArray(state.completedSegmentIds)) return;
+  completedSectors.clear();
+  for (const id of state.completedSegmentIds) {
+    if (sectorOrder.includes(id)) completedSectors.add(id);
+  }
 }
 
 function updateSectorGuidance(activeId = selectedSectorId, waiting = false) {
@@ -362,6 +375,7 @@ function goToSectors(resetDisplay = false) {
       segmentId: null,
       instrumentId: null,
       selectionMode: 'initial',
+      completedSegmentIds: [],
       lockedUntil
     };
     setRouteStatus();
@@ -371,7 +385,7 @@ function goToSectors(resetDisplay = false) {
       type: 'setState',
       source: 'controller',
       force: true,
-      patch: { phase: 'bankIntro', segmentId: null, instrumentId: null, selectionMode: 'initial', lockedUntil }
+      patch: { phase: 'bankIntro', segmentId: null, instrumentId: null, selectionMode: 'initial', completedSegmentIds: [], lockedUntil }
     });
     return;
   }
@@ -406,12 +420,13 @@ function chooseSector(id) {
     ...state,
     segmentId: sector.id,
     instrumentId: null,
-    phase: 'problem'
+    phase: 'problem',
+    completedSegmentIds: completedIds()
   };
   setRouteStatus();
   showStep(els.sectorStep, 'sectors');
   updateSectorGuidance(sector.id);
-  socket.send({ type: 'selectSegment', source: 'controller', force: true, segmentId: sector.id });
+  socket.send({ type: 'selectSegment', source: 'controller', force: true, segmentId: sector.id, completedSegmentIds: completedIds() });
 }
 
 function finishExperience() {
@@ -422,7 +437,7 @@ function finishExperience() {
     type: 'setState',
     source: 'controller',
     force: true,
-    patch: { phase: 'closing' }
+    patch: { phase: 'closing', completedSegmentIds: completedIds() }
   });
   showStep(els.finalStep, 'final');
 }
@@ -433,6 +448,7 @@ function viewTransformation() {
   state = {
     ...state,
     phase: 'closing',
+    completedSegmentIds: completedIds(),
     lockedUntil: Date.now() + transformationLockMs
   };
   setRouteStatus();
@@ -442,7 +458,7 @@ function viewTransformation() {
     type: 'setState',
     source: 'controller',
     force: true,
-    patch: { phase: 'closing', selectionMode: 'transformation', lockedMs: transformationLockMs }
+    patch: { phase: 'closing', selectionMode: 'transformation', completedSegmentIds: completedIds(), lockedMs: transformationLockMs }
   });
 }
 
@@ -454,6 +470,7 @@ function viewFullInfo() {
     ...state,
     phase: 'closing',
     selectionMode: 'fullInfo',
+    completedSegmentIds: completedIds(),
     lockedUntil: Date.now()
   };
   setRouteStatus();
@@ -463,11 +480,12 @@ function viewFullInfo() {
     type: 'setState',
     source: 'controller',
     force: true,
-    patch: { phase: 'closing', selectionMode: 'fullInfo', lockedMs: 0, lockedUntil: Date.now() }
+    patch: { phase: 'closing', selectionMode: 'fullInfo', completedSegmentIds: completedIds(), lockedMs: 0, lockedUntil: Date.now() }
   });
 }
 
 function syncFromServer() {
+  syncCompletedSectorsFromState();
   setRouteStatus();
   updateInteractionLock();
   if (localFinal) return;

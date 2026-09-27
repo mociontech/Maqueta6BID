@@ -24,6 +24,7 @@ const initialState = {
   instrumentId: null,
   phase: 'idle',
   selectionMode: 'initial',
+  completedSegmentIds: [],
   runId: 0,
   lockedUntil: 0,
   updatedAt: Date.now()
@@ -52,6 +53,22 @@ function isAllowedSelection(segmentId, instrumentId) {
   const segment = findSegment(segmentId);
   const instrument = findInstrument(instrumentId);
   return Boolean(segment && instrument && segment.allowedInstruments.includes(instrument.id));
+}
+
+function normalizeCompletedSegmentIds(ids = []) {
+  const allowedIds = new Set(experience.segments.map(segment => segment.id));
+  const normalized = [];
+  for (const id of Array.isArray(ids) ? ids : []) {
+    if (allowedIds.has(id) && !normalized.includes(id)) normalized.push(id);
+  }
+  return normalized;
+}
+
+function appendCompletedSegment(segmentId, ids = state.completedSegmentIds) {
+  return normalizeCompletedSegmentIds([
+    ...normalizeCompletedSegmentIds(ids),
+    segmentId
+  ]);
 }
 
 function broadcast(payload) {
@@ -96,7 +113,7 @@ function resetState(source = 'controller') {
   broadcast({ type: 'state', state, source });
 }
 
-function selectSegment(segmentId, source = 'controller') {
+function selectSegment(segmentId, source = 'controller', completedSegmentIds) {
   if (!findSegment(segmentId)) return;
   clearRouteTimer();
   setState({
@@ -104,6 +121,9 @@ function selectSegment(segmentId, source = 'controller') {
     instrumentId: null,
     phase: 'problem',
     selectionMode: 'initial',
+    completedSegmentIds: completedSegmentIds === undefined
+      ? appendCompletedSegment(segmentId)
+      : appendCompletedSegment(segmentId, completedSegmentIds),
     runId: state.runId + 1,
     lockedUntil: 0
   }, source);
@@ -118,6 +138,7 @@ function showSolutions(segmentId, source = 'controller', comparison = false) {
     instrumentId: null,
     phase: 'solutions',
     selectionMode: comparison ? 'compare' : 'initial',
+    completedSegmentIds: appendCompletedSegment(nextSegmentId),
     runId: state.runId + 1,
     lockedUntil: 0
   }, source);
@@ -151,6 +172,7 @@ function runRoute(segmentId, instrumentId, source = 'controller') {
     instrumentId: nextInstrumentId,
     phase: routePhases[0].phase,
     selectionMode: 'route',
+    completedSegmentIds: appendCompletedSegment(nextSegmentId),
     runId,
     lockedUntil: 0
   }, source);
@@ -175,6 +197,9 @@ function applyClientPatch(patch, source = 'client') {
       instrumentId: patch.instrumentId === undefined ? state.instrumentId : patch.instrumentId,
       phase: patch.phase,
       selectionMode: patch.selectionMode || state.selectionMode,
+      completedSegmentIds: patch.completedSegmentIds === undefined
+        ? normalizeCompletedSegmentIds(state.completedSegmentIds)
+        : normalizeCompletedSegmentIds(patch.completedSegmentIds),
       runId: state.runId + 1,
       lockedUntil
     }, source);
@@ -183,7 +208,7 @@ function applyClientPatch(patch, source = 'client') {
 
   if (patch.segmentId && !patch.instrumentId) {
     if (patch.phase === 'solutions') showSolutions(patch.segmentId, source, patch.selectionMode === 'compare');
-    else selectSegment(patch.segmentId, source);
+    else selectSegment(patch.segmentId, source, patch.completedSegmentIds);
     return;
   }
 
@@ -193,6 +218,9 @@ function applyClientPatch(patch, source = 'client') {
       segmentId: patch.segmentId,
       instrumentId: patch.instrumentId,
       phase: patch.phase || state.phase,
+      completedSegmentIds: patch.completedSegmentIds === undefined
+        ? appendCompletedSegment(patch.segmentId)
+        : normalizeCompletedSegmentIds(patch.completedSegmentIds),
       runId: state.runId + 1,
       lockedUntil: 0
     }, source);
@@ -220,7 +248,7 @@ wss.on('connection', (socket) => {
     }
 
     if (msg.type === 'selectSegment') {
-      selectSegment(msg.segmentId, msg.source || 'controller');
+      selectSegment(msg.segmentId, msg.source || 'controller', msg.completedSegmentIds);
     }
 
     if (msg.type === 'showSolutions') {

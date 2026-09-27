@@ -18,6 +18,7 @@ const initialState = {
   instrumentId: null,
   phase: 'idle',
   selectionMode: 'initial',
+  completedSegmentIds: [],
   runId: 0,
   lockedUntil: 0,
   updatedAt: Date.now()
@@ -98,6 +99,22 @@ function isAllowedSelection(segmentId, instrumentId) {
   return Boolean(segment && instrument && segment.allowedInstruments.includes(instrument.id));
 }
 
+function normalizeCompletedSegmentIds(ids = []) {
+  const allowedIds = new Set(experience.segments.map(segment => segment.id));
+  const normalized = [];
+  for (const id of Array.isArray(ids) ? ids : []) {
+    if (allowedIds.has(id) && !normalized.includes(id)) normalized.push(id);
+  }
+  return normalized;
+}
+
+function appendCompletedSegment(current, segmentId) {
+  return normalizeCompletedSegmentIds([
+    ...normalizeCompletedSegmentIds(current.completedSegmentIds),
+    segmentId
+  ]);
+}
+
 function isInteractionLocked(state) {
   return Number(state.lockedUntil || 0) > Date.now();
 }
@@ -171,7 +188,7 @@ function resetState(current) {
   };
 }
 
-function selectSegment(current, segmentId) {
+function selectSegment(current, segmentId, completedSegmentIds) {
   if (!findSegment(segmentId)) return current;
   return {
     ...current,
@@ -179,6 +196,9 @@ function selectSegment(current, segmentId) {
     instrumentId: null,
     phase: 'problem',
     selectionMode: 'initial',
+    completedSegmentIds: completedSegmentIds === undefined
+      ? appendCompletedSegment(current, segmentId)
+      : normalizeCompletedSegmentIds([...(Array.isArray(completedSegmentIds) ? completedSegmentIds : []), segmentId]),
     runId: Number(current.runId || 0) + 1,
     lockedUntil: 0,
     nextPhaseAt: null,
@@ -195,6 +215,7 @@ function showSolutions(current, segmentId, comparison = false) {
     instrumentId: null,
     phase: 'solutions',
     selectionMode: comparison ? 'compare' : 'initial',
+    completedSegmentIds: appendCompletedSegment(current, nextSegmentId),
     runId: Number(current.runId || 0) + 1,
     lockedUntil: 0,
     nextPhaseAt: null,
@@ -214,6 +235,7 @@ function runRoute(current, segmentId, instrumentId) {
     instrumentId: nextInstrumentId,
     phase: firstPhase.phase,
     selectionMode: 'route',
+    completedSegmentIds: appendCompletedSegment(current, nextSegmentId),
     runId,
     lockedUntil: 0,
     nextPhaseAt: Date.now() + firstPhase.duration,
@@ -237,6 +259,9 @@ function applyPatch(current, patch = {}) {
       instrumentId: patch.instrumentId === undefined ? current.instrumentId : patch.instrumentId,
       phase: patch.phase,
       selectionMode: patch.selectionMode || current.selectionMode,
+      completedSegmentIds: patch.completedSegmentIds === undefined
+        ? normalizeCompletedSegmentIds(current.completedSegmentIds)
+        : normalizeCompletedSegmentIds(patch.completedSegmentIds),
       runId: Number(current.runId || 0) + 1,
       lockedUntil,
       nextPhaseAt: null,
@@ -256,6 +281,9 @@ function applyPatch(current, patch = {}) {
       segmentId: patch.segmentId,
       instrumentId: patch.instrumentId,
       phase: patch.phase || current.phase,
+      completedSegmentIds: patch.completedSegmentIds === undefined
+        ? appendCompletedSegment(current, patch.segmentId)
+        : normalizeCompletedSegmentIds(patch.completedSegmentIds),
       runId: Number(current.runId || 0) + 1,
       lockedUntil: 0,
       updatedAt: Date.now()
@@ -275,7 +303,7 @@ function applyMessage(current, message = {}) {
   } else if (isInteractionLocked(current) && !message.force) {
     nextState = current;
   } else if (message.type === 'selectSegment') {
-    nextState = selectSegment(current, message.segmentId);
+    nextState = selectSegment(current, message.segmentId, message.completedSegmentIds);
   } else if (message.type === 'showSolutions') {
     nextState = showSolutions(current, message.segmentId, Boolean(message.comparison));
   } else if (message.type === 'runRoute') {

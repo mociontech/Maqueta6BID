@@ -34,6 +34,7 @@ const FIRST_BRIDGE_VISIBLE_PHASES = new Set(['problem', 'solutions', 'instrument
 let state = {
   phase: 'idle',
   selectionMode: 'initial',
+  completedSegmentIds: [],
   runId: 0,
   segmentId: null,
   instrumentId: null
@@ -386,12 +387,26 @@ function displayStateSignature(nextState = {}) {
     instrumentId: nextState.instrumentId || null,
     phase: nextState.phase || 'idle',
     selectionMode: nextState.selectionMode || 'initial',
+    completedSegmentIds: Array.isArray(nextState.completedSegmentIds) ? nextState.completedSegmentIds : [],
     runId: Number(nextState.runId || 0)
   });
 }
 
 function updatePrivateRevealedState() {
   els.shell.dataset.privateRevealed = [...revealedPrivateSectors].join(' ');
+}
+
+function completedSectorIdsFromState(excludeSectorId = null) {
+  if (!Array.isArray(state.completedSegmentIds)) return [];
+  const validIds = new Set(data.segments.map(item => item.id));
+  return state.completedSegmentIds.filter(id => validIds.has(id) && id !== excludeSectorId);
+}
+
+function seedPreviousPrivateReveals(activeSectorId = null) {
+  for (const sectorId of completedSectorIdsFromState(activeSectorId)) {
+    revealedPrivateSectors.add(sectorId);
+  }
+  updatePrivateRevealedState();
 }
 
 function estimateVideoDurationMs(video, fallbackMs = 10000) {
@@ -1052,6 +1067,7 @@ function renderExperience() {
 
   if (phase === 'problem' || phase === 'solutions') {
     playVideo(els.idleInformalVideo, { loop: true, keepVisibleOnEnd: true });
+    seedPreviousPrivateReveals(sector.id);
     revealPrivateSectorRead(sector, token);
     return;
   }

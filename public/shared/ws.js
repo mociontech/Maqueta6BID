@@ -24,6 +24,7 @@ export function createExperienceSocket(onState) {
     instrumentId: null,
     phase: 'idle',
     selectionMode: 'initial',
+    completedSegmentIds: [],
     runId: 0,
     updatedAt: Date.now()
   };
@@ -53,6 +54,7 @@ export function createExperienceSocket(onState) {
       instrumentId: nextState.instrumentId || null,
       phase: nextState.phase || 'idle',
       selectionMode: nextState.selectionMode || 'initial',
+      completedSegmentIds: Array.isArray(nextState.completedSegmentIds) ? nextState.completedSegmentIds : [],
       runId: Number(nextState.runId || 0),
       lockedUntil: Number(nextState.lockedUntil || 0),
       nextPhaseAt: Number(nextState.nextPhaseAt || 0)
