@@ -3045,15 +3045,31 @@ button {
 
 .physical-mode[data-phase="closing"] .bridge-copy-right {
   display: block;
-  left: 1172px;
-  top: 522px;
-  width: 250px;
+  left: 1176px;
+  top: 320px;
+  width: 270px;
+  font-size: 18px;
+  font-weight: 900;
+  line-height: 1.02;
   opacity: 0;
   transform: translateY(10px);
   transition: opacity .35s ease, transform .35s ease;
+  isolation: isolate;
 }
 
-.physical-mode[data-phase="closing"][data-sequence~="formal-copy"] .bridge-copy-right {
+.physical-mode[data-phase="closing"] .bridge-copy-right::before {
+  content: "";
+  position: absolute;
+  left: -88px;
+  top: -56px;
+  width: calc(100% + 176px);
+  height: calc(100% + 112px);
+  z-index: -1;
+  background: radial-gradient(ellipse at center, rgba(8, 17, 31, 1) 0 48%, rgba(8, 17, 31, .86) 64%, rgba(8, 17, 31, .36) 82%, rgba(8, 17, 31, 0) 100%);
+  filter: blur(8px);
+}
+
+.physical-mode[data-phase="closing"][data-sequence~="formal-bridge"] .bridge-copy-right {
   opacity: 1;
   transform: translateY(0);
 }
@@ -3063,19 +3079,19 @@ button {
 }
 
 .physical-mode[data-phase="closing"] .slot-formal::after {
-  border-color: rgba(94, 230, 170, .94);
+  border-color: rgba(155, 222, 84, .5);
   opacity: 0;
   box-shadow:
-    0 0 0 rgba(94, 230, 170, 0),
-    inset 0 0 0 rgba(94, 230, 170, 0);
+    0 0 0 rgba(155, 222, 84, 0),
+    inset 0 0 0 rgba(155, 222, 84, 0);
 }
 
 .physical-mode[data-phase="closing"][data-sequence~="formal-slot"] .slot-formal::after {
   opacity: 1;
   box-shadow:
-    0 0 28px rgba(94, 230, 170, .5),
-    0 0 56px rgba(88, 184, 255, .2),
-    inset 0 0 22px rgba(94, 230, 170, .12);
+    0 0 12px rgba(155, 222, 84, .2),
+    0 0 26px rgba(155, 222, 84, .08),
+    inset 0 0 10px rgba(155, 222, 84, .06);
   animation: formalSlotPulse 1.8s ease-in-out infinite;
 }
 
@@ -3118,7 +3134,7 @@ button {
   display: none !important;
 }
 
-.physical-mode[data-phase="closing"][data-sequence~="formal-copy"] .bridge-copy-right {
+.physical-mode[data-phase="closing"][data-sequence~="formal-bridge"] .bridge-copy-right {
   display: block !important;
   opacity: 1;
   transform: translateY(0);
@@ -3297,17 +3313,17 @@ button {
 
 @keyframes formalSlotPulse {
   0%, 100% {
-    border-color: rgba(94, 230, 170, .78);
+    border-color: rgba(155, 222, 84, .28);
     box-shadow:
-      0 0 20px rgba(94, 230, 170, .34),
-      inset 0 0 16px rgba(94, 230, 170, .1);
+      0 0 10px rgba(155, 222, 84, .14),
+      inset 0 0 8px rgba(155, 222, 84, .04);
   }
   50% {
-    border-color: rgba(120, 255, 236, 1);
+    border-color: rgba(155, 222, 84, .44);
     box-shadow:
-      0 0 34px rgba(120, 255, 236, .68),
-      0 0 64px rgba(94, 230, 170, .24),
-      inset 0 0 28px rgba(120, 255, 236, .18);
+      0 0 16px rgba(155, 222, 84, .22),
+      0 0 28px rgba(155, 222, 84, .08),
+      inset 0 0 12px rgba(155, 222, 84, .06);
   }
 }
 
@@ -3438,24 +3454,24 @@ button {
 }
 
 .physical-mode[data-phase="closing"] .slot-formal::before {
-  border: 2px solid rgba(207, 225, 255, .96);
+  border: 2px solid rgba(155, 222, 84, .32);
   box-shadow:
-    0 0 22px rgba(207, 225, 255, .72),
-    0 0 42px rgba(207, 225, 255, .32),
-    inset 0 0 18px rgba(207, 225, 255, .18);
+    0 0 10px rgba(155, 222, 84, .16),
+    0 0 22px rgba(155, 222, 84, .07),
+    inset 0 0 10px rgba(155, 222, 84, .05);
   opacity: 1;
-  animation: maquettePadCharge 2.2s ease-in-out infinite;
+  animation: formalSlotPulse 2.4s ease-in-out infinite;
 }
 
 .physical-mode[data-phase="closing"] .slot-formal::after {
   border: 0;
   background:
-    linear-gradient(90deg, transparent 0 16%, #cfe1ff 22%, transparent 31%) top left / 100% 3px no-repeat,
-    linear-gradient(180deg, transparent 0 18%, #cfe1ff 25%, transparent 34%) top right / 3px 100% no-repeat,
-    linear-gradient(270deg, transparent 0 18%, #cfe1ff 26%, transparent 36%) bottom right / 100% 3px no-repeat,
-    linear-gradient(0deg, transparent 0 20%, #cfe1ff 28%, transparent 38%) bottom left / 3px 100% no-repeat;
-  filter: drop-shadow(0 0 10px rgba(207, 225, 255, .76));
-  opacity: 1;
+    linear-gradient(90deg, transparent 0 16%, rgba(155, 222, 84, .52) 22%, transparent 31%) top left / 100% 3px no-repeat,
+    linear-gradient(180deg, transparent 0 18%, rgba(155, 222, 84, .52) 25%, transparent 34%) top right / 3px 100% no-repeat,
+    linear-gradient(270deg, transparent 0 18%, rgba(155, 222, 84, .52) 26%, transparent 36%) bottom right / 100% 3px no-repeat,
+    linear-gradient(0deg, transparent 0 20%, rgba(155, 222, 84, .52) 28%, transparent 38%) bottom left / 3px 100% no-repeat;
+  filter: drop-shadow(0 0 5px rgba(155, 222, 84, .22));
+  opacity: .68;
   animation: maquettePadTrace 2.8s linear infinite;
 }
 
