@@ -5,7 +5,7 @@ const { WebSocketServer, WebSocket } = require('ws');
 const experience = require('./data/experience.json');
 
 const PORT = Number(process.env.PORT || 3000);
-const AUTO_RESET_MS = Number(process.env.AUTO_RESET_MS || 60000);
+const AUTO_RESET_MS = Number(process.env.AUTO_RESET_MS || 0);
 const INTRO_LOCK_MS = Number(process.env.INTRO_LOCK_MS || experience.animationTimings?.mandatoryIntroLockMs || 24000);
 const TRANSFORMATION_LOCK_MS = Number(process.env.TRANSFORMATION_LOCK_MS || experience.animationTimings?.transformationLockMs || 12000);
 
@@ -122,11 +122,20 @@ function selectSegment(segmentId, source = 'controller', completedSegmentIds) {
     phase: 'problem',
     selectionMode: 'initial',
     completedSegmentIds: completedSegmentIds === undefined
-      ? appendCompletedSegment(segmentId)
-      : appendCompletedSegment(segmentId, completedSegmentIds),
+      ? normalizeCompletedSegmentIds(state.completedSegmentIds)
+      : normalizeCompletedSegmentIds(completedSegmentIds),
     runId: state.runId + 1,
     lockedUntil: 0
   }, source);
+}
+
+function completeSegment(segmentId, source = 'controller', completedSegmentIds) {
+  if (!findSegment(segmentId)) return;
+  setState({
+    completedSegmentIds: completedSegmentIds === undefined
+      ? appendCompletedSegment(segmentId)
+      : appendCompletedSegment(segmentId, completedSegmentIds)
+  }, source, { autoReset: false });
 }
 
 function showSolutions(segmentId, source = 'controller', comparison = false) {
@@ -249,6 +258,10 @@ wss.on('connection', (socket) => {
 
     if (msg.type === 'selectSegment') {
       selectSegment(msg.segmentId, msg.source || 'controller', msg.completedSegmentIds);
+    }
+
+    if (msg.type === 'completeSegment') {
+      completeSegment(msg.segmentId, msg.source || 'controller', msg.completedSegmentIds);
     }
 
     if (msg.type === 'showSolutions') {

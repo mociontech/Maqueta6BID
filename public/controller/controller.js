@@ -232,6 +232,10 @@ function completedIds() {
   return sectorOrder.filter(id => completedSectors.has(id));
 }
 
+function completedIdsWith(id) {
+  return sectorOrder.filter(sectorId => sectorId === id || completedSectors.has(sectorId));
+}
+
 function syncCompletedSectorsFromState() {
   if (!Array.isArray(state.completedSegmentIds)) return;
   completedSectors.clear();
@@ -411,11 +415,11 @@ function chooseSector(id) {
   const sector = currentSector(id);
   if (!sector) return;
   const firstSelection = completedSectors.size === 0;
-  localActionLockedUntil = Date.now() + (firstSelection ? 7000 : (data.animationTimings?.privateSectorReadMs || 5000));
+  const holdMs = firstSelection ? 7200 : Math.max(4800, data.animationTimings?.privateSectorReadMs || 5000);
+  localActionLockedUntil = Date.now() + holdMs;
   clearAutoRun();
   clearSectorReadTimer();
   selectedSectorId = sector.id;
-  completedSectors.add(sector.id);
   state = {
     ...state,
     segmentId: sector.id,
@@ -427,6 +431,30 @@ function chooseSector(id) {
   showStep(els.sectorStep, 'sectors');
   updateSectorGuidance(sector.id);
   socket.send({ type: 'selectSegment', source: 'controller', force: true, segmentId: sector.id, completedSegmentIds: completedIds() });
+  sectorReadTimer = setTimeout(() => completeSectorSelection(sector.id), holdMs);
+}
+
+function completeSectorSelection(id) {
+  sectorReadTimer = null;
+  const sector = currentSector(id);
+  if (!sector || completedSectors.has(id)) return;
+  completedSectors.add(id);
+  state = {
+    ...state,
+    segmentId: id,
+    phase: 'problem',
+    completedSegmentIds: completedIds()
+  };
+  setRouteStatus();
+  updateSectorGuidance(id);
+  updateInteractionLock();
+  socket.send({
+    type: 'completeSegment',
+    source: 'controller',
+    force: true,
+    segmentId: id,
+    completedSegmentIds: completedIdsWith(id)
+  });
 }
 
 function finishExperience() {
@@ -443,6 +471,7 @@ function finishExperience() {
 }
 
 function viewTransformation() {
+  if (completedSectors.size < sectorOrder.length) return;
   clearAutoRun();
   clearSectorReadTimer();
   state = {

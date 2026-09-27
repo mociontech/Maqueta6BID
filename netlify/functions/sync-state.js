@@ -2,7 +2,7 @@ const experience = require('../../data/experience.json');
 
 const STORE_NAME = 'maqueta6-sync-state';
 const DEFAULT_ROOM = 'default';
-const AUTO_RESET_MS = 60000;
+const AUTO_RESET_MS = 0;
 const INTRO_LOCK_MS = experience.animationTimings?.mandatoryIntroLockMs || 24000;
 const TRANSFORMATION_LOCK_MS = experience.animationTimings?.transformationLockMs || 12000;
 
@@ -197,11 +197,22 @@ function selectSegment(current, segmentId, completedSegmentIds) {
     phase: 'problem',
     selectionMode: 'initial',
     completedSegmentIds: completedSegmentIds === undefined
-      ? appendCompletedSegment(current, segmentId)
-      : normalizeCompletedSegmentIds([...(Array.isArray(completedSegmentIds) ? completedSegmentIds : []), segmentId]),
+      ? normalizeCompletedSegmentIds(current.completedSegmentIds)
+      : normalizeCompletedSegmentIds(completedSegmentIds),
     runId: Number(current.runId || 0) + 1,
     lockedUntil: 0,
     nextPhaseAt: null,
+    updatedAt: Date.now()
+  };
+}
+
+function completeSegment(current, segmentId, completedSegmentIds) {
+  if (!findSegment(segmentId)) return current;
+  return {
+    ...current,
+    completedSegmentIds: completedSegmentIds === undefined
+      ? appendCompletedSegment(current, segmentId)
+      : normalizeCompletedSegmentIds([...(Array.isArray(completedSegmentIds) ? completedSegmentIds : []), segmentId]),
     updatedAt: Date.now()
   };
 }
@@ -272,7 +283,7 @@ function applyPatch(current, patch = {}) {
   if (patch.segmentId && !patch.instrumentId) {
     return patch.phase === 'solutions'
       ? showSolutions(current, patch.segmentId, patch.selectionMode === 'compare')
-      : selectSegment(current, patch.segmentId);
+      : selectSegment(current, patch.segmentId, patch.completedSegmentIds);
   }
 
   if (patch.segmentId && patch.instrumentId && isAllowedSelection(patch.segmentId, patch.instrumentId)) {
@@ -304,6 +315,8 @@ function applyMessage(current, message = {}) {
     nextState = current;
   } else if (message.type === 'selectSegment') {
     nextState = selectSegment(current, message.segmentId, message.completedSegmentIds);
+  } else if (message.type === 'completeSegment') {
+    nextState = completeSegment(current, message.segmentId, message.completedSegmentIds);
   } else if (message.type === 'showSolutions') {
     nextState = showSolutions(current, message.segmentId, Boolean(message.comparison));
   } else if (message.type === 'runRoute') {

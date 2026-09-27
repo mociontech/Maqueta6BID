@@ -187,6 +187,21 @@ export function createExperienceSocket(onState) {
     };
   }
 
+  function normalizeCompletedIds(ids = []) {
+    const normalized = [];
+    for (const id of Array.isArray(ids) ? ids : []) {
+      if (id && !normalized.includes(id)) normalized.push(id);
+    }
+    return normalized;
+  }
+
+  function appendCompletedId(current = {}, id) {
+    return normalizeCompletedIds([
+      ...normalizeCompletedIds(current.completedSegmentIds),
+      id
+    ]);
+  }
+
   function readStaticState() {
     try {
       return JSON.parse(localStorage.getItem(storageKey)) || { ...initialState };
@@ -234,7 +249,18 @@ export function createExperienceSocket(onState) {
         instrumentId: null,
         phase: 'problem',
         selectionMode: 'initial',
+        completedSegmentIds: normalizeCompletedIds(message.completedSegmentIds ?? current.completedSegmentIds),
         runId
+      }, message.source || 'static-preview');
+      return true;
+    }
+
+    if (message.type === 'completeSegment') {
+      writeStaticState({
+        ...current,
+        completedSegmentIds: message.completedSegmentIds === undefined
+          ? appendCompletedId(current, message.segmentId)
+          : appendCompletedId({ completedSegmentIds: message.completedSegmentIds }, message.segmentId)
       }, message.source || 'static-preview');
       return true;
     }
@@ -247,6 +273,7 @@ export function createExperienceSocket(onState) {
         instrumentId: null,
         phase: 'solutions',
         selectionMode: message.comparison ? 'compare' : 'initial',
+        completedSegmentIds: appendCompletedId(current, message.segmentId || current.segmentId),
         runId
       }, message.source || 'static-preview');
       return true;
@@ -259,6 +286,7 @@ export function createExperienceSocket(onState) {
         instrumentId: message.instrumentId || current.instrumentId,
         phase: 'instrument',
         selectionMode: 'route',
+        completedSegmentIds: appendCompletedId(current, message.segmentId || current.segmentId),
         runId
       }, message.source || 'static-preview');
       scheduleStaticRoute(runId);
