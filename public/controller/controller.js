@@ -475,11 +475,12 @@ function viewTransformation() {
   if (completedSectors.size < sectorOrder.length) return;
   clearAutoRun();
   clearSectorReadTimer();
+  const lockedUntil = Date.now() + transformationLockMs;
   state = {
     ...state,
     phase: 'closing',
     completedSegmentIds: completedIds(),
-    lockedUntil: Date.now() + transformationLockMs
+    lockedUntil
   };
   setRouteStatus();
   showStep(els.activeStep, 'active');
@@ -488,7 +489,8 @@ function viewTransformation() {
     type: 'setState',
     source: 'controller',
     force: true,
-    patch: { phase: 'closing', selectionMode: 'transformation', completedSegmentIds: completedIds(), lockedMs: transformationLockMs }
+    // Lock computed with the tablet clock (it is the only one that reads it), so clock drift vs. the server can't freeze buttons.
+    patch: { phase: 'closing', selectionMode: 'transformation', completedSegmentIds: completedIds(), lockedUntil }
   });
 }
 

@@ -181,6 +181,22 @@ export function createExperienceSocket(onState) {
     }
   }
 
+  // Sync requests must never wait behind video/image downloads: high priority + hard timeout.
+  async function cloudFetch(url, options = {}, timeoutMs = 4000) {
+    const controller = 'AbortController' in window ? new AbortController() : null;
+    const timer = controller ? setTimeout(() => controller.abort(), timeoutMs) : null;
+    try {
+      return await fetch(url, {
+        cache: 'no-store',
+        priority: 'high',
+        ...options,
+        signal: controller?.signal
+      });
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
   function withCloudOrdering(message) {
     clientSeq += 1;
     try { localStorage.setItem('maqueta6-banca-desarrollo-client-seq', String(clientSeq)); } catch {}
@@ -337,10 +353,9 @@ export function createExperienceSocket(onState) {
   async function pullCloudState(source = 'cloud') {
     const generation = cloudGeneration;
     try {
-      const response = await fetch(`${cloudEndpoint}&t=${Date.now()}`, {
-        cache: 'no-store',
+      const response = await cloudFetch(`${cloudEndpoint}&t=${Date.now()}`, {
         headers: { accept: 'application/json' }
-      });
+      }, 3500);
       if (!response.ok) throw new Error(`Cloud sync ${response.status}`);
       const payload = await response.json();
       // A send happened while this poll was in flight: its answer may predate it.
@@ -409,15 +424,14 @@ export function createExperienceSocket(onState) {
       // The server ignores repeated clientSeq values, so retrying is safe.
       for (let attempt = 0; attempt < 5; attempt += 1) {
         try {
-          const response = await fetch(cloudEndpoint, {
+          const response = await cloudFetch(cloudEndpoint, {
             method: 'POST',
-            cache: 'no-store',
             headers: {
               'content-type': 'application/json',
               accept: 'application/json'
             },
             body: JSON.stringify(orderedMessage)
-          });
+          }, 6000);
           if (!response.ok) throw new Error(`Cloud sync ${response.status}`);
           const payload = await response.json();
           if (payload?.state) {

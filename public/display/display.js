@@ -387,7 +387,11 @@ function displayStateSignature(nextState = {}) {
     instrumentId: nextState.instrumentId || null,
     phase: nextState.phase || 'idle',
     selectionMode: nextState.selectionMode || 'initial',
-    completedSegmentIds: Array.isArray(nextState.completedSegmentIds) ? nextState.completedSegmentIds : [],
+    // completedSegmentIds is left out on purpose: marking a sector as completed must not
+    // restart the animation that is already playing for it. It is read fresh on each render.
+    completedSegmentIds: ['idle', 'bankIntro', 'problem', 'solutions'].includes(nextState.phase)
+      ? []
+      : (Array.isArray(nextState.completedSegmentIds) ? nextState.completedSegmentIds : []),
     runId: Number(nextState.runId || 0)
   });
 }
