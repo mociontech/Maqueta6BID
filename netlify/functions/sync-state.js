@@ -102,6 +102,32 @@ function isInteractionLocked(state) {
   return Number(state.lockedUntil || 0) > Date.now();
 }
 
+function clientSeqsFor(state = {}) {
+  return state.clientSeqs && typeof state.clientSeqs === 'object'
+    ? state.clientSeqs
+    : {};
+}
+
+function isStaleClientMessage(current, message = {}) {
+  const clientId = String(message.clientId || '');
+  const clientSeq = Number(message.clientSeq || 0);
+  if (!clientId || !Number.isFinite(clientSeq) || clientSeq <= 0) return false;
+  return clientSeq <= Number(clientSeqsFor(current)[clientId] || 0);
+}
+
+function stampClientMessage(current, next, message = {}) {
+  const clientId = String(message.clientId || '');
+  const clientSeq = Number(message.clientSeq || 0);
+  if (!clientId || !Number.isFinite(clientSeq) || clientSeq <= 0) return next;
+  return {
+    ...next,
+    clientSeqs: {
+      ...clientSeqsFor(current),
+      [clientId]: clientSeq
+    }
+  };
+}
+
 function advanceScheduledState(state) {
   let nextState = { ...state };
   let changed = false;
@@ -110,6 +136,7 @@ function advanceScheduledState(state) {
   if (nextState.phase !== 'idle' && nextState.phase !== 'closing' && AUTO_RESET_MS > 0 && Number(nextState.updatedAt || 0) + AUTO_RESET_MS < now) {
     return {
       ...initialState,
+      clientSeqs: clientSeqsFor(nextState),
       runId: Number(nextState.runId || 0) + 1,
       updatedAt: now
     };
@@ -138,6 +165,7 @@ function advanceScheduledState(state) {
 function resetState(current) {
   return {
     ...initialState,
+    clientSeqs: clientSeqsFor(current),
     runId: Number(current.runId || 0) + 1,
     updatedAt: Date.now()
   };
@@ -238,17 +266,25 @@ function applyPatch(current, patch = {}) {
 }
 
 function applyMessage(current, message = {}) {
-  if (message.type === 'reset') return resetState(current);
-  if (isInteractionLocked(current) && !message.force) return current;
+  if (isStaleClientMessage(current, message)) return current;
 
-  if (message.type === 'selectSegment') return selectSegment(current, message.segmentId);
-  if (message.type === 'showSolutions') return showSolutions(current, message.segmentId, Boolean(message.comparison));
-  if (message.type === 'runRoute') return runRoute(current, message.segmentId, message.instrumentId);
-  if (message.type === 'setState' && message.patch && typeof message.patch === 'object') {
-    return applyPatch(current, message.patch);
+  let nextState = current;
+
+  if (message.type === 'reset') {
+    nextState = resetState(current);
+  } else if (isInteractionLocked(current) && !message.force) {
+    nextState = current;
+  } else if (message.type === 'selectSegment') {
+    nextState = selectSegment(current, message.segmentId);
+  } else if (message.type === 'showSolutions') {
+    nextState = showSolutions(current, message.segmentId, Boolean(message.comparison));
+  } else if (message.type === 'runRoute') {
+    nextState = runRoute(current, message.segmentId, message.instrumentId);
+  } else if (message.type === 'setState' && message.patch && typeof message.patch === 'object') {
+    nextState = applyPatch(current, message.patch);
   }
 
-  return current;
+  return stampClientMessage(current, nextState, message);
 }
 
 exports.handler = async (event) => {

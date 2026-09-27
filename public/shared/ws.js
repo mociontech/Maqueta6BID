@@ -3,6 +3,8 @@ export function createExperienceSocket(onState) {
   let retryTimer;
   let phaseTimer;
   let cloudPollTimer;
+  let cloudSendQueue = Promise.resolve();
+  let cloudPendingSends = 0;
   let closedByClient = false;
   let staticMode = false;
   let cloudMode = false;
@@ -12,6 +14,8 @@ export function createExperienceSocket(onState) {
   const room = roomFromUrl();
   const storageKey = `maqueta6-banca-desarrollo-state:${room}`;
   const cloudEndpoint = `/.netlify/functions/sync-state?room=${encodeURIComponent(room)}`;
+  const clientId = clientIdFromStorage();
+  let clientSeq = Number(localStorage.getItem('maqueta6-banca-desarrollo-client-seq') || 0);
   const listeners = new Set();
   let lastDeliveredStateSignature = '';
   let lastDeliveredState = null;
@@ -154,6 +158,31 @@ export function createExperienceSocket(onState) {
     } catch {
       return 'default';
     }
+  }
+
+  function clientIdFromStorage() {
+    try {
+      const key = 'maqueta6-banca-desarrollo-client-id';
+      const existing = localStorage.getItem(key);
+      if (existing) return existing;
+      const next = crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+      localStorage.setItem(key, next);
+      return next;
+    } catch {
+      return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    }
+  }
+
+  function withCloudOrdering(message) {
+    clientSeq += 1;
+    try { localStorage.setItem('maqueta6-banca-desarrollo-client-seq', String(clientSeq)); } catch {}
+    return {
+      ...message,
+      room,
+      clientId,
+      clientSeq,
+      sentAt: Date.now()
+    };
   }
 
   function readStaticState() {
@@ -303,8 +332,12 @@ export function createExperienceSocket(onState) {
     clearTimeout(cloudPollTimer);
     if (!cloudMode || closedByClient) return;
     cloudPollTimer = setTimeout(async () => {
+      if (cloudPendingSends > 0) {
+        scheduleCloudPoll(180);
+        return;
+      }
       await pullCloudState();
-      scheduleCloudPoll(status.online ? 450 : 900);
+      scheduleCloudPoll(status.online ? 300 : 800);
     }, delay);
   }
 
@@ -322,40 +355,54 @@ export function createExperienceSocket(onState) {
     pullCloudState('cloud-initial').then(() => scheduleCloudPoll(350));
   }
 
-  function sendCloudMessage(message) {
-    fetch(cloudEndpoint, {
-      method: 'POST',
-      cache: 'no-store',
-      headers: {
-        'content-type': 'application/json',
-        accept: 'application/json'
-      },
-      body: JSON.stringify(message)
-    })
-      .then(response => {
-        if (!response.ok) throw new Error(`Cloud sync ${response.status}`);
-        return response.json();
-      })
-      .then(payload => {
-        if (payload?.state) {
-          setStatus({
-            online: true,
-            readyState: 'cloud-sync',
-            reconnectInMs: 0,
-            lastMessageAt: Date.now()
-          });
-          rememberCloudState(payload.state, message.source || 'cloud');
-        }
-      })
-      .catch(() => {
-        setStatus({
-          online: false,
-          readyState: 'cloud-error',
-          reconnects: status.reconnects + 1,
-          reconnectInMs: 700,
-          lastCloseAt: Date.now()
-        });
+  async function postCloudMessage(message) {
+    const orderedMessage = withCloudOrdering(message);
+    cloudPendingSends += 1;
+    clearTimeout(cloudPollTimer);
+    setStatus({
+      online: true,
+      readyState: 'cloud-sending',
+      reconnectInMs: 0
+    });
+    try {
+      const response = await fetch(cloudEndpoint, {
+        method: 'POST',
+        cache: 'no-store',
+        headers: {
+          'content-type': 'application/json',
+          accept: 'application/json'
+        },
+        body: JSON.stringify(orderedMessage)
       });
+      if (!response.ok) throw new Error(`Cloud sync ${response.status}`);
+      const payload = await response.json();
+      if (payload?.state) {
+        setStatus({
+          online: true,
+          readyState: 'cloud-sync',
+          reconnectInMs: 0,
+          lastMessageAt: Date.now()
+        });
+        rememberCloudState(payload.state, orderedMessage.source || 'cloud');
+      }
+    } catch {
+      setStatus({
+        online: false,
+        readyState: 'cloud-error',
+        reconnects: status.reconnects + 1,
+        reconnectInMs: 700,
+        lastCloseAt: Date.now()
+      });
+    } finally {
+      cloudPendingSends = Math.max(0, cloudPendingSends - 1);
+      scheduleCloudPoll(cloudPendingSends > 0 ? 180 : 120);
+    }
+  }
+
+  function sendCloudMessage(message) {
+    cloudSendQueue = cloudSendQueue
+      .catch(() => {})
+      .then(() => postCloudMessage(message));
     return true;
   }
 

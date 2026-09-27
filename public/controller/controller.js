@@ -49,6 +49,8 @@ let sectorReadTimer = null;
 const completedSectors = new Set();
 let localFinal = false;
 let lockTimer = null;
+let cloudBusy = false;
+let localActionLockedUntil = 0;
 
 const els = {
   shell: document.querySelector('.tablet-shell'),
@@ -88,8 +90,10 @@ const socket = createExperienceSocket(next => {
 });
 
 socket.onConnectionChange((online, wsStatus) => {
-  els.connection.textContent = online ? 'TV conectada' : retryLabel(wsStatus);
-  els.connection.classList.toggle('online', online);
+  cloudBusy = wsStatus?.readyState === 'cloud-sending';
+  els.connection.textContent = cloudBusy ? 'Sincronizando' : online ? 'TV conectada' : retryLabel(wsStatus);
+  els.connection.classList.toggle('online', online && !cloudBusy);
+  updateInteractionLock();
 });
 
 function retryLabel(wsStatus) {
@@ -266,7 +270,7 @@ function setRouteStatus() {
 }
 
 function lockRemainingMs() {
-  return Math.max(0, Number(state.lockedUntil || 0) - Date.now());
+  return Math.max(0, Number(state.lockedUntil || 0) - Date.now(), localActionLockedUntil - Date.now());
 }
 
 function isInteractionLocked() {
@@ -280,8 +284,10 @@ function updateInteractionLock() {
   }
 
   const locked = isInteractionLocked();
+  const blocked = locked || cloudBusy;
   const waitingIntro = state.phase === 'bankIntro' && els.shell.dataset.step === 'active';
-  els.shell.dataset.locked = locked ? 'true' : 'false';
+  els.shell.dataset.locked = blocked ? 'true' : 'false';
+  els.shell.dataset.syncing = cloudBusy ? 'true' : 'false';
   els.shell.dataset.waitingIntro = waitingIntro ? 'true' : 'false';
   if (els.activeActions) els.activeActions.hidden = waitingIntro;
   const controls = [
@@ -298,11 +304,11 @@ function updateInteractionLock() {
   ].filter(Boolean);
 
   for (const control of controls) {
-    control.disabled = locked;
-    control.setAttribute('aria-disabled', locked ? 'true' : 'false');
+    control.disabled = blocked;
+    control.setAttribute('aria-disabled', blocked ? 'true' : 'false');
   }
 
-  if (locked) {
+  if (blocked) {
     lockTimer = setTimeout(() => {
       setRouteStatus();
       updateInteractionLock();
@@ -312,7 +318,7 @@ function updateInteractionLock() {
       if (!isInteractionLocked() && state.phase === 'closing' && els.shell.dataset.step === 'active' && !localFinal) {
         showStep(els.finalStep, 'final');
       }
-    }, Math.min(lockRemainingMs(), 1000));
+    }, locked ? Math.max(120, Math.min(lockRemainingMs(), 1000)) : 250);
   } else if (waitingIntro && !localFinal) {
     showStep(els.sectorStep, 'sectors');
   } else if (state.phase === 'closing' && els.shell.dataset.step === 'active' && !localFinal) {
@@ -321,7 +327,7 @@ function updateInteractionLock() {
 }
 
 function shouldIgnoreInteraction() {
-  if (!isInteractionLocked()) return false;
+  if (!isInteractionLocked() && !cloudBusy) return false;
   setRouteStatus();
   updateInteractionLock();
   return true;
@@ -332,6 +338,7 @@ function clearLocalProgress() {
   clearSectorReadTimer();
   completedSectors.clear();
   selectedSectorId = null;
+  localActionLockedUntil = 0;
   updateSectorGuidance(null);
 }
 
@@ -339,7 +346,7 @@ function goToIntro(reset = true) {
   if (shouldIgnoreInteraction()) return;
   clearLocalProgress();
   showStep(els.introStep, 'intro');
-  if (reset) socket.send({ type: 'reset', source: 'controller' });
+  if (reset) socket.send({ type: 'reset', source: 'controller', force: true });
 }
 
 function goToSectors(resetDisplay = false) {
@@ -363,6 +370,7 @@ function goToSectors(resetDisplay = false) {
     socket.send({
       type: 'setState',
       source: 'controller',
+      force: true,
       patch: { phase: 'bankIntro', segmentId: null, instrumentId: null, selectionMode: 'initial', lockedUntil }
     });
     return;
@@ -388,6 +396,8 @@ function chooseSector(id) {
   if (completedSectors.has(id)) return;
   const sector = currentSector(id);
   if (!sector) return;
+  const firstSelection = completedSectors.size === 0;
+  localActionLockedUntil = Date.now() + (firstSelection ? 7000 : (data.animationTimings?.privateSectorReadMs || 5000));
   clearAutoRun();
   clearSectorReadTimer();
   selectedSectorId = sector.id;
@@ -401,7 +411,7 @@ function chooseSector(id) {
   setRouteStatus();
   showStep(els.sectorStep, 'sectors');
   updateSectorGuidance(sector.id);
-  socket.send({ type: 'selectSegment', source: 'controller', segmentId: sector.id });
+  socket.send({ type: 'selectSegment', source: 'controller', force: true, segmentId: sector.id });
 }
 
 function finishExperience() {
@@ -411,6 +421,7 @@ function finishExperience() {
   socket.send({
     type: 'setState',
     source: 'controller',
+    force: true,
     patch: { phase: 'closing' }
   });
   showStep(els.finalStep, 'final');
@@ -451,6 +462,7 @@ function viewFullInfo() {
   socket.send({
     type: 'setState',
     source: 'controller',
+    force: true,
     patch: { phase: 'closing', selectionMode: 'fullInfo', lockedMs: 0, lockedUntil: Date.now() }
   });
 }
