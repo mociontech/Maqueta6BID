@@ -3044,34 +3044,7 @@ button {
 }
 
 .physical-mode[data-phase="closing"] .bridge-copy-right {
-  display: block;
-  left: 1176px;
-  top: 320px;
-  width: 270px;
-  font-size: 18px;
-  font-weight: 900;
-  line-height: 1.02;
-  opacity: 0;
-  transform: translateY(10px);
-  transition: opacity .35s ease, transform .35s ease;
-  isolation: isolate;
-}
-
-.physical-mode[data-phase="closing"] .bridge-copy-right::before {
-  content: "";
-  position: absolute;
-  left: -88px;
-  top: -56px;
-  width: calc(100% + 176px);
-  height: calc(100% + 112px);
-  z-index: -1;
-  background: radial-gradient(ellipse at center, rgba(8, 17, 31, 1) 0 48%, rgba(8, 17, 31, .86) 64%, rgba(8, 17, 31, .36) 82%, rgba(8, 17, 31, 0) 100%);
-  filter: blur(8px);
-}
-
-.physical-mode[data-phase="closing"][data-sequence~="formal-bridge"] .bridge-copy-right {
-  opacity: 1;
-  transform: translateY(0);
+  display: none !important;
 }
 
 .physical-mode[data-phase="closing"] .right-title {
@@ -3132,12 +3105,6 @@ button {
 .physical-mode[data-phase="closing"] .informal-panel,
 .physical-mode[data-phase="closing"] .formal-panel {
   display: none !important;
-}
-
-.physical-mode[data-phase="closing"][data-sequence~="formal-bridge"] .bridge-copy-right {
-  display: block !important;
-  opacity: 1;
-  transform: translateY(0);
 }
 
 .physical-mode[data-phase="closing"] .formal-video-title {

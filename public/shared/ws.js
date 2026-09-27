@@ -9,8 +9,8 @@ export function createExperienceSocket(onState) {
   const channel = 'BroadcastChannel' in window
     ? new BroadcastChannel('maqueta6-banca-desarrollo')
     : null;
-  const storageKey = 'maqueta6-banca-desarrollo-state';
   const room = roomFromUrl();
+  const storageKey = `maqueta6-banca-desarrollo-state:${room}`;
   const cloudEndpoint = `/.netlify/functions/sync-state?room=${encodeURIComponent(room)}`;
   const listeners = new Set();
   let lastDeliveredStateSignature = '';
@@ -145,7 +145,12 @@ export function createExperienceSocket(onState) {
   function roomFromUrl() {
     try {
       const params = new URLSearchParams(location.search);
-      return params.get('room') || localStorage.getItem('maqueta6-banca-desarrollo-room') || 'default';
+      const explicitRoom = params.get('room');
+      if (explicitRoom) {
+        localStorage.setItem('maqueta6-banca-desarrollo-room', explicitRoom);
+        return explicitRoom;
+      }
+      return localStorage.getItem('maqueta6-banca-desarrollo-room') || 'default';
     } catch {
       return 'default';
     }
@@ -162,7 +167,7 @@ export function createExperienceSocket(onState) {
   function writeStaticState(nextState, source = 'static-preview') {
     const state = { ...nextState, updatedAt: Date.now() };
     localStorage.setItem(storageKey, JSON.stringify(state));
-    channel?.postMessage({ type: 'state', state, source });
+    channel?.postMessage({ type: 'state', room, state, source });
     deliverState(state);
   }
 
@@ -260,7 +265,7 @@ export function createExperienceSocket(onState) {
   function rememberCloudState(state, source = 'cloud') {
     if (isStaleState(state)) return false;
     localStorage.setItem(storageKey, JSON.stringify(state));
-    channel?.postMessage({ type: 'state', state, source });
+    channel?.postMessage({ type: 'state', room, state, source });
     return deliverState(state);
   }
 
@@ -363,7 +368,9 @@ export function createExperienceSocket(onState) {
   }
 
   channel?.addEventListener('message', event => {
-    if (event.data?.type === 'state' && event.data.state) deliverState(event.data.state);
+    if (event.data?.type !== 'state' || !event.data.state) return;
+    if (event.data.room !== room) return;
+    deliverState(event.data.state);
   });
 
   connect();
