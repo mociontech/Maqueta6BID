@@ -3118,6 +3118,12 @@ button {
   display: none !important;
 }
 
+.physical-mode[data-phase="closing"][data-sequence~="formal-copy"] .bridge-copy-right {
+  display: block !important;
+  opacity: 1;
+  transform: translateY(0);
+}
+
 .physical-mode[data-phase="closing"] .formal-video-title {
   display: none !important;
 }
