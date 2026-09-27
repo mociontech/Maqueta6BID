@@ -553,17 +553,29 @@ function revealFormalTransformationSequence(token) {
   setFormalSequenceSteps('formal-bridge');
   stopVideo(els.formalVideo);
   stopVideo(els.finalFormalVideo);
+  playMiddleBridgeVideo({ loopOnly: true, loopOffset: .55 });
   playFinalBridgeVideo({ restart: true });
 
   later(() => {
-    setFormalSequenceSteps('formal-bridge', 'formal-popup7');
+    setFormalSequenceSteps('formal-bridge', 'formal-popup5');
   }, 4000, token);
 
   later(() => {
-    setFormalSequenceSteps('formal-bridge', 'formal-popup7', 'formal-video');
+    setFormalSequenceSteps('formal-bridge', 'formal-popup5', 'formal-popup7');
+  }, 5600, token);
+
+  later(() => {
+    setFormalSequenceSteps('formal-bridge', 'formal-popup5', 'formal-popup7', 'formal-video');
     playVideo(els.finalFormalVideo, { restart: true, loop: true, keepVisibleOnEnd: true });
   }, 7600, token);
 
+  later(() => {
+    setFormalSequenceSteps('formal-bridge', 'formal-popup5', 'formal-popup7', 'formal-video', 'formal-popup8');
+  }, 13200, token);
+
+  later(() => {
+    setFormalSequenceSteps('formal-bridge', 'formal-popup5', 'formal-popup7', 'formal-video', 'formal-popup8', 'formal-slot');
+  }, 15600, token);
 }
 
 function revealFullInfoSequence() {
@@ -581,6 +593,7 @@ function revealFullInfoSequence() {
     'formal-popup5',
     'formal-video',
     'formal-popup8',
+    'formal-slot',
     ...allPrivateSteps()
   );
   playVideo(els.finalFormalVideo, { restart: true, loop: true, keepVisibleOnEnd: true });
