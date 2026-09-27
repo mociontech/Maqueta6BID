@@ -417,7 +417,6 @@ function finishExperience() {
 }
 
 function viewTransformation() {
-  if (shouldIgnoreInteraction()) return;
   clearAutoRun();
   clearSectorReadTimer();
   state = {
@@ -431,6 +430,7 @@ function viewTransformation() {
   socket.send({
     type: 'setState',
     source: 'controller',
+    force: true,
     patch: { phase: 'closing', selectionMode: 'transformation', lockedMs: transformationLockMs }
   });
 }

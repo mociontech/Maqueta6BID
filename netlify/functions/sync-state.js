@@ -239,7 +239,7 @@ function applyPatch(current, patch = {}) {
 
 function applyMessage(current, message = {}) {
   if (message.type === 'reset') return resetState(current);
-  if (isInteractionLocked(current)) return current;
+  if (isInteractionLocked(current) && !message.force) return current;
 
   if (message.type === 'selectSegment') return selectSegment(current, message.segmentId);
   if (message.type === 'showSolutions') return showSolutions(current, message.segmentId, Boolean(message.comparison));

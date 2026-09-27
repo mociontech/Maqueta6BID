@@ -213,7 +213,7 @@ wss.on('connection', (socket) => {
       return;
     }
 
-    if (isInteractionLocked()) return;
+    if (isInteractionLocked() && !msg.force) return;
 
     if (msg.type === 'setState' && msg.patch && typeof msg.patch === 'object') {
       applyClientPatch(msg.patch, msg.source || 'client');
