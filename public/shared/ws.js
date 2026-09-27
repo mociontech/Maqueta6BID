@@ -145,7 +145,7 @@ export function createExperienceSocket(onState) {
   }
 
   function shouldUseCloudSync() {
-    return !['localhost', '127.0.0.1'].includes(location.hostname) && location.protocol !== 'file:';
+    return location.hostname === 'maqueta6bid.netlify.app' || location.hostname.endsWith('.netlify.app');
   }
 
   function roomFromUrl() {
