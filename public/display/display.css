@@ -1292,7 +1292,7 @@ button {
 .physical-mode .stage {
   top: 0;
   height: 1080px;
-  background: url("/TV/melo1.png") center / cover no-repeat #08111d;
+  background: url("/TV/melo2.png") center / cover no-repeat #08111d;
 }
 
 .physical-layout {
@@ -3323,11 +3323,11 @@ button {
 }
 
 .physical-mode[data-phase="idle"] .stage {
-  background: url("/TV/melo1.png") center / cover no-repeat #08111d;
+  background: url("/TV/melo2.png") center / cover no-repeat #08111d;
 }
 
 .physical-mode[data-phase="bankIntro"] .stage {
-  background: url("/TV/melo1.png") center / cover no-repeat #08111d;
+  background: url("/TV/melo2.png") center / cover no-repeat #08111d;
 }
 
 .physical-mode[data-phase="problem"] .stage,
@@ -3336,7 +3336,7 @@ button {
 .physical-mode[data-phase="route"] .stage,
 .physical-mode[data-phase="providers"] .stage,
 .physical-mode[data-phase="result"] .stage {
-  background: url("/TV/melo1.png") center / cover no-repeat #08111d;
+  background: url("/TV/melo2.png") center / cover no-repeat #08111d;
 }
 
 .physical-mode[data-phase="idle"] .stage > * {
@@ -3630,7 +3630,8 @@ button {
   position: absolute;
   overflow: hidden;
   background: transparent;
-  opacity: 1 !important;
+  opacity: 0 !important;
+  pointer-events: none;
 }
 
 .physical-mode[data-phase="idle"] .idle-media-informal {
@@ -3659,7 +3660,7 @@ button {
   height: 100%;
   display: block;
   object-fit: contain;
-  opacity: 1;
+  opacity: 0;
   filter: none;
 }
 
@@ -3671,6 +3672,11 @@ button {
   position: absolute;
   overflow: hidden;
   background: transparent;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.physical-mode[data-phase="bankIntro"][data-sequence~="video"] .idle-media-informal {
   opacity: 1;
 }
 
@@ -3717,8 +3723,12 @@ button {
   height: 100%;
   display: block;
   object-fit: contain;
-  opacity: 1;
+  opacity: 0;
   filter: none;
+}
+
+.physical-mode[data-phase="bankIntro"][data-sequence~="video"] .idle-media-informal video {
+  opacity: 1;
 }
 
 .bridge-video {
