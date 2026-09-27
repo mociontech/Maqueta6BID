@@ -238,7 +238,8 @@ function completedIdsWith(id) {
 
 function syncCompletedSectorsFromState() {
   if (!Array.isArray(state.completedSegmentIds)) return;
-  completedSectors.clear();
+  // Only a new cycle clears progress; a lagging cloud state must not drop a sector the tablet already completed.
+  if (state.phase === 'idle' || state.phase === 'bankIntro') completedSectors.clear();
   for (const id of state.completedSegmentIds) {
     if (sectorOrder.includes(id)) completedSectors.add(id);
   }

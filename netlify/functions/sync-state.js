@@ -49,39 +49,58 @@ function keyForRoom(room) {
   return `room:${cleanRoom(room)}`;
 }
 
-async function getBlobStore() {
+const MAX_WRITE_ATTEMPTS = 6;
+
+async function getBlobStore(event) {
   try {
-    const { getStore } = await import('@netlify/blobs');
+    const { getStore, connectLambda } = await import('@netlify/blobs');
+    // Lambda-compatibility functions must connect Blobs explicitly; otherwise every
+    // instance silently falls back to its own memory and devices stop agreeing.
+    if (event?.blobs && typeof connectLambda === 'function') connectLambda(event);
     return getStore({ name: STORE_NAME, consistency: 'strong' });
   } catch {
     return null;
   }
 }
 
-async function readStoredState(key) {
-  const store = await getBlobStore();
+async function readStoredState(store, key) {
   if (store) {
     try {
-      const cloudState = await store.get(key, { type: 'json', consistency: 'strong' });
-      if (cloudState) return cloudState;
+      const result = await store.getWithMetadata(key, { type: 'json', consistency: 'strong' });
+      if (result?.data) return { state: result.data, etag: result.etag || null, exists: true };
+      return { state: { ...initialState, updatedAt: Date.now() }, etag: null, exists: false };
     } catch {
       // Local direct invocation can run without Netlify Blobs credentials.
     }
   }
-  return memoryStore.get(key) || { ...initialState, updatedAt: Date.now() };
+  const local = memoryStore.get(key);
+  return { state: local || { ...initialState, updatedAt: Date.now() }, etag: null, exists: Boolean(local), memory: true };
 }
 
-async function writeStoredState(key, state, { touch = true } = {}) {
-  const nextState = touch ? { ...state, updatedAt: Date.now() } : state;
-  memoryStore.set(key, nextState);
-  const store = await getBlobStore();
-  if (store) {
+// Writes only if nobody else wrote since we read (compare-and-swap on the etag).
+// Returns null when another write won the race so the caller can retry.
+async function writeStoredState(store, key, state, read) {
+  const nextState = {
+    ...state,
+    rev: Number(read.state.rev || 0) + 1,
+    updatedAt: Date.now()
+  };
+  if (store && !read.memory) {
+    const conditions = read.exists && read.etag ? { onlyIfMatch: read.etag } : { onlyIfNew: true };
     try {
-      await store.setJSON(key, nextState);
-    } catch {
-      // Keep the in-memory fallback for local tests if Blobs is unavailable.
+      const result = await store.setJSON(key, nextState, conditions);
+      if (result && result.modified === false) return null;
+    } catch (error) {
+      // Unexpected Blobs error (not a lost race): fall back to a plain write so the flow keeps moving.
+      console.error('sync-state conditional write failed', error);
+      try {
+        await store.setJSON(key, nextState);
+      } catch {
+        return null;
+      }
     }
   }
+  memoryStore.set(key, nextState);
   return nextState;
 }
 
@@ -331,11 +350,13 @@ function applyMessage(current, message = {}) {
 exports.handler = async (event) => {
   const room = cleanRoom(event.queryStringParameters?.room);
   const key = keyForRoom(room);
-  let state = advanceScheduledState(await readStoredState(key));
+  const store = await getBlobStore(event);
+  const storage = store ? 'blobs' : 'memory';
 
   if (event.httpMethod === 'GET') {
-    state = await writeStoredState(key, state, { touch: false });
-    return json(200, { type: 'state', room, state, source: 'cloud' });
+    // Never write on GET: polls from the TV must not overwrite tablet changes.
+    const read = await readStoredState(store, key);
+    return json(200, { type: 'state', room, state: advanceScheduledState(read.state), source: 'cloud', storage });
   }
 
   if (event.httpMethod === 'POST') {
@@ -345,9 +366,21 @@ exports.handler = async (event) => {
     } catch {
       return json(400, { error: 'Invalid JSON' });
     }
-    const nextState = applyMessage(state, message);
-    state = await writeStoredState(key, advanceScheduledState(nextState));
-    return json(200, { type: 'state', room, state, source: message.source || 'cloud' });
+
+    for (let attempt = 0; attempt < MAX_WRITE_ATTEMPTS; attempt += 1) {
+      const read = await readStoredState(store, key);
+      const current = advanceScheduledState(read.state);
+      if (isStaleClientMessage(current, message)) {
+        return json(200, { type: 'state', room, state: current, source: 'cloud', storage, duplicate: true });
+      }
+      const nextState = advanceScheduledState(applyMessage(current, message));
+      const written = await writeStoredState(store, key, nextState, read);
+      if (written) {
+        return json(200, { type: 'state', room, state: written, source: message.source || 'cloud', storage });
+      }
+      await new Promise(resolve => setTimeout(resolve, 40 + Math.random() * 80 * (attempt + 1)));
+    }
+    return json(409, { error: 'Concurrent update, retry' });
   }
 
   return json(405, { error: 'Method not allowed' });

@@ -10,3 +10,6 @@ test-artifacts/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Videos fuente pesados (la app usa los .webm)
+*.mov

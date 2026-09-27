@@ -5,6 +5,7 @@ export function createExperienceSocket(onState) {
   let cloudPollTimer;
   let cloudSendQueue = Promise.resolve();
   let cloudPendingSends = 0;
+  let cloudGeneration = 0;
   let closedByClient = false;
   let staticMode = false;
   let cloudMode = false;
@@ -57,7 +58,8 @@ export function createExperienceSocket(onState) {
       completedSegmentIds: Array.isArray(nextState.completedSegmentIds) ? nextState.completedSegmentIds : [],
       runId: Number(nextState.runId || 0),
       lockedUntil: Number(nextState.lockedUntil || 0),
-      nextPhaseAt: Number(nextState.nextPhaseAt || 0)
+      nextPhaseAt: Number(nextState.nextPhaseAt || 0),
+      rev: Number(nextState.rev || 0)
     });
   }
 
@@ -67,6 +69,10 @@ export function createExperienceSocket(onState) {
 
   function isStaleState(nextState = {}) {
     if (!lastDeliveredState) return false;
+    // Cloud states carry a server revision that grows on every write: trust it first.
+    const nextRev = Number(nextState.rev || 0);
+    const currentRev = Number(lastDeliveredState.rev || 0);
+    if (nextRev > 0 && currentRev > 0) return nextRev < currentRev;
     const nextRunId = stateRunId(nextState);
     const currentRunId = stateRunId(lastDeliveredState);
     if (nextRunId < currentRunId) return true;
@@ -329,6 +335,7 @@ export function createExperienceSocket(onState) {
   }
 
   async function pullCloudState(source = 'cloud') {
+    const generation = cloudGeneration;
     try {
       const response = await fetch(`${cloudEndpoint}&t=${Date.now()}`, {
         cache: 'no-store',
@@ -336,12 +343,15 @@ export function createExperienceSocket(onState) {
       });
       if (!response.ok) throw new Error(`Cloud sync ${response.status}`);
       const payload = await response.json();
+      // A send happened while this poll was in flight: its answer may predate it.
+      if (generation !== cloudGeneration || cloudPendingSends > 0) return null;
       if (payload?.state) {
         setStatus({
           online: true,
           readyState: 'cloud-sync',
           reconnectInMs: 0,
-          lastMessageAt: Date.now()
+          lastMessageAt: Date.now(),
+          storage: payload.storage || status.storage
         });
         rememberCloudState(payload.state, source);
       }
@@ -388,6 +398,7 @@ export function createExperienceSocket(onState) {
   async function postCloudMessage(message) {
     const orderedMessage = withCloudOrdering(message);
     cloudPendingSends += 1;
+    cloudGeneration += 1;
     clearTimeout(cloudPollTimer);
     setStatus({
       online: true,
@@ -395,36 +406,46 @@ export function createExperienceSocket(onState) {
       reconnectInMs: 0
     });
     try {
-      const response = await fetch(cloudEndpoint, {
-        method: 'POST',
-        cache: 'no-store',
-        headers: {
-          'content-type': 'application/json',
-          accept: 'application/json'
-        },
-        body: JSON.stringify(orderedMessage)
-      });
-      if (!response.ok) throw new Error(`Cloud sync ${response.status}`);
-      const payload = await response.json();
-      if (payload?.state) {
-        setStatus({
-          online: true,
-          readyState: 'cloud-sync',
-          reconnectInMs: 0,
-          lastMessageAt: Date.now()
-        });
-        rememberCloudState(payload.state, orderedMessage.source || 'cloud');
+      // The server ignores repeated clientSeq values, so retrying is safe.
+      for (let attempt = 0; attempt < 5; attempt += 1) {
+        try {
+          const response = await fetch(cloudEndpoint, {
+            method: 'POST',
+            cache: 'no-store',
+            headers: {
+              'content-type': 'application/json',
+              accept: 'application/json'
+            },
+            body: JSON.stringify(orderedMessage)
+          });
+          if (!response.ok) throw new Error(`Cloud sync ${response.status}`);
+          const payload = await response.json();
+          if (payload?.state) {
+            setStatus({
+              online: true,
+              readyState: 'cloud-sync',
+              reconnectInMs: 0,
+              lastMessageAt: Date.now(),
+              storage: payload.storage || status.storage
+            });
+            rememberCloudState(payload.state, orderedMessage.source || 'cloud');
+          }
+          return;
+        } catch {
+          setStatus({
+            online: false,
+            readyState: 'cloud-sending',
+            reconnects: status.reconnects + 1,
+            reconnectInMs: 300 * (attempt + 1),
+            lastCloseAt: Date.now()
+          });
+          await new Promise(resolve => setTimeout(resolve, 300 * (attempt + 1)));
+        }
       }
-    } catch {
-      setStatus({
-        online: false,
-        readyState: 'cloud-error',
-        reconnects: status.reconnects + 1,
-        reconnectInMs: 700,
-        lastCloseAt: Date.now()
-      });
+      setStatus({ online: false, readyState: 'cloud-error', reconnectInMs: 700 });
     } finally {
       cloudPendingSends = Math.max(0, cloudPendingSends - 1);
+      cloudGeneration += 1;
       scheduleCloudPoll(cloudPendingSends > 0 ? 180 : 120);
     }
   }

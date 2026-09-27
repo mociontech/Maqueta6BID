@@ -29,6 +29,7 @@ export function createDiagnosticsPanel({ title = 'Diagnóstico', socket, getRows
       ['FPS', String(fps.value || 'calculando')],
       ['Reintentos', String(ws.reconnects || 0)],
       ['Último mensaje', fmtTime(ws.lastMessageAt)],
+      ...(ws.storage ? [['Almacenamiento', ws.storage === 'blobs' ? 'nube (Blobs)' : 'memoria (NO sincroniza)']] : []),
       ...getRows()
     ];
 
