@@ -14,6 +14,7 @@ export function createExperienceSocket(onState) {
   const cloudEndpoint = `/.netlify/functions/sync-state?room=${encodeURIComponent(room)}`;
   const listeners = new Set();
   let lastDeliveredStateSignature = '';
+  let lastDeliveredState = null;
   const initialState = {
     segmentId: null,
     instrumentId: null,
@@ -43,21 +44,36 @@ export function createExperienceSocket(onState) {
   }
 
   function stateSignature(nextState = {}) {
+    // Only visual-driving fields should restart the display sequence.
     return JSON.stringify({
       segmentId: nextState.segmentId || null,
       instrumentId: nextState.instrumentId || null,
       phase: nextState.phase || 'idle',
       selectionMode: nextState.selectionMode || 'initial',
-      runId: Number(nextState.runId || 0),
-      lockedUntil: Number(nextState.lockedUntil || 0),
-      nextPhaseAt: Number(nextState.nextPhaseAt || 0)
+      runId: Number(nextState.runId || 0)
     });
   }
 
+  function stateRunId(nextState = {}) {
+    return Number(nextState.runId || 0);
+  }
+
+  function isStaleState(nextState = {}) {
+    if (!lastDeliveredState) return false;
+    const nextRunId = stateRunId(nextState);
+    const currentRunId = stateRunId(lastDeliveredState);
+    if (nextRunId < currentRunId) return true;
+    return nextRunId === currentRunId
+      && lastDeliveredState.phase !== 'idle'
+      && nextState.phase === 'idle';
+  }
+
   function deliverState(nextState) {
+    if (isStaleState(nextState)) return false;
     const signature = stateSignature(nextState);
     if (signature === lastDeliveredStateSignature) return false;
     lastDeliveredStateSignature = signature;
+    lastDeliveredState = { ...nextState };
     onState(nextState);
     return true;
   }
@@ -241,9 +257,10 @@ export function createExperienceSocket(onState) {
   }
 
   function rememberCloudState(state, source = 'cloud') {
+    if (isStaleState(state)) return false;
     localStorage.setItem(storageKey, JSON.stringify(state));
     channel?.postMessage({ type: 'state', state, source });
-    deliverState(state);
+    return deliverState(state);
   }
 
   async function pullCloudState(source = 'cloud') {
