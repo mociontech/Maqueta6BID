@@ -2,12 +2,16 @@ export function createExperienceSocket(onState) {
   let socket;
   let retryTimer;
   let phaseTimer;
+  let cloudPollTimer;
   let closedByClient = false;
   let staticMode = false;
+  let cloudMode = false;
   const channel = 'BroadcastChannel' in window
     ? new BroadcastChannel('maqueta6-banca-desarrollo')
     : null;
   const storageKey = 'maqueta6-banca-desarrollo-state';
+  const room = roomFromUrl();
+  const cloudEndpoint = `/.netlify/functions/sync-state?room=${encodeURIComponent(room)}`;
   const listeners = new Set();
   const initialState = {
     segmentId: null,
@@ -39,6 +43,10 @@ export function createExperienceSocket(onState) {
 
   function connect() {
     clearTimeout(retryTimer);
+    if (shouldUseCloudSync()) {
+      activateCloudMode();
+      return;
+    }
     if (staticMode) return;
     const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
     status.attempts += 1;
@@ -58,8 +66,8 @@ export function createExperienceSocket(onState) {
 
     socket.addEventListener('close', () => {
       if (closedByClient) return;
-      if (shouldUseStaticFallback()) {
-        activateStaticMode();
+      if (shouldUseCloudSync()) {
+        activateCloudMode();
         return;
       }
       const delay = Math.min(3000, 500 * (2 ** Math.min(status.reconnects, 3)));
@@ -90,6 +98,19 @@ export function createExperienceSocket(onState) {
 
   function shouldUseStaticFallback() {
     return !['localhost', '127.0.0.1'].includes(location.hostname);
+  }
+
+  function shouldUseCloudSync() {
+    return !['localhost', '127.0.0.1'].includes(location.hostname) && location.protocol !== 'file:';
+  }
+
+  function roomFromUrl() {
+    try {
+      const params = new URLSearchParams(location.search);
+      return params.get('room') || localStorage.getItem('maqueta6-banca-desarrollo-room') || 'default';
+    } catch {
+      return 'default';
+    }
   }
 
   function readStaticState() {
@@ -198,7 +219,104 @@ export function createExperienceSocket(onState) {
     writeStaticState(readStaticState(), 'static-preview');
   }
 
+  function rememberCloudState(state, source = 'cloud') {
+    localStorage.setItem(storageKey, JSON.stringify(state));
+    channel?.postMessage({ type: 'state', state, source });
+    onState(state);
+  }
+
+  async function pullCloudState(source = 'cloud') {
+    try {
+      const response = await fetch(`${cloudEndpoint}&t=${Date.now()}`, {
+        cache: 'no-store',
+        headers: { accept: 'application/json' }
+      });
+      if (!response.ok) throw new Error(`Cloud sync ${response.status}`);
+      const payload = await response.json();
+      if (payload?.state) {
+        setStatus({
+          online: true,
+          readyState: 'cloud-sync',
+          reconnectInMs: 0,
+          lastMessageAt: Date.now()
+        });
+        rememberCloudState(payload.state, source);
+      }
+      return payload?.state || null;
+    } catch (error) {
+      setStatus({
+        online: false,
+        readyState: 'cloud-error',
+        reconnects: status.reconnects + 1,
+        reconnectInMs: 700,
+        lastCloseAt: Date.now()
+      });
+      return null;
+    }
+  }
+
+  function scheduleCloudPoll(delay = 450) {
+    clearTimeout(cloudPollTimer);
+    if (!cloudMode || closedByClient) return;
+    cloudPollTimer = setTimeout(async () => {
+      await pullCloudState();
+      scheduleCloudPoll(status.online ? 450 : 900);
+    }, delay);
+  }
+
+  function activateCloudMode() {
+    if (cloudMode) return;
+    cloudMode = true;
+    staticMode = false;
+    clearTimeout(retryTimer);
+    setStatus({
+      online: false,
+      readyState: 'cloud-sync',
+      reconnectInMs: 0,
+      lastOpenAt: Date.now()
+    });
+    pullCloudState('cloud-initial').then(() => scheduleCloudPoll(350));
+  }
+
+  function sendCloudMessage(message) {
+    fetch(cloudEndpoint, {
+      method: 'POST',
+      cache: 'no-store',
+      headers: {
+        'content-type': 'application/json',
+        accept: 'application/json'
+      },
+      body: JSON.stringify(message)
+    })
+      .then(response => {
+        if (!response.ok) throw new Error(`Cloud sync ${response.status}`);
+        return response.json();
+      })
+      .then(payload => {
+        if (payload?.state) {
+          setStatus({
+            online: true,
+            readyState: 'cloud-sync',
+            reconnectInMs: 0,
+            lastMessageAt: Date.now()
+          });
+          rememberCloudState(payload.state, message.source || 'cloud');
+        }
+      })
+      .catch(() => {
+        setStatus({
+          online: false,
+          readyState: 'cloud-error',
+          reconnects: status.reconnects + 1,
+          reconnectInMs: 700,
+          lastCloseAt: Date.now()
+        });
+      });
+    return true;
+  }
+
   function send(message) {
+    if (cloudMode) return sendCloudMessage(message);
     if (staticMode) return applyStaticMessage(message);
     if (!socket || socket.readyState !== WebSocket.OPEN) return false;
     socket.send(JSON.stringify(message));
@@ -220,6 +338,7 @@ export function createExperienceSocket(onState) {
       closedByClient = true;
       clearTimeout(retryTimer);
       clearTimeout(phaseTimer);
+      clearTimeout(cloudPollTimer);
       channel?.close();
       socket?.close();
     },
