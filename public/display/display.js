@@ -48,6 +48,7 @@ let playedVideoRun = {
 };
 const revealedPrivateSectors = new Set();
 let pendingRevealSectorId = null;
+let lastRenderedStateSignature = '';
 
 const els = {
   shell: document.querySelector('.display-shell'),
@@ -377,6 +378,16 @@ function loopBridgeVideoFromConfiguredStart(video) {
 function setSequenceSteps(...steps) {
   els.shell.dataset.sequence = steps.filter(Boolean).join(' ');
   updatePrivateRevealedState();
+}
+
+function displayStateSignature(nextState = {}) {
+  return JSON.stringify({
+    segmentId: nextState.segmentId || null,
+    instrumentId: nextState.instrumentId || null,
+    phase: nextState.phase || 'idle',
+    selectionMode: nextState.selectionMode || 'initial',
+    runId: Number(nextState.runId || 0)
+  });
 }
 
 function updatePrivateRevealedState() {
@@ -1068,6 +1079,9 @@ function fitDisplay() {
 
 const socket = createExperienceSocket(nextState => {
   state = nextState;
+  const signature = displayStateSignature(nextState);
+  if (signature === lastRenderedStateSignature) return;
+  lastRenderedStateSignature = signature;
   renderExperience();
 });
 

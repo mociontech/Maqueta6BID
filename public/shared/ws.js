@@ -44,13 +44,14 @@ export function createExperienceSocket(onState) {
   }
 
   function stateSignature(nextState = {}) {
-    // Only visual-driving fields should restart the display sequence.
     return JSON.stringify({
       segmentId: nextState.segmentId || null,
       instrumentId: nextState.instrumentId || null,
       phase: nextState.phase || 'idle',
       selectionMode: nextState.selectionMode || 'initial',
-      runId: Number(nextState.runId || 0)
+      runId: Number(nextState.runId || 0),
+      lockedUntil: Number(nextState.lockedUntil || 0),
+      nextPhaseAt: Number(nextState.nextPhaseAt || 0)
     });
   }
 

@@ -208,6 +208,11 @@ wss.on('connection', (socket) => {
     let msg;
     try { msg = JSON.parse(String(raw)); } catch { return; }
 
+    if (msg.type === 'reset') {
+      resetState(msg.source || 'controller');
+      return;
+    }
+
     if (isInteractionLocked()) return;
 
     if (msg.type === 'setState' && msg.patch && typeof msg.patch === 'object') {
@@ -226,9 +231,6 @@ wss.on('connection', (socket) => {
       runRoute(msg.segmentId, msg.instrumentId, msg.source || 'controller');
     }
 
-    if (msg.type === 'reset') {
-      resetState(msg.source || 'controller');
-    }
   });
 });
 
