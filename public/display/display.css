@@ -1292,7 +1292,7 @@ button {
 .physical-mode .stage {
   top: 0;
   height: 1080px;
-  background: url("/TV/melo2.png") center / cover no-repeat #08111d;
+  background: url("/TV/melo3.png") center / cover no-repeat #08111d;
 }
 
 .physical-layout {
@@ -3323,11 +3323,11 @@ button {
 }
 
 .physical-mode[data-phase="idle"] .stage {
-  background: url("/TV/melo2.png") center / cover no-repeat #08111d;
+  background: url("/TV/melo3.png") center / cover no-repeat #08111d;
 }
 
 .physical-mode[data-phase="bankIntro"] .stage {
-  background: url("/TV/melo2.png") center / cover no-repeat #08111d;
+  background: url("/TV/melo3.png") center / cover no-repeat #08111d;
 }
 
 .physical-mode[data-phase="problem"] .stage,
@@ -3336,7 +3336,7 @@ button {
 .physical-mode[data-phase="route"] .stage,
 .physical-mode[data-phase="providers"] .stage,
 .physical-mode[data-phase="result"] .stage {
-  background: url("/TV/melo2.png") center / cover no-repeat #08111d;
+  background: url("/TV/melo3.png") center / cover no-repeat #08111d;
 }
 
 .physical-mode[data-phase="idle"] .stage > * {

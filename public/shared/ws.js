@@ -13,6 +13,7 @@ export function createExperienceSocket(onState) {
   const room = roomFromUrl();
   const cloudEndpoint = `/.netlify/functions/sync-state?room=${encodeURIComponent(room)}`;
   const listeners = new Set();
+  let lastDeliveredStateSignature = '';
   const initialState = {
     segmentId: null,
     instrumentId: null,
@@ -39,6 +40,26 @@ export function createExperienceSocket(onState) {
   function setStatus(patch) {
     Object.assign(status, patch);
     notify();
+  }
+
+  function stateSignature(nextState = {}) {
+    return JSON.stringify({
+      segmentId: nextState.segmentId || null,
+      instrumentId: nextState.instrumentId || null,
+      phase: nextState.phase || 'idle',
+      selectionMode: nextState.selectionMode || 'initial',
+      runId: Number(nextState.runId || 0),
+      lockedUntil: Number(nextState.lockedUntil || 0),
+      nextPhaseAt: Number(nextState.nextPhaseAt || 0)
+    });
+  }
+
+  function deliverState(nextState) {
+    const signature = stateSignature(nextState);
+    if (signature === lastDeliveredStateSignature) return false;
+    lastDeliveredStateSignature = signature;
+    onState(nextState);
+    return true;
   }
 
   function connect() {
@@ -89,7 +110,7 @@ export function createExperienceSocket(onState) {
       try {
         const msg = JSON.parse(event.data);
         setStatus({ lastMessageAt: Date.now() });
-        if (msg.type === 'state') onState(msg.state);
+        if (msg.type === 'state') deliverState(msg.state);
       } catch (error) {
         console.warn('Mensaje inválido', error);
       }
@@ -125,7 +146,7 @@ export function createExperienceSocket(onState) {
     const state = { ...nextState, updatedAt: Date.now() };
     localStorage.setItem(storageKey, JSON.stringify(state));
     channel?.postMessage({ type: 'state', state, source });
-    onState(state);
+    deliverState(state);
   }
 
   function scheduleStaticRoute(runId) {
@@ -222,7 +243,7 @@ export function createExperienceSocket(onState) {
   function rememberCloudState(state, source = 'cloud') {
     localStorage.setItem(storageKey, JSON.stringify(state));
     channel?.postMessage({ type: 'state', state, source });
-    onState(state);
+    deliverState(state);
   }
 
   async function pullCloudState(source = 'cloud') {
@@ -324,7 +345,7 @@ export function createExperienceSocket(onState) {
   }
 
   channel?.addEventListener('message', event => {
-    if (event.data?.type === 'state' && event.data.state) onState(event.data.state);
+    if (event.data?.type === 'state' && event.data.state) deliverState(event.data.state);
   });
 
   connect();
