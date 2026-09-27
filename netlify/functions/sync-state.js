@@ -107,7 +107,7 @@ function advanceScheduledState(state) {
   let changed = false;
   const now = Date.now();
 
-  if (nextState.phase !== 'idle' && AUTO_RESET_MS > 0 && Number(nextState.updatedAt || 0) + AUTO_RESET_MS < now) {
+  if (nextState.phase !== 'idle' && nextState.phase !== 'closing' && AUTO_RESET_MS > 0 && Number(nextState.updatedAt || 0) + AUTO_RESET_MS < now) {
     return {
       ...initialState,
       runId: Number(nextState.runId || 0) + 1,

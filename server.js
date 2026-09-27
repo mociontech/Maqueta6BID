@@ -79,7 +79,7 @@ function isInteractionLocked() {
 
 function scheduleAutoReset() {
   clearAutoResetTimer();
-  if (!AUTO_RESET_MS || AUTO_RESET_MS < 0 || state.phase === 'idle') return;
+  if (!AUTO_RESET_MS || AUTO_RESET_MS < 0 || state.phase === 'idle' || state.phase === 'closing') return;
   autoResetTimer = setTimeout(() => resetState('auto-reset'), AUTO_RESET_MS);
 }
 

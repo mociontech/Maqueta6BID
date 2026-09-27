@@ -553,7 +553,7 @@ function revealFormalTransformationSequence(token) {
   setFormalSequenceSteps('formal-bridge');
   stopVideo(els.formalVideo);
   stopVideo(els.finalFormalVideo);
-  playMiddleBridgeVideo({ loopOnly: true, loopOffset: .55 });
+  playPrivateBridgeVideo({ loopOnly: true, loopOffset: .55 });
   playFinalBridgeVideo({ restart: true });
 
   later(() => {
