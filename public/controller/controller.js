@@ -1,5 +1,6 @@
 import { createExperienceSocket } from '/shared/ws.js';
 import { createDiagnosticsPanel } from '/shared/diagnostics.js';
+import { createMetrics } from '/shared/metrics.js';
 
 const data = await fetch('/data/experience.json').then(response => response.json());
 const staticStateStorageKey = 'maqueta6-banca-desarrollo-state';
@@ -42,6 +43,7 @@ const sectorLabelAssets = {
   insurers: '/pantallas/ASEGURADORAS.png'
 };
 
+const metrics = createMetrics({ room: roomName() });
 let state = { segmentId: null, instrumentId: null, phase: 'idle', selectionMode: 'initial', completedSegmentIds: [], runId: 0, lockedUntil: 0 };
 let selectedSectorId = null;
 let autoRunTimer = null;
@@ -105,6 +107,16 @@ function renderConnection(online, wsStatus) {
 }
 
 socket.onConnectionChange(renderConnection);
+
+function roomName() {
+  try {
+    return new URLSearchParams(location.search).get('room')
+      || localStorage.getItem('maqueta6-banca-desarrollo-room')
+      || 'default';
+  } catch {
+    return 'default';
+  }
+}
 
 function retryLabel(wsStatus) {
   if (wsStatus?.reconnectInMs) return `Reconectando ${Math.round(wsStatus.reconnectInMs / 1000)} s`;
@@ -370,15 +382,17 @@ function clearLocalProgress() {
   updateSectorGuidance(null);
 }
 
-function goToIntro(reset = true) {
+function goToIntro(reset = true, reason = 'reinicio') {
   if (shouldIgnoreInteraction()) return;
+  metrics.end(reason);
   clearLocalProgress();
   showStep(els.introStep, 'intro');
   if (reset) socket.send({ type: 'reset', source: 'controller', force: true });
 }
 
-function goToSectors(resetDisplay = false) {
+function goToSectors(resetDisplay = false, origin = 'bancaDesarrollo') {
   if (shouldIgnoreInteraction()) return;
+  if (resetDisplay) metrics.start(origin);
   clearAutoRun();
   clearSectorReadTimer();
   selectedSectorId = null;
@@ -425,6 +439,7 @@ function chooseSector(id) {
   if (completedSectors.has(id)) return;
   const sector = currentSector(id);
   if (!sector) return;
+  metrics.step(`sector:${id}`);
   const firstSelection = completedSectors.size === 0;
   const holdMs = firstSelection ? 7200 : Math.max(4800, data.animationTimings?.privateSectorReadMs || 5000);
   localActionLockedUntil = Date.now() + holdMs;
@@ -470,6 +485,7 @@ function completeSectorSelection(id) {
 
 function finishExperience() {
   if (shouldIgnoreInteraction()) return;
+  metrics.step('finalizar');
   clearAutoRun();
   clearSectorReadTimer();
   socket.send({
@@ -483,6 +499,7 @@ function finishExperience() {
 
 function viewTransformation() {
   if (completedSectors.size < sectorOrder.length) return;
+  metrics.step('verImpacto');
   clearAutoRun();
   clearSectorReadTimer();
   const lockedUntil = Date.now() + transformationLockMs;
@@ -506,6 +523,7 @@ function viewTransformation() {
 
 function viewFullInfo() {
   if (shouldIgnoreInteraction()) return;
+  metrics.step('verInfoCompleta');
   clearAutoRun();
   clearSectorReadTimer();
   state = {
@@ -565,15 +583,15 @@ function syncFromServer() {
 }
 
 els.begin.addEventListener('click', () => goToSectors(true));
-els.backHome.addEventListener('click', () => goToIntro(true));
-els.goHome.addEventListener('click', () => goToIntro(true));
+els.backHome.addEventListener('click', () => goToIntro(true, 'volver al inicio'));
+els.goHome.addEventListener('click', () => goToIntro(true, 'volver al inicio'));
 els.newSector?.addEventListener('click', () => goToSectors(false));
-els.changeSector.addEventListener('click', () => goToSectors(true));
+els.changeSector.addEventListener('click', () => goToSectors(true, 'cambiarSector'));
 els.finish.addEventListener('click', finishExperience);
 els.viewTransformation?.addEventListener('click', viewTransformation);
 els.exploreAgain.addEventListener('click', viewFullInfo);
 els.restart.addEventListener('click', () => goToIntro(true));
-els.resetGlobal.addEventListener('click', () => goToIntro(true));
+els.resetGlobal.addEventListener('click', () => goToIntro(true, 'reinicio general'));
 
 createDiagnosticsPanel({
   title: 'Diagnostico tablet',
